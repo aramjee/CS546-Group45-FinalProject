@@ -1,0 +1,1 @@
+// this is a helper file to do some error checking for inputs.
