@@ -3,23 +3,17 @@ import moment from "moment";
 import {ObjectId} from "mongodb";
 
 function checkArgumentsExist(...args) {
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    const argName = Object.keys({arg})[0]; // Get the name of the argument
-
+  for (let arg of args) {
     if (!arg) {
-      throw [400, `ERROR: ${argName} must be a non-empty string`];
+      throw [400, `ERROR: All filed must present`];
     }
   }
 }
 
 function checkNonEmptyStrings(...args) {
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    const argName = Object.keys({arg})[0]; // Get the name of the argument
-
+  for (let arg of args) {
     if (typeof arg !== "string" || arg.trim().length === 0) {
-      throw [400, `ERROR: ${argName} must be a non-empty string`];
+      throw [400, `ERROR: Field must be a non-empty string`];
     }
   }
 }
