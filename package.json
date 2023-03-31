@@ -21,6 +21,7 @@
   "homepage": "https://github.com/aramjee/CS546-Group45-FinalProject#readme",
   "dependencies": {
     "express": "^4.18.2",
-    "mongodb": "^4.13.0"
+    "mongodb": "^4.13.0",
+    "moment": "^2.29.1"
   }
 }
