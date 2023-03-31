@@ -99,7 +99,8 @@ async function createReview(
         user.dateOfBirth,
         user.isGymOwner,
         user.hashedPassword,
-        updatedReview)
+        updatedReview,
+        user.comments)
     // TODO: need to check user function
 
 
@@ -157,7 +158,8 @@ async function removeReview(id) {
         user.dateOfBirth,
         user.isGymOwner,
         user.hashedPassword,
-        updatedReviews)
+        updatedReviews,
+        user.comments)
     // TODO: need to check user function
 
 
