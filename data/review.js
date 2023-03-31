@@ -4,8 +4,7 @@
 // This data file should export all functions using the ES6 standard as shown in the lecture code
 
 import { reviewCollection } from '../config/mongoCollections.js';
-import { gymCollection } from '../config/mongoCollections.js';
-import { userCollection } from '../config/mongoCollections.js';
+
 import { ObjectId } from 'mongodb';
 import { validation } from '../helpers.js';
 import { userDataFunctions } from './user.js'
@@ -87,56 +86,44 @@ async function createReview(
     const newId = insertInfo.insertedId.toString();
 
     // user collection add a review
-    const usersCollection = await userCollection();
-    let users = await usersCollection.find({ _id: new ObjectId(newReview.userId) }).toArray();
-    let oldUserReviews = []
-    for (const user of users) {
-        for (const review of user.reviews) {
-            oldUserReviews.push(review)
-        }
-    }
-    const updatedUser = {
-        reviews: oldUserReviews
-    }
-    updatedUser.reviews.push(newId)
-    const updatedInfoUser = await usersCollection.findOneAndUpdate(
-        { _id: new ObjectId(newReview.userId) },
-        { $set: updatedUser },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfoUser.lastErrorObject.n === 0) {
-        throw 'could not update user successfully';
-    }
+    let user = await userDataFunctions.get(userId)
+    let updatedReview = await this.getUserReviews(userId)
+    await userDataFunctions.update(
+        user._id,
+        user.firstName,
+        user.lastName,
+        user.userName,
+        user.email,
+        user.city,
+        user.state,
+        user.dateOfBirth,
+        user.isGymOwner,
+        user.hashedPassword,
+        updatedReview)
+    // TODO: need to check user function
+
 
     // gym collection add a review
-    const gymsCollection = await gymCollection();
-    let gyms = await gymsCollection.find({ _id: new ObjectId(newReview.gymId) }).toArray();
-    let oldGymReviews = []
+    let UpdatedgymReviews = await this.getGymReviews(gymId)
+    let gym = await gymDataFunctions.get(gymId)
     let ratings = []
-    for (const gym of gyms) {
-        for (const review of gym.reviews) {
-            oldGymReviews.push(review)
-            ratings.push(review.rating)
-        }
+    for (review of UpdatedgymReviews) {
+        ratings.push(review.rating)
     }
-    ratings.push(newReview.rating)
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
 
-    const updatedGym = {
-        reviews: oldGymReviews,
-        OverallRating: grade
-    }
-    updatedGym.reviews.push(newId)
-    const updatedInfoGym = await gymsCollection.findOneAndUpdate(
-        { _id: new ObjectId(newReview.gymId) },
-        { $set: updatedGym },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfoGym.lastErrorObject.n === 0) {
-        throw 'could not update gym successfully';
-    }
-
+    await gymDataFunctions.update(
+        gym.gymId,
+        gym.website,
+        gym.gymOwnerId,
+        gym.city,
+        gym.state,
+        gym.zip,
+        UpdatedgymReviews,
+        gym.likedGymsCnt,
+        gym.dislikedGymsCnt,
+        grade)
     // finally
     const review = await this.get(newId);
     return review;
@@ -157,62 +144,45 @@ async function removeReview(id) {
 
 
     // user collection remove a review
-    const usersCollection = await userCollection();
-    let users = await usersCollection.find({ _id: new ObjectId(newReview.userId) }).toArray();
-    let oldUserReviews = []
-    for (const user of users) {
-        for (const review of user.reviews) {
-            if (review === id) {
-                continue
-            }
-            else { oldUserReviews.push(review) }
-        }
-    }
-    const updatedUser = {
-        reviews: oldUserReviews
-    }
-    const updatedInfoUser = await usersCollection.findOneAndUpdate(
-        { _id: new ObjectId(newReview.userId) },
-        { $set: updatedUser },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfoUser.lastErrorObject.n === 0) {
-        throw 'could not update user successfully';
-    }
+    let user = await userDataFunctions.get(userId)
+    let updatedReviews = await this.getUserReviews(userId)
+    await userDataFunctions.update(
+        user._id,
+        user.firstName,
+        user.lastName,
+        user.userName,
+        user.email,
+        user.city,
+        user.state,
+        user.dateOfBirth,
+        user.isGymOwner,
+        user.hashedPassword,
+        updatedReviews)
+    // TODO: need to check user function
+
 
     // gym collection remove a review
-    const gymsCollection = await gymCollection();
-    let gyms = await gymsCollection.find({ _id: new ObjectId(newReview.gymId) }).toArray();
-    let oldGymReviews = []
+    // gym collection add a review
+    let UpdatedgymReviews = await this.getGymReviews(gymId)
+    let gym = await gymDataFunctions.get(newReview.gymId)
     let ratings = []
-    for (const gym of gyms) {
-        for (const review of gym.reviews) {
-            if (review === id) {
-                continue;
-            }
-            else {
-                oldGymReviews.push(review)
-                ratings.push(review.rating)
-            }
-
-        }
+    for (review of UpdatedgymReviews) {
+        ratings.push(review.rating)
     }
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
 
-    const updatedGym = {
-        reviews: oldGymReviews,
-        OverallRating: grade
-    }
-    const updatedInfoGym = await gymsCollection.findOneAndUpdate(
-        { _id: new ObjectId(newReview.gymId) },
-        { $set: updatedGym },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfoGym.lastErrorObject.n === 0) {
-        throw 'could not update gym successfully';
-    }
-
+    await gymDataFunctions.update(
+        gym.gymId,
+        gym.website,
+        gym.gymOwnerId,
+        gym.city,
+        gym.state,
+        gym.zip,
+        UpdatedgymReviews,
+        gym.likedGymsCnt,
+        gym.dislikedGymsCnt,
+        grade)
 
     // finally
     return `${deletionInfo.value.name} has been successfully deleted!`;
@@ -268,29 +238,26 @@ async function updateReviewRating(
         throw 'could not update review successfully';
     }
 
-    // update gym overall rating
-    const gymsCollection = await gymCollection();
-    let gyms = await gymsCollection.find({ _id: new ObjectId(newReview.gymId) }).toArray();
+    let UpdatedgymReviews = await this.getGymReviews(newReview.gymId)
+    let gym = await gymDataFunctions.get(newReview.gymId)
     let ratings = []
-    for (const gym of gyms) {
-        for (const review of gym.reviews) {
-            ratings.push(review.rating)
-        }
+    for (review of UpdatedgymReviews) {
+        ratings.push(review.rating)
     }
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
 
-    const updatedGym = {
-        OverallRating: grade
-    }
-    const updatedInfoGym = await gymsCollection.findOneAndUpdate(
-        { _id: new ObjectId(newReview.gymId) },
-        { $set: updatedGym },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfoGym.lastErrorObject.n === 0) {
-        throw 'could not update gym successfully';
-    }
+    await gymDataFunctions.update(
+        gym.gymId,
+        gym.website,
+        gym.gymOwnerId,
+        gym.city,
+        gym.state,
+        gym.zip,
+        UpdatedgymReviews,
+        gym.likedGymsCnt,
+        gym.dislikedGymsCnt,
+        grade)
 
     // finally 
     return await this.get(id);
