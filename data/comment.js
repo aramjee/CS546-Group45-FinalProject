@@ -3,7 +3,6 @@
 // placeholder: API GoogleDoc link 
 
 // This data file should export all functions using the ES6 standard as shown in the lecture code
-import { reviewCollection } from '../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
 import { validation } from '../helpers.js';
 import { userDataFunctions } from './user.js'
@@ -11,9 +10,8 @@ import { reviewDataFunctions } from './review.js'
 
 // return one comment object
 async function get(commentId) {
-    commentId = validation.checkId(commentId, 'commentId')
-    const reviewsCollection = await reviewCollection();
-    const allReview = await reviewsCollection.find().toArray();
+    commentId = validation.checkObjectId(commentId, 'commentId')
+    const allReview = await reviewDataFunctions.getAll();
     for (const review of allReview) {
         for (const comment of review.comments) {
             if (comment._id.toString() === commentId) {
@@ -24,11 +22,10 @@ async function get(commentId) {
     }
     throw `the comment doesn't exist`
 }
-// return a list of comment object under a review
+// return a list of comment ids under a review
 async function getAllByReview(reviewId) {
-    reviewId = validation.checkId(reviewId, 'reviewId')
-    const reviewsCollection = await reviewCollection();
-    const review = await reviewsCollection.find({ _id: new ObjectId(reviewId) }).toArray();
+    reviewId = validation.checkObjectId(reviewId, 'reviewId')
+    const review = await reviewDataFunctions.get(reviewId);
     if (review.length === 0) {
         throw `invalid reviewId`
     }
@@ -36,30 +33,24 @@ async function getAllByReview(reviewId) {
     let comments = [];
     for (const review of review) {
         for (const comment of review.comments) {
-            comment._id = comment._id.toString()
-            comments.push(comment);
+            comments.push(comment._id.toString());
         }
     }
     return comments;
 }
 
-// return a list of comment object posted by the user
+// return a list of comment ids posted by the user
 async function getAllByUser(userId) {
-    userId = validation.checkId(userId, 'userId');
+    userId = validation.checkObjectId(userId, 'userId');
     if (!userDataFunctions.get(id)) {
         throw `no user have such id`
     }
-    const reviewsCollection = await reviewCollection();
-    const reviews = await reviewsCollection.find().toArray();
-    if (reviews.length === 0) {
-        throw `invalid review`
-    }
+    const allReviews = await reviewDataFunctions.getAll();
     let comments = [];
-    for (const review of reviews) {
+    for (const review of allReviews) {
         for (const comment of review.comments) {
             if (comment.userId === userId) {
-                comment._id = comment._id.toString();
-                comments.push(comment);
+                comments.push(comment._id.toString());
             }
         }
     }
@@ -72,102 +63,52 @@ async function create(
     content,
     reviewId
 ) {
-    [userId, dateOfComment, content, reviewId] = validation.checkCommentInputCreatePut(userId, dateOfComment, content, reviewId)
+    userId = validation.checkObjectId(userId);
+    reviewId = validation.checkObjectId(reviewId);
+
     const newComment = { _id: new ObjectId(), userId: userId, dateOfComment: dateOfComment, content: content, reviewId: reviewId };
+    const newCommentId = newComment._id.toString()
 
-    const reviewsCollection = await reviewCollection();
-    const oldReviews = await reviewsCollection.find({ _id: new ObjectId(reviewId) }).toArray();
-    let oldComments = [];
-    for (const review of oldReviews) {
-        for (const comment of review.comments) {
-            oldComments.push(comment);
-        }
-    }
-    const updatedReview = {
-        comments: oldComments,
-    }
-    updatedReview.comments.push(newComment)
-
-    const updatedInfo = await reviewsCollection.findOneAndUpdate(
-        { _id: new ObjectId(reviewId) },
-        { $set: updatedReview },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfo.lastErrorObject.n === 0) {
-        throw 'could not update review successfully';
-    }
-    const newId = newComment._id.toString()
+    // add the comment to the review, note that comment is a subcollection of the review
+    let updatedReview = reviewDataFunctions.get(reviewId);
+    updatedReview.push(newComment);
+    await reviewDataFunctions.updateReviewContent(reviewId, updatedReview);
 
     // add the comment to the user
     let user = await userDataFunctions.get(userId)
-    let updatedComment = await this.getAllByUser(userId)
-    await userDataFunctions.update(
-        user._id,
-        user.firstName,
-        user.lastName,
-        user.userName,
-        user.email,
-        user.city,
-        user.state,
-        user.dateOfBirth,
-        user.isGymOwner,
-        user.hashedPassword,
-        user.reviews,
-        updatedComment)
+    let userCommentList = await this.getAllByUser(userId);
+    userCommentList.push(newCommentId);
+    user.comments = userCommentList;
+    await userDataFunctions.update(userId, user)
 
     // finally
-
-    return await get(newId);
+    return await get(newCommentId);
 }
 
 
 
 
 async function remove(commentId) {
-    commentId = validation.checkId(commentId, 'commentId')
-    let comment = this.get(commentId)
-
-    const reviewsCollection = await reviewCollection();
-    let reviews = await reviewsCollection.find().toArray();
-    for (const review of reviews) {
-        for (const comment of review.comments) {
-            if (comment._id.toString() === commentId) {
-                removeReview = review;
-            }
+    commentId = validation.checkObjectId(commentId, 'commentId')
+    const userId = await this.get(commentId).userId;
+    const reviewId = await this.get(commentId).reviewId;
+    let review = reviewDataFunctions.get(reviewId);
+    let updatedCommentsReview = []
+    for (let comment of review.comments) {
+        if (comment._id.toString() !== commentId) {
+            updatedReviews.push(comment)
         }
     }
-    if (removeReview === undefined) {
-        throw `the comment doesn't exist`;
-    }
-    const updatedInfo = await reviewsCollection.findOneAndUpdate(
-        { _id: removeReview._id },
-        {
-            $set: { overallRating: grade },
-            $pull: { "comments": { _id: new ObjectId(commentId) } }
-        },
-        { returnDocument: 'after' })
-    if (updatedInfo.lastErrorObject.n === 0) {
-        throw 'could not update review successfully';
-    }
+    review.comments = updatedCommentsReview;
+    await reviewDataFunctions.updateReviewComment(reviewId, updatedReview);
 
     // user collection remove a review
-    let user = await userDataFunctions.get(comment.userId)
-    let updatedComments = await reviewDataFunctions.getUserReviews(comment.userId)
-    await userDataFunctions.update(
-        user._id,
-        user.firstName,
-        user.lastName,
-        user.userName,
-        user.email,
-        user.city,
-        user.state,
-        user.dateOfBirth,
-        user.isGymOwner,
-        user.hashedPassword,
-        user.reviews,
-        updatedComments)
-
-    return await reviewDataFunctions.get(removeReview._id.toString())
+    // safe to use the getUserReviews bc: it goes in the review collection, and the comment is removed there
+    let user = await userDataFunctions.get(userId)
+    let updatedComments = await reviewDataFunctions.getUserReviews(userId)
+    user.comments = updatedComments;
+    await userDataFunctions.update(userId, user)
+    return await reviewDataFunctions.get(reviewId)
 
 }
 async function update(
@@ -175,10 +116,10 @@ async function update(
     content,
     dataOfReview
 ) {
-    id = validation.checkId(id, 'id');
+    id = validation.checkObjectId(id, 'id');
 
     // todo: how to check content?
-    // pull the old review first, and then create a new review
+    // pull the old review first, and then create a new review (only update the review collection since in the user collection it's a list of ids not list of object)
     let Updatedcomment = this.get(id);
     Updatedcomment.content = content;
     Updatedcomment.dataOfReview = dataOfReview;
@@ -197,8 +138,6 @@ async function update(
     if (updatedInfo.lastErrorObject.n === 0) {
         throw 'could not update band successfully';
     }
-
-
 
 }
 export const commentDataFunctions = { get, getAllByReview, getAllByUser, create, remove, update } 
