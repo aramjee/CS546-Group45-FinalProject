@@ -46,7 +46,7 @@ const create = async (
   const usersDBConnection = await userCollection();
 
   //Check for duplicated email
-  const userExists = await usersDBConnection.findOne({ email: lowerCaseEmail});
+  const userExists = await usersDBConnection.findOne({email: lowerCaseEmail});
   if (userExists) {
     throw [404, `Email already in use`];
   }
@@ -99,30 +99,42 @@ const remove = async (id) => {
   };
 };
 
-const update = async (
-  id,
-  firstName,
-  lastName,
-  userName,
-  email,
-  city,
-  state,
-  dateOfBirth,
-  isGymOwner,
-  hashedPassword
-) => {
+const update = async (id, user) => {
   // Validation
   await validation.checkObjectId(id);
-  await validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, hashedPassword);
-  await validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, hashedPassword);
-  await validation.checkValidEmail(email);
-  await validation.checkValidData(dateOfBirth);
+  await validation.checkArgumentsExist(user.firstName, user.lastName, user.userName, user.email, user.city, user.state,
+    user.dateOfBirth, user.isGymOwner, user.hashedPassword, user.reviews, user.comments, user.likedGyms, user.dislikedGyms,
+    user.favGymList, user.gymsListForOwner);
+  await validation.checkNonEmptyStrings(user.firstName, user.lastName, user.userName, user.email, user.city, user.state, user.hashedPassword);
+  await validation.checkValidEmail(user.email);
+  await validation.checkValidData(user.dateOfBirth);
+  await validation.checkObjectIdArray(user.reviews);
+  await validation.checkObjectIdArray(user.comments);
+  await validation.checkObjectIdArray(user.likedGyms);
+  await validation.checkObjectIdArray(user.dislikedGyms);
+  await validation.checkObjectIdArray(user.favGymList);
+  await validation.checkObjectIdArray(user.gymsListForOwner);
 
   // Update the band data in the database
   const usersDBConnection = await userCollection();
   const updateInfo = await usersDBConnection.findOneAndUpdate(
     {_id: new ObjectId(id.trim())},
-    {$set: {firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, hashedPassword}},
+    {$set: {firstName: user.firstName,
+        lastName: user.lastName,
+        userName: user.userName,
+        email: user.email,
+        city: user.city,
+        state: user.state,
+        dateOfBirth: user.dateOfBirth,
+        isGymOwner: user.isGymOwner,
+        hashedPassword: user.hashedPassword,
+        reviews: user.reviews,
+        comments: user.comments,
+        likedGyms: user.likedGyms,
+        dislikedGyms: user.dislikedGyms,
+        favGymList: user.favGymList,
+        gymsListForOwner: user.gymsListForOwner
+    }},
     {returnDocument: 'after'}
   );
 

@@ -51,5 +51,35 @@ const checkObjectId = async (id) => {
   }
 }
 
+const checkValidWebsite = async (website) => {
+  const emailRegex = /^https:\/\/www\..{5,}\.com$/;
+  if (!emailRegex.test(website)){
+    throw [400, `ERROR: ${website} must be a valid website`];
+  }
+}
 
-export {checkArgumentsExist, checkValidData, checkNonEmptyStrings, checkValidEmail, checkObjectId}
+const checkObjectIdArray = async (arr) => {
+  if (!Array.isArray(arr)) {
+    throw [400, "ERROR: Must be array"]
+  }
+  for (let i = 0; i < arr.length; i++) {
+    if (typeof arr[i] !== 'string' || arr[i].trim().length === 0 || !ObjectId.isValid(arr[i])) {
+      throw [400, "ERROR: The element of array must be ObjectId"]
+    }
+  }
+}
+
+const checkValidRating = async (rating) => {
+  if (typeof rating !== 'number' || rating < 0 || rating > 5 || !Number.isInteger(rating * 10)) {
+    throw [400, "ERROR: Rating must be a number between 1 and 5 with one decimal place"]
+  }
+}
+
+const checkValidNonNegativeInteger = async (number) => {
+  if (typeof number !== 'number' || !Number.isInteger(number) || number < 0) {
+    throw [400, "ERROR: Number must be non negative integer"]
+  }
+}
+
+export {checkArgumentsExist, checkValidData, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
+  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating}
