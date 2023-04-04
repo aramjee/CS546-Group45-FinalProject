@@ -23,8 +23,7 @@ try {
         0,
         "safdsavd9bjdasnf13456yu*-2"
     );
-    // console.log('userA has been created');
-    console.log(userA);
+    console.log('userA has been created');
 } catch (e) {
     console.log(e);
 }
@@ -35,15 +34,14 @@ try {
         "firstName",
         "lastName",
         "userName",
-        "email@stevens.edu",
+        "email1@stevens.edu",
         "NY",
         "NY",
         "01/01/2000",
         1,
         "safdsavd9bjdasnf13456yu*-2"
     );
-    // console.log('gymOwnerA has been created');
-    console.log(userA);
+    console.log('gymOwnerA has been created');
 } catch (e) {
     console.log(e);
 }
@@ -54,7 +52,7 @@ let gymOwnerA_id = gymOwnerA._id.toString();
 try {
     gymA = await gyms.create(
         "Equinox",
-        "https://www.equinox.com/",
+        "http://www.linkinpark.com",
         "gym",
         gymOwnerA_id,
         "35 Hudson Yards",
@@ -62,8 +60,7 @@ try {
         "New York",
         "10001"
     )
-    // console.log('gymA has been created');
-    console.log(gymA);
+    console.log('gymA has been created');
 } catch (e) {
     console.log(e);
 }
@@ -77,6 +74,7 @@ try {
         "I like this gym",
         5
     )
+    console.log("reviewA is created!")
 } catch (e) {
     console.log(e);
 }
@@ -89,6 +87,8 @@ try {
         "I agree",
         reviewA_id
     )
+    console.log("commentA is created!")
+
 } catch (e) {
     console.log(e);
 }

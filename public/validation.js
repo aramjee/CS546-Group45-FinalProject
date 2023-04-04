@@ -3,12 +3,15 @@ import moment from "moment";
 import { ObjectId } from "mongodb";
 
 function checkArgumentsExist(...args) {
+  //console.log('checkAr')
   for (let arg of args) {
+    //console.log(arg)
     if (!arg) {
       throw [400, `ERROR: All filed must present`];
     }
-    arg = arg.trim();
+    //arg = arg.trim();
   }
+  //console.log('done with checkArgumentsExist')
   return args;
 }
 
@@ -60,7 +63,8 @@ const checkObjectId = async (id, idName) => {
   return id;
 }
 
-// TODO: maybe the definition of a valid website should be different from the homework? let's circle back in the group meeting
+// TODO: maybe the definition of a valid website should be different 
+// from the homework? e.g: https://www.abc.com/
 const checkValidWebsite = async (website) => {
   const emailRegex = /^https:\/\/www\..{5,}\.com$/;
   if (!emailRegex.test(website)) {
@@ -87,7 +91,6 @@ const checkValidRating = async (rating) => {
   if (typeof rating !== 'number' || rating < 0 || rating > 5 || !Number.isInteger(rating * 10)) {
     throw [400, "ERROR: Rating must be a number between 1 and 5 with one decimal place"]
   }
-  rating = rating.trim();
   return rating;
 }
 
