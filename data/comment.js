@@ -4,7 +4,6 @@
 
 // This data file should export all functions using the ES6 standard as shown in the lecture code
 import { reviewCollection } from '../config/mongoCollections.js';
-import { userCollection } from '../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
 import { validation } from '../helpers.js';
 import { userDataFunctions } from './user.js'
@@ -100,27 +99,21 @@ async function create(
     const newId = newComment._id.toString()
 
     // add the comment to the user
-    const usersCollection = await userCollection();
-    let users = await usersCollection.find({ _id: new ObjectId(newComment.userId) }).toArray();
-    let oldUserComments = []
-    for (const user of users) {
-        for (const comment of user.comments) {
-            oldUserComments.push(comment)
-        }
-    }
-    const updatedUser = {
-        comments: oldUserComments
-    }
-    updatedUser.reviews.push(newId)
-    const updatedInfoUser = await usersCollection.findOneAndUpdate(
-        { _id: new ObjectId(newComment.userId) },
-        { $set: updatedUser },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfoUser.lastErrorObject.n === 0) {
-        throw 'could not update user successfully';
-    }
-
+    let user = await userDataFunctions.get(userId)
+    let updatedComment = await this.getAllByUser(userId)
+    await userDataFunctions.update(
+        user._id,
+        user.firstName,
+        user.lastName,
+        user.userName,
+        user.email,
+        user.city,
+        user.state,
+        user.dateOfBirth,
+        user.isGymOwner,
+        user.hashedPassword,
+        user.reviews,
+        updatedComment)
 
     // finally
 
@@ -132,9 +125,11 @@ async function create(
 
 async function remove(commentId) {
     commentId = validation.checkId(commentId, 'commentId')
+    let comment = this.get(commentId)
+
     const reviewsCollection = await reviewCollection();
-    let review = await reviewsCollection.find().toArray();
-    for (const review of review) {
+    let reviews = await reviewsCollection.find().toArray();
+    for (const review of reviews) {
         for (const comment of review.comments) {
             if (comment._id.toString() === commentId) {
                 removeReview = review;
@@ -156,38 +151,54 @@ async function remove(commentId) {
     }
 
     // user collection remove a review
-    const usersCollection = await userCollection();
-    let users = await usersCollection.find({ _id: new ObjectId(removeReview.userId) }).toArray();
-    let oldUserReviews = []
-    for (const user of users) {
-        for (const review of user.reviews) {
-            if (review === commentId) {
-                continue
-            }
-            else { oldUserReviews.push(review) }
-        }
-    }
-    const updatedUser = {
-        reviews: oldUserReviews
-    }
-    const updatedInfoUser = await usersCollection.findOneAndUpdate(
-        { _id: new ObjectId(removeReview.userId) },
-        { $set: updatedUser },
-        { returnDocument: 'after' }
-    );
-    if (updatedInfoUser.lastErrorObject.n === 0) {
-        throw 'could not update user successfully';
-    }
+    let user = await userDataFunctions.get(comment.userId)
+    let updatedComments = await reviewDataFunctions.getUserReviews(comment.userId)
+    await userDataFunctions.update(
+        user._id,
+        user.firstName,
+        user.lastName,
+        user.userName,
+        user.email,
+        user.city,
+        user.state,
+        user.dateOfBirth,
+        user.isGymOwner,
+        user.hashedPassword,
+        user.reviews,
+        updatedComments)
+
     return await reviewDataFunctions.get(removeReview._id.toString())
 
 }
-async function updateReview(
+async function update(
     id,
     content,
     dataOfReview
 ) {
     id = validation.checkId(id, 'id');
-    // how to check content?
+
+    // todo: how to check content?
     // pull the old review first, and then create a new review
+    let Updatedcomment = this.get(id);
+    Updatedcomment.content = content;
+    Updatedcomment.dataOfReview = dataOfReview;
+    let allComments = this.getAllByReview(updatedComment.reviewId);
+    for (comment of allComments) {
+        if (comment._id === id) {
+            comment = Updatedcomment;
+            break
+        }
+    }
+    const updatedInfo = await bandsCollection.findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: allComments },
+        { returnDocument: 'after' }
+    );
+    if (updatedInfo.lastErrorObject.n === 0) {
+        throw 'could not update band successfully';
+    }
+
+
+
 }
-export const commentDataFunctions = { get, getAllByReview, getAllByUser, create, remove, updateReview } 
+export const commentDataFunctions = { get, getAllByReview, getAllByUser, create, remove, update } 
