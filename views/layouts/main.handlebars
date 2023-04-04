@@ -1,3 +1,29 @@
 {{! This will be your default layout for all handlebars file rendered. This will be inherited by all other templates. }}
 {{! Refer lecture code to learn more on how this works: https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_Templating }}
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/main-styles.css">
+
+     <title>{{title}}r</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Homepage</a></li>
+        </ul>
+    </nav>
+    <h1>{{title}}</h1>
+
+    {{{body}}}
+</body>
+</html>
