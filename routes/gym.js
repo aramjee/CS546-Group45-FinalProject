@@ -9,4 +9,9 @@ router.route('/').get(async (req, res) => {
   res.render('homepage', { title: 'Gym Application' });
 });
 
+router.route('/list').get(async (req, res) => {
+  //code here for GET
+  res.render('gymList', {});
+});
+
 export default router;
