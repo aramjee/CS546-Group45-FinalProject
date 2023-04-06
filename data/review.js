@@ -4,15 +4,14 @@
 // This data file should export all functions using the ES6 standard as shown in the lecture code
 
 import { reviewCollection } from '../config/mongoCollections.js';
-
 import { ObjectId } from 'mongodb';
-import { validation } from '../helpers.js';
+import * as validation from '../public/validation.js';
 import { userDataFunctions } from './user.js'
-import { gymDataFunctions } from './user.js'
+import { gymDataFunctions } from './gym.js'
 
 // get review by review's id, return the review object
-async function getReview(id) {
-    id = validation.checkId(id, 'id')
+async function get(id) {
+    id = await validation.checkObjectId(id, 'review id')
     const reviewsCollection = await reviewCollection();
     const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
     if (review === null) throw 'No review with that id';
@@ -23,12 +22,21 @@ async function getReview(id) {
     }
     return review;
 }
+// get All, return list of review ids
+async function getAll() {
+    const reviewsCollection = await reviewCollection();
+    let reviewList = await reviewsCollection.find({}).toArray();
+    reviewList = reviewList.map((element) => {
+        return element._id.toString();
+    });
+    return reviewList;
+}
 
 // get a gym's all  review, return a list of reviewIds (string)
 async function getGymReviews(gymId) {
-    userId = validation.checkId(userId, 'userId')
+    gymId = await validation.checkObjectId(gymId, 'gym id')
     const reviewsCollection = await reviewCollection();
-    if (!gymDataFunctions.get(id)) {
+    if (!await gymDataFunctions.getByGymId(gymId)) {
         throw `no user have such id`
     }
     const reviewList = await reviewsCollection.find({ gymId: new ObjectId(gymId) }).toArray();
@@ -42,10 +50,10 @@ async function getGymReviews(gymId) {
 
 // get a user's all previous review, return a list of reviewIds (string)
 async function getUserReviews(userId) {
-    userId = validation.checkId(userId, 'userId')
+    userId = await validation.checkObjectId(userId, 'userId')
     const reviewsCollection = await reviewCollection();
     // check is user id exist in database, TBD.
-    if (!userDataFunctions.get(id)) {
+    if (!userDataFunctions.getByUserId(userId)) {
         throw `no user have such id`
     }
     const reviewList = await reviewsCollection.find({ userId: new ObjectId(userId) }).toArray();
@@ -59,25 +67,26 @@ async function getUserReviews(userId) {
 }
 
 // create a review
-// also add a review to user collection 
-// and add a review to the gym and adjust its rating
-async function createReview(
+
+async function create(
     gymId,
     userId,
     dataOfReview,
     content,
     rating) {
+    gymId = await validation.checkObjectId(gymId);
+    userId = await validation.checkObjectId(userId);
 
-    [gymId, userId, dataOfReview, content, rating] = validation.checkReviewInputCreatePut(gymId, userId, dataOfReview, content, rating)
+
     let newReview = {
         gymId: gymId,
         userId: userId,
         dataOfReview: dataOfReview,
         content: content,
-        comments: new Array(),
+        comments: [],
         rating: rating
     }
-    //TODO: since the content of the review is optional, 1)check if could just be empty string 2)check if empty review, there's no comment option.
+
     const reviewsCollection = await reviewCollection();
     const insertInfo = await reviewsCollection.insertOne(newReview);
     if (!insertInfo || !insertInfo.insertedId) {
@@ -86,55 +95,39 @@ async function createReview(
     const newId = insertInfo.insertedId.toString();
 
     // user collection add a review
-    let user = await userDataFunctions.get(userId)
-    let updatedReview = await this.getUserReviews(userId)
-    await userDataFunctions.update(
-        user._id,
-        user.firstName,
-        user.lastName,
-        user.userName,
-        user.email,
-        user.city,
-        user.state,
-        user.dateOfBirth,
-        user.isGymOwner,
-        user.hashedPassword,
-        updatedReview,
-        user.comments)
-    // TODO: need to check user function
+    let updatedUser = await userDataFunctions.getByUserId(userId)
 
+    let updatedReview = await this.getUserReviews(userId)
+    updatedUser.reviews = updatedReview;
+    await userDataFunctions.update(userId, updatedUser)
 
     // gym collection add a review
     let UpdatedgymReviews = await this.getGymReviews(gymId)
-    let gym = await gymDataFunctions.get(gymId)
+    let updatedGym = await gymDataFunctions.getByGymId(gymId)
     let ratings = []
     for (review of UpdatedgymReviews) {
         ratings.push(review.rating)
     }
+    ratings.push(rating)
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
+    updatedGym.reviews = UpdatedgymReviews;
+    updatedGym.rating = grade;
 
-    await gymDataFunctions.update(
-        gym.gymId,
-        gym.website,
-        gym.gymOwnerId,
-        gym.city,
-        gym.state,
-        gym.zip,
-        UpdatedgymReviews,
-        gym.likedGymsCnt,
-        gym.dislikedGymsCnt,
-        grade)
+    await gymDataFunctions.update(gymId, updatedGym)
     // finally
     const review = await this.get(newId);
     return review;
 }
 
 // remove a review
-// todo: user collection delete the review
-// todo: gym collection delete the review, adjust the rating
+
 async function removeReview(id) {
-    id = validation.checkId(id, 'id')
+    id = await validation.checkObjectId(id, 'review id')
+    //get the user and gym before deletion
+    let userId = await this.get(id).userId;
+    let gymId = await this.get(id).gymId;
+    // deletion
     const reviewsCollection = await reviewCollection();
     const deletionInfo = await reviewsCollection.findOneAndDelete({
         _id: new ObjectId(id)
@@ -143,48 +136,24 @@ async function removeReview(id) {
         throw `Could not delete review with id of ${id}`;
     }
 
-
     // user collection remove a review
-    let user = await userDataFunctions.get(userId)
-    let updatedReviews = await this.getUserReviews(userId)
-    await userDataFunctions.update(
-        user._id,
-        user.firstName,
-        user.lastName,
-        user.userName,
-        user.email,
-        user.city,
-        user.state,
-        user.dateOfBirth,
-        user.isGymOwner,
-        user.hashedPassword,
-        updatedReviews,
-        user.comments)
-    // TODO: need to check user function
-
+    let newReviewsUser = await this.getByUserId(userId);
+    let updatedUser = await userDataFunctions.getByUserId(userId)
+    updatedUser.reviews = newReviewsUser;
+    await userDataFunctions.update(id, updatedUser)
 
     // gym collection remove a review
-    // gym collection add a review
-    let UpdatedgymReviews = await this.getGymReviews(gymId)
-    let gym = await gymDataFunctions.get(newReview.gymId)
-    let ratings = []
-    for (review of UpdatedgymReviews) {
-        ratings.push(review.rating)
+    let updatedGym = await gymDataFunctions.getByGymId(gymId) // the gym object
+    let newReviewGym = await this.getGymReviews(gymReview); // updated review
+    updatedGym.reviews = newReviewGym; // update review list
+    let allRatings = []
+    for (review of newReviewGym) {
+        allRatings.push(review.rating)
     }
-    let total = ratings.reduce((acc, c) => acc + c, 0)
-    let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
-
-    await gymDataFunctions.update(
-        gym.gymId,
-        gym.website,
-        gym.gymOwnerId,
-        gym.city,
-        gym.state,
-        gym.zip,
-        UpdatedgymReviews,
-        gym.likedGymsCnt,
-        gym.dislikedGymsCnt,
-        grade)
+    let total = allRatings.reduce((acc, c) => acc + c, 0)
+    let grade = ((Math.floor((total / allRatings.length) * 10)) / 10)
+    updatedGym.rating = grade;  // update rating 
+    await gymDataFunctions.update(gymId, updatedGym)
 
     // finally
     return `${deletionInfo.value.name} has been successfully deleted!`;
@@ -198,7 +167,7 @@ async function updateReviewContent(
     content,
     dataOfReview
 ) {
-    id = validation.checkId(id, 'id');
+    id = await validation.checkObjectId(id, 'review id');
     // how to check content and date?
 
     const reviewsCollection = await reviewCollection();
@@ -208,7 +177,7 @@ async function updateReviewContent(
         { returnDocument: 'after' }
     );
     const newReview = await get(id);
-    if (JSON.stringify(oldReview) === JSON.stringify(newReview)) {
+    if (JSON.stringify(newReview) === JSON.stringify(newReview)) {
         throw `there's no real update, everything is the same`;
     }
     if (updatedInfo.lastErrorObject.n === 0) {
@@ -223,7 +192,7 @@ async function updateReviewRating(
     rating,
     dataOfReview
 ) {
-    id = validation.checkId(id, 'id');
+    id = await validation.checkObjectId(id, 'review id');
     // how to check content and date?
 
     const reviewsCollection = await reviewCollection();
@@ -240,31 +209,36 @@ async function updateReviewRating(
         throw 'could not update review successfully';
     }
 
-    let UpdatedgymReviews = await this.getGymReviews(newReview.gymId)
-    let gym = await gymDataFunctions.get(newReview.gymId)
+    let gymId = await this.get(id).gymId; // get the gym of the review
+    let updatedgymReviews = await this.getGymReviews(gymId) // get the updated review list
+    let updatedGym = await gymDataFunctions.get(gymId) // get the gym object
+    updatedGym.reviews = updatedgymReviews; // update gym review list
     let ratings = []
-    for (review of UpdatedgymReviews) {
+    for (review of updatedgymReviews) {
         ratings.push(review.rating)
     }
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
-
-    await gymDataFunctions.update(
-        gym.gymId,
-        gym.website,
-        gym.gymOwnerId,
-        gym.city,
-        gym.state,
-        gym.zip,
-        UpdatedgymReviews,
-        gym.likedGymsCnt,
-        gym.dislikedGymsCnt,
-        grade)
+    updatedGym.rating = grade;
+    await gymDataFunctions.update(gymId, updatedGym)
 
     // finally 
     return await this.get(id);
 }
 
+async function updateReviewComment(id, updatedReview) {
+    id = await validation.checkObjectId(id, 'comment id');
+    const reviewsCollection = await reviewCollection();
+    const updatedInfo = await reviewsCollection.findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { comments: updatedReview.comments } },
+        { returnDocument: 'after' }
+    );
+    if (updatedInfo.lastErrorObject.n === 0) {
+        throw 'could not update review successfully';
+    }
 
-export const reviewDataFunctions = { getReview, getGymReviews, getUserReviews, createReview, removeReview, updateReviewContent, updateReviewRating }
+}
+
+export const reviewDataFunctions = { get, getAll, getGymReviews, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
 

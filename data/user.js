@@ -2,9 +2,9 @@
 // team members:Amit Ramjee, Chuqing Ke, Gabriel Souza, Xinxuan Lyu
 // placeholder: API GoogleDoc link
 
-import {ObjectId} from "mongodb";
+import { ObjectId } from "mongodb";
 import * as validation from '../public/validation.js';
-import {userCollection} from '../config/mongoCollections.js';
+import { userCollection } from '../config/mongoCollections.js';
 
 const create = async (
   firstName,
@@ -46,7 +46,7 @@ const create = async (
   const usersDBConnection = await userCollection();
 
   //Check for duplicated email
-  const userExists = await usersDBConnection.findOne({email: lowerCaseEmail});
+  const userExists = await usersDBConnection.findOne({ email: lowerCaseEmail });
   if (userExists) {
     throw [404, `Email already in use`];
   }
@@ -65,7 +65,7 @@ const create = async (
 const getByUserId = async (id) => {
   await validation.checkObjectId(id);
   const usersDBConnection = await userCollection();
-  const userGet = await usersDBConnection.findOne({_id: ObjectId(id.trim())});
+  const userGet = await usersDBConnection.findOne({ _id: ObjectId(id.trim()) });
   if (userGet === null)
     throw [404, `ERROR: No user exists with that id ${id.toString()}`];
   userGet._id = userGet._id.toString();
@@ -102,8 +102,13 @@ const remove = async (id) => {
 const update = async (id, user) => {
   // Validation
   await validation.checkObjectId(id);
+  // -----------------------------------------------------------
+  // important note for bugs fixing:
+  // user.isGymOwner could be 0. ==> cannot use checkArgumentsExist!!
+  // -----------------------------------------------------------
+
   await validation.checkArgumentsExist(user.firstName, user.lastName, user.userName, user.email, user.city, user.state,
-    user.dateOfBirth, user.isGymOwner, user.hashedPassword, user.reviews, user.comments, user.likedGyms, user.dislikedGyms,
+    user.dateOfBirth, user.hashedPassword, user.reviews, user.comments, user.likedGyms, user.dislikedGyms,
     user.favGymList, user.gymsListForOwner);
   await validation.checkNonEmptyStrings(user.firstName, user.lastName, user.userName, user.email, user.city, user.state, user.hashedPassword);
   await validation.checkValidEmail(user.email);
@@ -118,8 +123,10 @@ const update = async (id, user) => {
   // Update the band data in the database
   const usersDBConnection = await userCollection();
   const updateInfo = await usersDBConnection.findOneAndUpdate(
-    {_id: new ObjectId(id.trim())},
-    {$set: {firstName: user.firstName,
+    { _id: new ObjectId(id.trim()) },
+    {
+      $set: {
+        firstName: user.firstName,
         lastName: user.lastName,
         userName: user.userName,
         email: user.email,
@@ -134,8 +141,9 @@ const update = async (id, user) => {
         dislikedGyms: user.dislikedGyms,
         favGymList: user.favGymList,
         gymsListForOwner: user.gymsListForOwner
-    }},
-    {returnDocument: 'after'}
+      }
+    },
+    { returnDocument: 'after' }
   );
 
   if (updateInfo.lastErrorObject.n === 0)
@@ -144,4 +152,4 @@ const update = async (id, user) => {
   return updateInfo.value;
 };
 
-export {create, getAll, getByUserId, update, remove}
+export const userDataFunctions = { create, getAll, getByUserId, update, remove }
