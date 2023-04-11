@@ -4,7 +4,7 @@
 
 // This data file should export all functions using the ES6 standard as shown in the lecture code
 import { ObjectId } from 'mongodb';
-import * as validation from '../public/validation.js';
+import * as validation from '../public/js/validation.js';
 import { userDataFunctions } from './user.js'
 import { reviewDataFunctions } from './review.js'
 
@@ -24,7 +24,7 @@ async function get(commentId) {
             }
         }
     }
-    throw `the comment doesn't exist`
+    throw [400, `ERROR: ${commentId} the comment doesn't exist`]
 }
 // return a list of comment ids under a review
 async function getAllByReview(reviewId) {

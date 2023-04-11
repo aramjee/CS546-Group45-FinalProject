@@ -3,7 +3,7 @@
 // placeholder: API GoogleDoc link
 
 import { ObjectId } from "mongodb";
-import * as validation from '../public/validation.js';
+import * as validation from '../public/js/validation.js';
 import { userCollection } from '../config/mongoCollections.js';
 
 const create = async (
@@ -18,8 +18,8 @@ const create = async (
   hashedPassword
 ) => {
   // Validation
-  await validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword);
-  await validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, hashedPassword);
+  validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword);
+  validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, hashedPassword);
   await validation.checkValidEmail(email);
   await validation.checkValidData(dateOfBirth);
 
@@ -63,7 +63,7 @@ const create = async (
 };
 
 const getByUserId = async (id) => {
-  await validation.checkObjectId(id);
+  await validation.checkObjectId(id, "UserId");
   const usersDBConnection = await userCollection();
   const userGet = await usersDBConnection.findOne({ _id: ObjectId(id.trim()) });
   if (userGet === null)
@@ -84,7 +84,7 @@ const getAll = async () => {
 
 
 const remove = async (id) => {
-  await validation.checkObjectId(id);
+  await validation.checkObjectId(id, "UserId");
   const usersDBConnection = await userCollection();
   const deletionInfo = await usersDBConnection.findOneAndDelete({
     _id: ObjectId(id.trim())
@@ -94,23 +94,23 @@ const remove = async (id) => {
     throw [404, `Could not delete name with Id ${id}`];
   }
   return {
-    "bandId": id,
+    "userId": id,
     "deleted": true
   };
 };
 
 const update = async (id, user) => {
   // Validation
-  await validation.checkObjectId(id);
+  await validation.checkObjectId(id, "UserId");
   // -----------------------------------------------------------
   // important note for bugs fixing:
   // user.isGymOwner could be 0. ==> cannot use checkArgumentsExist!!
   // -----------------------------------------------------------
 
-  await validation.checkArgumentsExist(user.firstName, user.lastName, user.userName, user.email, user.city, user.state,
+  validation.checkArgumentsExist(user.firstName, user.lastName, user.userName, user.email, user.city, user.state,
     user.dateOfBirth, user.hashedPassword, user.reviews, user.comments, user.likedGyms, user.dislikedGyms,
     user.favGymList, user.gymsListForOwner);
-  await validation.checkNonEmptyStrings(user.firstName, user.lastName, user.userName, user.email, user.city, user.state, user.hashedPassword);
+  validation.checkNonEmptyStrings(user.firstName, user.lastName, user.userName, user.email, user.city, user.state, user.hashedPassword);
   await validation.checkValidEmail(user.email);
   await validation.checkValidData(user.dateOfBirth);
   await validation.checkObjectIdArray(user.reviews);
@@ -120,7 +120,7 @@ const update = async (id, user) => {
   await validation.checkObjectIdArray(user.favGymList);
   await validation.checkObjectIdArray(user.gymsListForOwner);
 
-  // Update the band data in the database
+  // Update the user data in the database
   const usersDBConnection = await userCollection();
   const updateInfo = await usersDBConnection.findOneAndUpdate(
     { _id: new ObjectId(id.trim()) },
@@ -152,4 +152,22 @@ const update = async (id, user) => {
   return updateInfo.value;
 };
 
-export const userDataFunctions = { create, getAll, getByUserId, update, remove }
+const removeGymFromUsers = async (gymId) => {
+  await validation.checkObjectId(gymId, "gymId");
+
+
+  const usersDBConnection = await userCollection();
+  await usersDBConnection.updateMany(
+    { $or: [{ likedGyms: gymId }, { dislikedGyms: gymId }, { favGymList: gymId }, { gymsListForOwner: gymId }] },
+    {
+      $pull: {
+        likedGyms: gymId,
+        dislikedGyms: gymId,
+        favGymList: gymId,
+        gymsListForOwner: gymId,
+      },
+    }
+  );
+};
+
+export const userDataFunctions = { create, getAll, getByUserId, update, remove, removeGymFromUsers}
