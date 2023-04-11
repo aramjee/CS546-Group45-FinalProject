@@ -12,11 +12,12 @@ const router = Router();
 //Gym listing page
 router.route('/').get(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    //User does not necessarily be logged in to view the gyms, only publish a review so had to comment this out....
+    //let userLoggedIn = helper.checkIfLoggedIn(req);
     const gymList = await gymData.getAll();
-    res.status(200).render("gymList", {gymsList: gymList, userLoggedIn: userLoggedIn});
+    res.status(200).render('gymList', { gymsList: gymList }); // removed , userLoggedIn: userLoggedIn
   } catch (e) {
-    res.status(500).json({error: e});
+    res.status(500).json({ error: e });
   }
 });
 
