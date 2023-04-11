@@ -8,6 +8,8 @@ import { dirname } from 'path';
 import exphbs from 'express-handlebars';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const session = require('express-session');
+
 
 const staticDir = express.static(__dirname + '/public');
 
@@ -28,6 +30,15 @@ app.use('/public', staticDir);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(rewriteUnsupportedBrowserMethods);
+
+// Session middleware configuration
+app.use(
+  session({
+    secret: 'zft7mxy2xvc.gax!WXD',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');

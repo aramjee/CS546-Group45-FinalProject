@@ -5,7 +5,7 @@
 
 import { reviewCollection } from '../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
-import * as validation from '../public/validation.js';
+import * as validation from '../public/js/validation.js';
 import { userDataFunctions } from './user.js'
 import { gymDataFunctions } from './gym.js'
 
@@ -14,7 +14,8 @@ async function get(id) {
     id = await validation.checkObjectId(id, 'review id')
     const reviewsCollection = await reviewCollection();
     const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
-    if (review === null) throw 'No review with that id';
+    if (review === null)
+        throw [400, `ERROR: ${id} No review with that id`]
     // convert all objectId to string
     review._id = review._id.toString();
     for (const comment of review.comments) {
