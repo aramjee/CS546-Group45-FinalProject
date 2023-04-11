@@ -9,6 +9,7 @@ import * as validation from "../public/js/validation.js";
 
 const router = Router();
 
+//Gym listing page
 router.route('/').get(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -19,6 +20,7 @@ router.route('/').get(async (req, res) => {
   }
 });
 
+//Individual Gym page
 router.route('/:id').get(async (req, res) => {
   try {
     let reviewsList = [];
@@ -51,6 +53,7 @@ router.route('/:id').get(async (req, res) => {
   }
 });
 
+//Wild Card Search bar
 router.route('/search').get(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -64,6 +67,7 @@ router.route('/search').get(async (req, res) => {
   }
 });
 
+//Gym Manage Page, Ideally should be entered in user profile --> manage gym (if user is gym owner)
 router.route('/manage').get(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -91,6 +95,7 @@ router.route('/manage').get(async (req, res) => {
   }
 });
 
+//Add gym function in gym manage page
 router.route('/add').post(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -117,6 +122,7 @@ router.route('/add').post(async (req, res) => {
   }
 });
 
+//Delete gym function in gym manage function
 router.route('/delete/:gymId').delete(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -141,6 +147,7 @@ router.route('/delete/:gymId').delete(async (req, res) => {
   }
 });
 
+//Edit gym function in manage page
 router.route('/edit/:gymId').put(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -181,6 +188,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
   }
 });
 
+// Thumb up in gym detail page
 router.route('/:id/like').post(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -197,6 +205,7 @@ router.route('/:id/like').post(async (req, res) => {
   }
 });
 
+// Thumb down in gym detail page
 router.route('/:id/dislike').post(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
