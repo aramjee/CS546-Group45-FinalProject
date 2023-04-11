@@ -35,7 +35,7 @@ function checkValidEmail(email) {
   return email;
 }
 
-function checkValidData(date) {
+function checkValidDate(date) {
   if (!moment(date, 'MM/DD/YYYY', true).isValid()) {
     throw [400, `ERROR: ${date} must be a valid date string in the format MM/DD/YYYY`];
   }
@@ -102,6 +102,6 @@ const checkValidNonNegativeInteger = async (number) => {
 }
 
 export {
-  checkArgumentsExist, checkValidData, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
+  checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
   checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating
 }

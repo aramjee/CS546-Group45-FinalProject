@@ -1,6 +1,5 @@
 //Here you will import route files and export them as used in previous labs
 
-//Here you will import route files and export them as used in previous labs
 import gymRoutes from './gym.js';
 import userRoutes from './user.js';
 import commentRoutes from './comment.js';

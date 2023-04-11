@@ -11,6 +11,7 @@ import { gymDataFunctions } from './gym.js'
 
 // get review by review's id, return the review object
 async function get(id) {
+    await validation.checkArgumentsExist(id);
     id = await validation.checkObjectId(id, 'review id')
     const reviewsCollection = await reviewCollection();
     const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
@@ -35,10 +36,11 @@ async function getAll() {
 
 // get a gym's all  review, return a list of reviewIds (string)
 async function getGymReviews(gymId) {
+    await validation.checkArgumentsExist(gymId);
     gymId = await validation.checkObjectId(gymId, 'gym id')
     const reviewsCollection = await reviewCollection();
     if (!await gymDataFunctions.getByGymId(gymId)) {
-        throw `no user have such id`
+        throw `no gym have such id`
     }
     const reviewList = await reviewsCollection.find({ gymId: new ObjectId(gymId) }).toArray();
     // If there are no review for the user, this function will return an empty array
@@ -51,6 +53,7 @@ async function getGymReviews(gymId) {
 
 // get a user's all previous review, return a list of reviewIds (string)
 async function getUserReviews(userId) {
+    await validation.checkArgumentsExist(userId);
     userId = await validation.checkObjectId(userId, 'userId')
     const reviewsCollection = await reviewCollection();
     // check is user id exist in database, TBD.
@@ -72,17 +75,27 @@ async function getUserReviews(userId) {
 async function create(
     gymId,
     userId,
-    dataOfReview,
+    dateOfReview,
     content,
     rating) {
+    validation.checkArgumentsExist(gymId, userId, dateOfReview, content, rating)
+    validation.checkNonEmptyStrings(gymId, userId, dateOfReview);
     gymId = await validation.checkObjectId(gymId);
     userId = await validation.checkObjectId(userId);
+    dateOfReview = await validation.checkValidDate(dateOfReview);
+    rating = await validation.checkValidRating(rating);
 
+    if (!userDataFunctions.getByUserId(userId)) {
+        throw `no user have such id`;
+    }
+    if (!gymDataFunctions.getByUserId(gymId)) {
+        throw `no gym have such id`;
+    }
 
     let newReview = {
         gymId: gymId,
         userId: userId,
-        dataOfReview: dataOfReview,
+        dateOfReview: dateOfReview,
         content: content,
         comments: [],
         rating: rating
@@ -122,9 +135,12 @@ async function create(
 }
 
 // remove a review
-
 async function removeReview(id) {
-    id = await validation.checkObjectId(id, 'review id')
+    await validation.checkArgumentsExist(id);
+    id = await validation.checkObjectId(id, 'review id');
+    if (!await this.get(id)) {
+        throw `no review have this id`;
+    }
     //get the user and gym before deletion
     let userId = await this.get(id).userId;
     let gymId = await this.get(id).gymId;
@@ -166,15 +182,17 @@ async function removeReview(id) {
 async function updateReviewContent(
     id,
     content,
-    dataOfReview
+    dateOfReview
 ) {
+    await validation.checkArgumentsExist(id, content, dateOfReview);
+    dateOfReview = await validation.checkValidDate(dateOfReview);
     id = await validation.checkObjectId(id, 'review id');
     // how to check content and date?
 
     const reviewsCollection = await reviewCollection();
     const updatedInfo = await reviewsCollection.findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: { content: content, dataOfReview: dataOfReview } },
+        { $set: { content: content, dateOfReview: dateOfReview } },
         { returnDocument: 'after' }
     );
     const newReview = await get(id);
@@ -191,7 +209,7 @@ async function updateReviewContent(
 async function updateReviewRating(
     id,
     rating,
-    dataOfReview
+    dateOfReview
 ) {
     id = await validation.checkObjectId(id, 'review id');
     // how to check content and date?
@@ -199,7 +217,7 @@ async function updateReviewRating(
     const reviewsCollection = await reviewCollection();
     const updatedInfo = await reviewsCollection.findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: { rating: rating, dataOfReview: dataOfReview } },
+        { $set: { rating: rating, dateOfReview: dateOfReview } },
         { returnDocument: 'after' }
     );
     const newReview = await get(id);
@@ -228,7 +246,10 @@ async function updateReviewRating(
 }
 
 async function updateReviewComment(id, updatedReview) {
+    await validation.checkArgumentsExist(id, updatedReview);
     id = await validation.checkObjectId(id, 'comment id');
+
+
     const reviewsCollection = await reviewCollection();
     const updatedInfo = await reviewsCollection.findOneAndUpdate(
         { _id: new ObjectId(id) },

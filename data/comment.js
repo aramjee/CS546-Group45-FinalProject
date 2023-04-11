@@ -4,12 +4,13 @@
 
 // This data file should export all functions using the ES6 standard as shown in the lecture code
 import { ObjectId } from 'mongodb';
-import * as validation from '../public/js/validation.js';
+import * as validation from '../public/validation.js';
 import { userDataFunctions } from './user.js'
 import { reviewDataFunctions } from './review.js'
 
 // return one comment object
 async function get(commentId) {
+    await validation.checkArgumentsExist(commentId);
     commentId = await validation.checkObjectId(commentId, 'commentId')
     const allReviewIds = await reviewDataFunctions.getAll();
     const allReview = []
@@ -24,14 +25,16 @@ async function get(commentId) {
             }
         }
     }
-    throw [400, `ERROR: ${commentId} the comment doesn't exist`]
+    throw `the comment doesn't exist`
 }
 // return a list of comment ids under a review
 async function getAllByReview(reviewId) {
+    await validation.checkArgumentsExist(reviewId);
+
     reviewId = await validation.checkObjectId(reviewId, 'reviewId')
     const review = await reviewDataFunctions.get(reviewId);
     if (review.length === 0) {
-        throw `invalid reviewId`
+        throw `invalid reviewId`;
     }
     // If there are no comment for the review, this function will return an empty array
     let comments = [];
@@ -45,6 +48,7 @@ async function getAllByReview(reviewId) {
 
 // return a list of comment ids posted by the user
 async function getAllByUser(userId) {
+    await validation.checkArgumentsExist(userId);
     userId = await validation.checkObjectId(userId, 'userId');
     if (!userDataFunctions.getByUserId(userId)) {
         throw `no user have such id`
@@ -72,6 +76,9 @@ async function create(
     content,
     reviewId
 ) {
+    await validation.checkArgumentsExist(userId, dateOfComment, content, reviewId);
+    dateOfComment = validation.checkValidDate(dateOfComment);
+    content = validation.checkNonEmptyStrings(content);
     userId = await validation.checkObjectId(userId);
     reviewId = await validation.checkObjectId(reviewId);
 
@@ -97,6 +104,7 @@ async function create(
 
 
 async function remove(commentId) {
+    validation.checkArgumentsExist(commentId);
     commentId = await validation.checkObjectId(commentId, 'commentId')
     const userId = await this.get(commentId).userId;
     const reviewId = await this.get(commentId).reviewId;
@@ -119,18 +127,22 @@ async function remove(commentId) {
     return await reviewDataFunctions.get(reviewId)
 
 }
+
 async function update(
     id,
     content,
-    dataOfReview
+    dateOfComment
 ) {
+    await validation.checkArgumentsExist(id, content, dateOfComment);
+    dateOfComment = validation.checkValidDate(dateOfComment);
+    content = validation.checkNonEmptyStrings(content);
     id = await validation.checkObjectId(id, 'id');
 
     // todo: how to check content?
     // pull the old review first, and then create a new review (only update the review collection since in the user collection it's a list of ids not list of object)
     let updatedComment = this.get(id);
     updatedComment.content = content;
-    updatedComment.dataOfReview = dataOfReview;
+    updatedComment.dateOfComment = dateOfComment;
     let allCommentsIds = this.getAllByReview(updatedComment.reviewId);
     let allComments = [];
     for (let id of allCommentsIds) {
