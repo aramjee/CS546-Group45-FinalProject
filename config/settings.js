@@ -1,4 +1,4 @@
 export const mongoConfig = {
-    serverUrl: 'mongodb://localhost:27017/',
-    database: 'Group45_GymRating'
+  serverUrl: 'mongodb://127.0.0.1:27017/', //switched out localhost
+  database: 'Group45_GymRating',
 };
