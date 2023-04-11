@@ -2,11 +2,11 @@
 // team members:Amit Ramjee, Chuqing Ke, Gabriel Souza, Xinxuan Lyu
 // placeholder: API GoogleDoc link
 
-import {ObjectId} from "mongodb";
+import { ObjectId } from "mongodb";
 import * as validation from '../public/js/validation.js';
-import {gymCollection} from '../config/mongoCollections.js';
-import {userDataFunctions} from './user.js'
-import {reviewDataFunctions} from './review.js'
+import { gymCollection } from '../config/mongoCollections.js';
+import { userDataFunctions } from './user.js'
+import { reviewDataFunctions } from './review.js'
 
 
 const create = async (
@@ -58,7 +58,7 @@ const getByGymId = async (id) => {
   id = id.trim(); // since on line 59 and 60 id is not trimmed yet; but also inside the remove function, id should is not trimmed and pass in.
   await validation.checkObjectId(id, "GymId");
   const gymsDBConnection = await gymCollection();
-  const gymGet = await gymsDBConnection.findOne({_id: ObjectId(id.trim())});
+  const gymGet = await gymsDBConnection.findOne({ _id: ObjectId(id.trim()) });
   if (gymGet === null)
     throw [404, `ERROR: No gym exists with that id ${id.toString()}`];
   gymGet._id = gymGet._id.toString();
@@ -113,12 +113,14 @@ const update = async (id, gym) => {
   await validation.checkValidWebsite(gym.website);
   await validation.checkValidNonNegativeInteger(gym.likedGymsCnt);
   await validation.checkValidNonNegativeInteger(gym.dislikedGymsCnt);
-  await validation.checkValidRating(gym.rating)
+  // in order to update the gym, the review will call this function
+  // but need to check if this is the first review, or otherwise the gym rating is 0.
+  if (gym.rating) { await validation.checkValidRating(gym.rating) };
 
   // Update the gym data in the database
   const gymsDBConnection = await gymCollection();
   const updateInfo = await gymsDBConnection.findOneAndUpdate(
-    {_id: new ObjectId(id.trim())},
+    { _id: new ObjectId(id.trim()) },
     {
       $set: {
         gymName: gym.gymName,
@@ -134,7 +136,7 @@ const update = async (id, gym) => {
         rating: gym.rating
       }
     },
-    {returnDocument: 'after'}
+    { returnDocument: 'after' }
   );
 
   if (updateInfo.lastErrorObject.n === 0)
@@ -148,7 +150,7 @@ const searchByValue = async (name) => {
 
   const regex = new RegExp(name, 'i'); // Case-insensitive search
   const gymsDBConnection = await gymCollection();
-  const gymsList = await gymsDBConnection.find({gymName: {$regex: regex}});
+  const gymsList = await gymsDBConnection.find({ gymName: { $regex: regex } });
 
   if (gymsList.length === 0) {
     throw [404, `Error: No gyms found with the provided search value ${name}`];
@@ -160,15 +162,15 @@ const getByGymOwnerId = async (gymOwnerId) => {
   await validation.checkObjectId(gymOwnerId, "gymOwnerId");
 
   const gymsDBConnection = await gymCollection();
-  return await gymsDBConnection.find({gymOwnerId: gymOwnerId});
+  return await gymsDBConnection.find({ gymOwnerId: gymOwnerId });
 };
 
 const updateLikedGymsCnt = async (id) => {
   await validation.checkObjectId(id);
   const gymsDBConnection = await gymCollection();
   let updateOne = await gymsDBConnection.updateOne(
-    {_id: new ObjectId(id)},
-    {$inc: {likedGymsCnt: 1}}
+    { _id: new ObjectId(id) },
+    { $inc: { likedGymsCnt: 1 } }
   );
   if (updateOne.matchedCount === 0)
     throw [404, `Could not update likedGymsCnt in gym: ${id}`];
@@ -178,12 +180,12 @@ const updateDislikedGymsCnt = async (id) => {
   await validation.checkObjectId(id);
   const gymsDBConnection = await gymCollection();
   let updateOne = await gymsDBConnection.updateOne(
-    {_id: new ObjectId(id)},
-    {$inc: {dislikedGymsCnt: 1}}
+    { _id: new ObjectId(id) },
+    { $inc: { dislikedGymsCnt: 1 } }
   );
   if (updateOne.matchedCount === 0)
     throw [404, `Could not update dislikedGymsCnt in gym: ${id}`];
 };
 
 
-export const gymDataFunctions = {create, getAll, getByGymId, getByGymOwnerId, update, remove, searchByValue, updateLikedGymsCnt, updateDislikedGymsCnt}
+export const gymDataFunctions = { create, getAll, getByGymId, getByGymOwnerId, update, remove, searchByValue, updateLikedGymsCnt, updateDislikedGymsCnt }
