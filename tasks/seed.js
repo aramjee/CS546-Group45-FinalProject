@@ -52,7 +52,7 @@ let gymOwnerA_id = gymOwnerA._id.toString();
 try {
     gymA = await gyms.create(
         "Equinox",
-        "http://www.linkinpark.com",
+        "https://www.linkinpark.com",
         "gym",
         gymOwnerA_id,
         "35 Hudson Yards",

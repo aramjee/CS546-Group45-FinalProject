@@ -9,4 +9,34 @@ router.route('/').get(async (req, res) => {
   res.render('homepage', { title: 'Gym Application' });
 });
 
+router.route('/login').get(async (req, res) => {
+    //code here for GET
+    res.render('homepage', { title: 'Gym Application' });
+});
+
+router.route('/signup').get(async (req, res) => {
+    //code here for GET
+    res.render('homepage', { title: 'Gym Application' });
+});
+
+router.route('/single/:id').get(async (req, res) => {
+    //code here for GET
+    res.render('homepage', { title: 'Gym Application' });
+});
+
+router.route('/single/update/:id').get(async (req, res) => {
+    //code here for GET
+    res.render('homepage', { title: 'Gym Application' });
+});
+
+router.route('/gymOwner/:id').get(async (req, res) => {
+    //code here for GET
+    res.render('homepage', { title: 'Gym Application' });
+});
+
+router.route('/single/update/:id').get(async (req, res) => {
+    //code here for GET
+    res.render('homepage', { title: 'Gym Application' });
+});
+
 export default router;
