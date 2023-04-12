@@ -35,7 +35,7 @@ function checkValidEmail(email) {
   return email;
 }
 
-function checkValidData(date) {
+function checkValidDate(date) {
   if (!moment(date, 'MM/DD/YYYY', true).isValid()) {
     throw [400, `ERROR: ${date} must be a valid date string in the format MM/DD/YYYY`];
   }
@@ -66,12 +66,26 @@ const checkObjectId = async (id, idName) => {
 // TODO: maybe the definition of a valid website should be different 
 // from the homework? e.g: https://www.abc.com/
 const checkValidWebsite = async (website) => {
-  const emailRegex = /^https:\/\/www\..{5,}\.com$/;
-  if (!emailRegex.test(website)) {
-    throw [400, `ERROR: ${website} must be a valid website`];
+  // This following checkwebsite does not work. I have double check by manipulating the seed file, but it will always throw.
+  // const emailRegex = /^https:\/\/www\..{5,}\.com$/;
+  // if (!emailRegex.test(website)) {
+  //   throw [400, `ERROR: ${website} must be a valid website`];
+  // }
+  // website = website.trim();
+  // return website;
+  const websitePrefix = 'http://www.';
+  const websiteSuffix = '.com';
+  if ((website.trim().slice(-4) !== websiteSuffix) || !website.includes(websitePrefix)) {
+    throw `not valid website`;
   }
-  website = website.trim();
-  return website;
+  for (let i = 0; i < website.length - websitePrefix.length; i++) {
+    if (website.slice(i, i + websitePrefix.length) === websitePrefix) {
+      if (website.length - i - websitePrefix.length - websiteSuffix.length < 5) {
+        throw `not valid website`;
+      }
+    }
+  }
+  return website.trim();
 }
 
 const checkObjectIdArray = async (arr) => {
@@ -102,6 +116,6 @@ const checkValidNonNegativeInteger = async (number) => {
 }
 
 export {
-  checkArgumentsExist, checkValidData, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
+  checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
   checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating
 }

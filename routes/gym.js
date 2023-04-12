@@ -1,10 +1,10 @@
 // CS546 group 45 final project
 // team members:Amit Ramjee, Chuqing Ke, Gabriel Souza, Xinxuan Lyu
 // placeholder: API GoogleDoc link
-import {Router} from 'express';
-import {gymData, reviewData, commentData, userData} from '../data/index.js';
-import * as helper from '../public/js/heper.js';
-import {checkIfGymOwner} from "../public/js/heper.js";
+import { Router } from 'express';
+import { gymData, reviewData, commentData, userData } from '../data/index.js';
+import * as helper from '../public/js/helper.js';
+import { checkIfGymOwner } from "../public/js/helper.js";
 import * as validation from "../public/js/validation.js";
 
 const router = Router();
@@ -46,11 +46,11 @@ router.route('/:id').get(async (req, res) => {
       reviewsList.push(review);
     }
     gym.reviewsList = reviewsList;
-    res.status(200).render("gym", {gym: gym, userLoggedIn: userLoggedIn})
+    res.status(200).render("gym", { gym: gym, userLoggedIn: userLoggedIn })
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 
@@ -60,11 +60,11 @@ router.route('/search').get(async (req, res) => {
     let userLoggedIn = helper.checkIfLoggedIn(req);
     const searchName = req.query.name;
     const gymsList = await gymData.searchByValue(searchName);
-    res.status(200).render('gymList', {gymsList: gymsList, userLoggedIn: userLoggedIn});
+    res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 
@@ -78,7 +78,7 @@ router.route('/manage').get(async (req, res) => {
     let checkIfGymOwner = helper.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
-      return res.status(403).json({error: 'You must be a gym owner to add a gym'});
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
 
     const gymOwnerId = req.session.userId;
@@ -88,11 +88,11 @@ router.route('/manage').get(async (req, res) => {
     // if (!gymsList) {
     //   return res.status(404).json({error: 'No gym found for the current gym owner'});
     // }
-    res.status(200).render('manageGyms', {gymsList: gymsList, userLoggedIn: userLoggedIn});
+    res.status(200).render('manageGyms', { gymsList: gymsList, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 
@@ -106,7 +106,7 @@ router.route('/add').post(async (req, res) => {
     let checkIfGymOwner = helper.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
-      return res.status(403).json({error: 'You must be a gym owner to add a gym'});
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
 
     validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
@@ -119,7 +119,7 @@ router.route('/add').post(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 
@@ -133,7 +133,7 @@ router.route('/delete/:gymId').delete(async (req, res) => {
     let checkIfGymOwner = helper.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
-      return res.status(403).json({error: 'You must be a gym owner to add a gym'});
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
     const gymOwnerId = req.session.userId;
     const gymId = req.params.gymId;
@@ -144,7 +144,7 @@ router.route('/delete/:gymId').delete(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 
@@ -158,14 +158,14 @@ router.route('/edit/:gymId').put(async (req, res) => {
     let checkIfGymOwner = helper.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
-      return res.status(403).json({error: 'You must be a gym owner to add a gym'});
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
     const gymOwnerId = req.session.userId;
     const gymId = req.params.gymId;
     await validation.checkObjectId(gymId, "gymId");
     const gym = gymData.getByGymId(gymId);
-    if (gym.gymOwnerId !== gymOwnerId){
-      return res.status(403).json({error: 'You must be a gym owner to add a gym'});
+    if (gym.gymOwnerId !== gymOwnerId) {
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
 
     validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip);
@@ -185,7 +185,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 
