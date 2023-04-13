@@ -21,7 +21,7 @@ const create = async (
   validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword);
   validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, hashedPassword);
   await validation.checkValidEmail(email);
-  await validation.checkValidData(dateOfBirth);
+  await validation.checkValidDate(dateOfBirth);
 
   const lowerCaseEmail = email.toLowerCase();
 
@@ -112,7 +112,7 @@ const update = async (id, user) => {
     user.favGymList, user.gymsListForOwner);
   validation.checkNonEmptyStrings(user.firstName, user.lastName, user.userName, user.email, user.city, user.state, user.hashedPassword);
   await validation.checkValidEmail(user.email);
-  await validation.checkValidData(user.dateOfBirth);
+  await validation.checkValidDate(user.dateOfBirth);
   await validation.checkObjectIdArray(user.reviews);
   await validation.checkObjectIdArray(user.comments);
   await validation.checkObjectIdArray(user.likedGyms);
@@ -170,4 +170,4 @@ const removeGymFromUsers = async (gymId) => {
   );
 };
 
-export const userDataFunctions = { create, getAll, getByUserId, update, remove, removeGymFromUsers}
+export const userDataFunctions = { create, getAll, getByUserId, update, remove, removeGymFromUsers }
