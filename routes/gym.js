@@ -25,32 +25,35 @@ router.route('/').get(async (req, res) => {
 router.route('/:id').get(async (req, res) => {
   try {
     let reviewsList = [];
-    let userLoggedIn = helper.checkIfLoggedIn(req);
-    const currentUserId = userLoggedIn ? req.session.userId : null;
-    const gym = await gymData.getByGymId(req.params.id);
-    if (userLoggedIn) {
+    // Comment out user login to test individual page ---- AMIT
+    // let userLoggedIn = helper.checkIfLoggedIn(req);
+    // const currentUserId = userLoggedIn ? req.session.userId : null;
+    //if (userLoggedIn) {
 
-    }
+    //}
+    const gym = await gymData.getByGymId(req.params.id);
     // Retrieve review
-    for (const reviewId of gym.reviews) {
-      const review = await reviewData.get(reviewId);
-      let commentList = [];
-      // Retrieve comments
-      for (const commentId of review.comments) {
-        const comment = await commentData.get(commentId);
-        comment.isCurrentUser = comment.userId === currentUserId;
-        commentList.push(comment);
+    if(gym.reviews){
+      for (const reviewId of gym.reviews) {
+        const review = await reviewData.get(reviewId);
+        let commentList = [];
+        // Retrieve comments
+        for (const comm of review.comments) {
+          const comment = await commentData.get(comm._id);
+          // comment.isCurrentUser = comment.userId === currentUserId;
+          commentList.push(comment);
+        }
+        review.commentsList = commentList
+        // review.isCurrentUser = review.userId === currentUserId;
+        reviewsList.push(review);
       }
-      review.commentsList = commentList
-      review.isCurrentUser = review.userId === currentUserId;
-      reviewsList.push(review);
     }
     gym.reviewsList = reviewsList;
-    res.status(200).render("gym", { gym: gym, userLoggedIn: userLoggedIn })
+    res.status(200).render("singleGym", {gym: gym})  // AMIT removed ( , userLoggedIn: userLoggedIn)
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    res.status(status).json({error: message});
   }
 });
 

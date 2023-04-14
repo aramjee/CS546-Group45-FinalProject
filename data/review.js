@@ -1,6 +1,6 @@
 // CS546 group 45 final project
 // team members:Amit Ramjee, Chuqing Ke, Gabriel Souza, Xinxuan Lyu
-// placeholder: API GoogleDoc link 
+// placeholder: API GoogleDoc link
 // This data file should export all functions using the ES6 standard as shown in the lecture code
 
 import { reviewCollection } from '../config/mongoCollections.js';
@@ -19,8 +19,10 @@ async function get(id) {
         throw [400, `ERROR: ${id} No review with that id`]
     // convert all objectId to string
     review._id = review._id.toString();
+    review.user = await userDataFunctions.getByUserId(review.userId);
     for (const comment of review.comments) {
         comment._id = comment._id.toString()
+        comment.user = await userDataFunctions.getByUserId(comment.userId);
     }
     return review;
 }
@@ -175,7 +177,7 @@ async function removeReview(id) {
     }
     let total = allRatings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / allRatings.length) * 10)) / 10)
-    updatedGym.rating = grade;  // update rating 
+    updatedGym.rating = grade;  // update rating
     await gymDataFunctions.update(gymId, updatedGym)
 
     // finally
@@ -250,7 +252,7 @@ async function updateReviewRating(
 
     await gymDataFunctions.update(gymId, updatedGym)
 
-    // finally 
+    // finally
     return await this.get(id);
 }
 
@@ -272,4 +274,3 @@ async function updateReviewComment(id, updatedReview) {
 }
 
 export const reviewDataFunctions = { get, getAll, getGymReviews, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
-

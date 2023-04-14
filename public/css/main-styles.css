@@ -1,5 +1,9 @@
 /*This file should have CSS rulesets */
 
 .checked {
-    color: orange;
-  }
+  color: orange;
+}
+
+.card-link {
+  text-decoration: none;
+}

@@ -1,29 +1,50 @@
 <div class="row">
-
-    <div class="col-10 col-sm-8 col-lg-6">
+    <div class="col">
         {{!-- Change this to title of gym when available --}}
-        <h2>Gym #1</h2>
+        <h2>{{gym.gymName}}</h2>
+        <div class="pull-right">
+            <input type="button" value="Add to Favorites" class="btn btn-sm btn-primary"/>
+            <input type="button" value="Post a New Review" class="btn btn-sm btn-dark"/>
+        </div>
+        <div>
+            {{#each gym.category}}
+                <span class="badge rounded-pill text-bg-secondary">{{.}}</span>
+            {{/each}}
+        </div>
+        <div>   
+            {{gym.rating}} rating
+        </div>
+        <div>
+            <div><b>Address:</b> {{gym.address}}</div>
+            <div><b>Website:</b> {{gym.website}}</div>
+        </div>
+        <div>
+            <input type="button" value="Like ({{gym.likedGymsCnt}})" class="btn btn-sm btn-success"/> 
+            <input type="button" value="Dislike ({{gym.dislikedGymsCnt}})" class="btn btn-sm btn-danger"/> 
+        </div>
     </div>
-
 </div>
-
+<hr>
 <div class="row">
-    <div class="col-12 col-sm-4 col-lg-1">
-
-        <span class="badge rounded-pill text-bg-secondary">Category</span>
-        <span class="badge rounded-pill text-bg-secondary">Category</span>
-        <span class="badge rounded-pill text-bg-secondary">Category</span>
-        <span class="badge rounded-pill text-bg-secondary">Category</span>
-
+    <div class="col">
+        {{#each gym.reviewsList}}
+            <div>
+                {{user.username}} <i>{{dateOfReview}}</i>
+                <input type="button" value="Respond with a comment" class="btn btn-sm btn-primary pull-right"/>
+            </div>
+            <div>
+                {{rating}} rating
+            </div>
+            <div>
+                <i>Review:</i> {{content}}
+            </div><br/>
+            {{#each comments}}
+            <p>
+                <b>Comment from <i>{{user.username}}</i></b><br>
+                {{content}}
+            </p>
+            {{/each}}
+            <hr>
+        {{/each}}
     </div>
-
-    {{!-- <div class="col-1 col-sm-4 col-lg-1">
-    </div>
-
-    <div class="col-1 col-sm-4 col-lg-1">
-    </div>
-
-    <div class="col-1 col-sm-4 col-lg-1">
-    </div> --}}
-
 </div>
