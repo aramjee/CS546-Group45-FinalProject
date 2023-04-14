@@ -2,7 +2,7 @@
 // team members:Amit Ramjee, Chuqing Ke, Gabriel Souza, Xinxuan Lyu
 // placeholder: API GoogleDoc link
 import { Router } from 'express';
-import { gymData, commentData, commentData, userData, reviewData } from '../data/index.js';
+import { gymData, commentData, userData, reviewData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
 const router = Router();
 

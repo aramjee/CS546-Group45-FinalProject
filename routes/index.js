@@ -13,7 +13,7 @@ const constructorMethod = (app) => {
   app.use('/comment', commentRoutes);
   app.use('/review', reviewRoutes);
   app.use('*', (req, res) => {
-    res.status(404).render('error', { error: '404 : Page not Found' });
+    res.status(200).render('homepage');
   });
 };
 
