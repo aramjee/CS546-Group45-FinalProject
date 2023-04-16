@@ -63,29 +63,14 @@ const checkObjectId = async (id, idName) => {
   return id;
 }
 
-// TODO: maybe the definition of a valid website should be different 
-// from the homework? e.g: https://www.abc.com/
+
 const checkValidWebsite = async (website) => {
-  // This following checkwebsite does not work. I have double check by manipulating the seed file, but it will always throw.
-  // const emailRegex = /^https:\/\/www\..{5,}\.com$/;
-  // if (!emailRegex.test(website)) {
-  //   throw [400, `ERROR: ${website} must be a valid website`];
-  // }
-  // website = website.trim();
-  // return website;
-  const websitePrefix = 'http://www.';
-  const websiteSuffix = '.com';
-  if ((website.trim().slice(-4) !== websiteSuffix) || !website.includes(websitePrefix)) {
-    throw `not valid website`;
+  const emailRegex = /^https:\/\/www\..{5,}\.com$/;
+  if (!emailRegex.test(website)) {
+    throw [400, `ERROR: ${website} must be a valid website`];
   }
-  for (let i = 0; i < website.length - websitePrefix.length; i++) {
-    if (website.slice(i, i + websitePrefix.length) === websitePrefix) {
-      if (website.length - i - websitePrefix.length - websiteSuffix.length < 5) {
-        throw `not valid website`;
-      }
-    }
-  }
-  return website.trim();
+  website = website.trim();
+  return website;
 }
 
 const checkObjectIdArray = async (arr) => {
