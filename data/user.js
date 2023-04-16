@@ -76,8 +76,9 @@ const getByUserEmail = async (email) => {
   await validation.checkValidEmail(email);
   const usersDBConnection = await userCollection();
   const userGet = await usersDBConnection.findOne({ email: email });
-  if (userGet === null)
-    throw [404, `ERROR: No user exists with that email ${email}`];
+  if (userGet === null){
+    return null;
+  }
   userGet._id = userGet._id.toString();
   return userGet;
 };
