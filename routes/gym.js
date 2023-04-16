@@ -4,7 +4,6 @@
 import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import * as helper from '../public/js/helper.js';
-import { checkIfGymOwner } from "../public/js/helper.js";
 import * as validation from "../public/js/validation.js";
 
 const router = Router();
@@ -25,12 +24,9 @@ router.route('/').get(async (req, res) => {
 router.route('/:id').get(async (req, res) => {
   try {
     let reviewsList = [];
-    // Comment out user login to test individual page ---- AMIT
-    // let userLoggedIn = helper.checkIfLoggedIn(req);
-    // const currentUserId = userLoggedIn ? req.session.userId : null;
-    //if (userLoggedIn) {
+    let userLoggedIn = helper.checkIfLoggedIn(req);
+    const currentUserId = userLoggedIn ? req.session.userId : null;
 
-    //}
     const gym = await gymData.getByGymId(req.params.id);
     // Retrieve review
     if(gym.reviews){
@@ -40,16 +36,16 @@ router.route('/:id').get(async (req, res) => {
         // Retrieve comments
         for (const comm of review.comments) {
           const comment = await commentData.get(comm._id);
-          // comment.isCurrentUser = comment.userId === currentUserId;
+          comment.isCurrentUser = comment.userId === currentUserId;
           commentList.push(comment);
         }
         review.commentsList = commentList
-        // review.isCurrentUser = review.userId === currentUserId;
+        review.isCurrentUser = review.userId === currentUserId;
         reviewsList.push(review);
       }
     }
     gym.reviewsList = reviewsList;
-    res.status(200).render("singleGym", {gym: gym})  // AMIT removed ( , userLoggedIn: userLoggedIn)
+    res.status(200).render("singleGym", {gym: gym, userLoggedIn: userLoggedIn});
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
