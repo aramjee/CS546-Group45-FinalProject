@@ -9,7 +9,6 @@ import exphbs from 'express-handlebars';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import session from 'express-session';
-import xss from 'xss';
 
 const staticDir = express.static(__dirname + '/public');
 
@@ -37,8 +36,15 @@ app.use(
     secret: 'zft7mxy2xvc.gax!WXD',
     resave: false,
     saveUninitialized: true,
+    cookie: {maxAge: 60000}
   })
 );
+
+//TODO: Pass login info in main handler bar, or request log
+app.use((req, res, next) => {
+  res.locals.userId = req.session.userId;
+  next();
+});
 
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');

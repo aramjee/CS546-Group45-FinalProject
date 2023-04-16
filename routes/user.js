@@ -5,6 +5,9 @@ import {Router} from 'express';
 import * as helper from '../public/js/helper.js';
 import {gymData, reviewData, userData} from '../data/index.js';
 import * as validation from "../public/js/validation.js";
+import bcrypt from 'bcrypt';
+import xss from 'xss';
+
 
 const router = Router();
 
@@ -20,6 +23,9 @@ router.route('/login').get(async (req, res) => {
 router.route('/logout').get(async (req, res) => {
   req.session.destroy(function (err) {
     console.log("User logged out");
+    if (err) {
+      return res.status(500).json({ error: 'Failed to log out' });
+    }
   })
   res.status(200).render("login", {title: 'Gym User Login'});
 });
@@ -42,7 +48,7 @@ router.route('/login').post(async (req, res) => {
     }
 
     // Compare passwords using bcrypt (compare with hashed password)
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
 
     if (!passwordMatch) {
       hasErrors = true;
