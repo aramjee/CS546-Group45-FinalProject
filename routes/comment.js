@@ -18,12 +18,12 @@ router.route('/new').post(async (req, res) => {
     let newComment = req.body;
 
     await validation.checkArgumentsExist(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
-    newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId = await alidation.checkNonEmptyStrings(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
-    userId = await validation.checkObjectId(newComment.userId);
-    reviewId = await validation.checkObjectId(newComment.reviewId);
+    newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId = await validation.checkNonEmptyStrings(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
+    newComment.userId = await validation.checkObjectId(newComment.userId);
+    newComment.reviewId = await validation.checkObjectId(newComment.reviewId);
     dateOfReview = await validation.checkValidDate(newComment.dateOfReview);
 
-    let review = await reviewData.get(reviewId);
+    let review = await reviewData.get(newComment.reviewId);
     await commentData.create(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
     res.status(200).render('gym', { gym: review.gymId, userLoggedIn: userLoggedIn });
   } catch (e) {
@@ -44,9 +44,9 @@ router.route('/update/:id').put(async (req, res) => {
     let commentId = req.params.id;
     let updatedComment = req.body;
     await validation.checkArgumentsExist(commentId, updatedComment.content, updatedComment.dateOfComment);
-    dateOfComment = await validation.checkValidDate(updatedComment.dateOfComment);
-    content = await validation.checkNonEmptyStrings(updatedComment.content);
-    commentId = await validation.checkObjectId(commentId, 'comment id');
+    updatedComment.dateOfComment = await validation.checkValidDate(updatedComment.dateOfComment);
+    updatedComment.content = await validation.checkNonEmptyStrings(updatedComment.content);
+    updatedComment.commentId = await validation.checkObjectId(commentId, 'comment id');
 
 
 

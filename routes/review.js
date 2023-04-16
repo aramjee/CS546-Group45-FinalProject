@@ -17,10 +17,10 @@ router.route('/new').post(async (req, res) => {
     let newReview = req.body;
     await validation.checkArgumentsExist(newReview.gymId, newReview.userId, newReview.dateOfReview, newReview.content, newReview.rating);
     await alidation.checkNonEmptyStrings(newReview.gymId, newReview.userId, newReview.dateOfReview);
-    gymId = await validation.checkObjectId(newReview.gymId);
-    userId = await validation.checkObjectId(newReview.userId);
-    dateOfReview = await validation.checkValidDate(newReview.dateOfReview);
-    rating = await validation.checkValidRating(newReview.rating);
+    newReview.gymId = await validation.checkObjectId(newReview.gymId);
+    newReview.userId = await validation.checkObjectId(newReview.userId);
+    newReview.dateOfReview = await validation.checkValidDate(newReview.dateOfReview);
+    newReview.rating = await validation.checkValidRating(newReview.rating);
 
     await reviewData.create(newReview.gymId, newReview.userId, newReview.dateOfReview, newReview.content, newReview.rating);
     res.status(200).render('gym', { gym: newReview.gym, userLoggedIn: userLoggedIn });
