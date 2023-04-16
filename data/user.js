@@ -46,7 +46,7 @@ const create = async (
   const usersDBConnection = await userCollection();
 
   //Check for duplicated email
-  const userExists = await usersDBConnection.findOne({ email: lowerCaseEmail });
+  const userExists = await getByUserEmail(lowerCaseEmail);
   if (userExists) {
     throw [404, `Email already in use`];
   }
@@ -71,6 +71,17 @@ const getByUserId = async (id) => {
   userGet._id = userGet._id.toString();
   return userGet;
 };
+
+const getByUserEmail = async (email) => {
+  await validation.checkValidEmail(email);
+  const usersDBConnection = await userCollection();
+  const userGet = await usersDBConnection.findOne({ email: email });
+  if (userGet === null)
+    throw [404, `ERROR: No user exists with that email ${email}`];
+  userGet._id = userGet._id.toString();
+  return userGet;
+};
+
 
 const getAll = async () => {
   const usersDBConnection = await userCollection();
@@ -102,11 +113,6 @@ const remove = async (id) => {
 const update = async (id, user) => {
   // Validation
   await validation.checkObjectId(id, "UserId");
-  // -----------------------------------------------------------
-  // important note for bugs fixing:
-  // user.isGymOwner could be 0. ==> cannot use checkArgumentsExist!!
-  // -----------------------------------------------------------
-
   validation.checkArgumentsExist(user.firstName, user.lastName, user.userName, user.email, user.city, user.state,
     user.dateOfBirth, user.hashedPassword, user.reviews, user.comments, user.likedGyms, user.dislikedGyms,
     user.favGymList, user.gymsListForOwner);
@@ -170,4 +176,4 @@ const removeGymFromUsers = async (gymId) => {
   );
 };
 
-export const userDataFunctions = { create, getAll, getByUserId, update, remove, removeGymFromUsers }
+export const userDataFunctions = { create, getAll, getByUserId, getByUserEmail, update, remove, removeGymFromUsers }
