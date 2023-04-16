@@ -76,7 +76,7 @@ const getByUserEmail = async (email) => {
   await validation.checkValidEmail(email);
   const usersDBConnection = await userCollection();
   const userGet = await usersDBConnection.findOne({ email: email });
-  if (userGet === null){
+  if (userGet === null) {
     return null;
   }
   userGet._id = userGet._id.toString();
