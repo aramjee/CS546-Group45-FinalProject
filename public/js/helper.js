@@ -2,11 +2,12 @@
 import { gymData, reviewData, commentData, userData } from '../../data/index.js';
 
 function checkIfLoggedIn(req) {
+    console.log(req.session);
     let userLoggedIn = false;
     if (req.session.userId === null || req.session.userId === undefined) {
         console.log('User not logged in');
     } else {
-        console.log('Welcome user', req.session.currentUserId);
+        console.log('Welcome user', req.session.userId);
         userLoggedIn = true;
     }
     return userLoggedIn;

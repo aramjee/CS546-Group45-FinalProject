@@ -13,8 +13,9 @@ const router = Router();
 
 
 router.route('/login').get(async (req, res) => {
+    console.log(req.body);
   if (helper.checkIfLoggedIn(req)) {
-    res.redirect("/users/profile");
+    res.redirect("/user/profile");
   } else {
     res.render('login', {title: 'Gym User Login'});
   }
@@ -31,11 +32,12 @@ router.route('/logout').get(async (req, res) => {
 });
 
 router.route('/login').post(async (req, res) => {
+  //  console.log(req.body);
   let hasErrors = false;
   let errors = [];
 
   if (helper.checkIfLoggedIn(req)) {
-    res.redirect("/users/profile");
+    res.redirect("/user/profile");
   } else {
     const {email, password} = req.body;
     const user = await userData.getByUserEmail(email);
@@ -43,8 +45,8 @@ router.route('/login').post(async (req, res) => {
 
     if (!user) {
       hasErrors = true;
-      errors.push("Invalid Username or Password");
-      return res.status(400).render("login", {hasErrors: hasErrors, errors: errors});
+      errors.push("Invalid Username");
+        return res.status(400).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors});
     }
 
     // Compare passwords using bcrypt (compare with hashed password)
@@ -52,18 +54,18 @@ router.route('/login').post(async (req, res) => {
 
     if (!passwordMatch) {
       hasErrors = true;
-      errors.push("Invalid Username or Password");
-      return res.status(401).render("login", {hasErrors: hasErrors, errors: errors});
+      errors.push("Invalid Password");
+        return res.status(401).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors});
     }
 
     req.session.userId = user._id.toString();
-    return res.redirect("/users/profile");
+    return res.redirect("/user/profile");
   }
 });
 
 router.route('/signup').get(async (req, res) => {
   if (helper.checkIfLoggedIn(req)) {
-    res.redirect("/users/profile");
+    res.redirect("/user/profile");
   } else {
     res.render('signup', {title: 'Gym User Signup'});
   }
@@ -73,6 +75,7 @@ router.route('/signup').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
 
+    //console.log(req.body);
   const {
     firstName,
     lastName,
@@ -87,31 +90,39 @@ router.route('/signup').post(async (req, res) => {
 
   // validation
   try {
-    validation.checkArgumentsExist(firstName, lastName, username, email, city, state, dateOfBirth, password);
-    validation.checkNonEmptyStrings(firstName, lastName, username, email, city, state, password);
+    validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword, isGymOwner);
+    validation.checkNonEmptyStrings(username, email, password);
     await validation.checkValidEmail(email);
-    await validation.checkValidDate(dateOfBirth);
+
+    if (dateOfBirth.length > 0) {
+        await validation.checkValidDate(dateOfBirth);
+    }
+    
   } catch (e) {
     hasErrors = true
     errors.push(e[1]);
-    return res.status(e[0]).render("signup", {hasErrors: hasErrors, errors: errors});
+      return res.status(e[0]).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors});
   }
-
 
   const existingUser = await userData.getByUserEmail(email);
   if (existingUser) {
     hasErrors = true
     errors.push("Email already used, please login");
-    return res.status(400).render("signup", {hasErrors: hasErrors, errors: errors});
-  }
+      return res.status(400).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors});
+    }
 
   // Hash the password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  await userData.create(xss(firstName), xss(lastName), xss(username), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, hashedPassword)
-
-  res.status(201).render("login", {hasErrors: hasErrors, errors: errors});
+    try {
+        await userData.create(xss(firstName), xss(lastName), xss(username), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, hashedPassword)
+        res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
+    } catch (e) {
+        hasErrors = true;
+        errors.push(e[1]);
+        res.status(e[0]).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
+    }
 });
 
 router.route('/profile').get(async (req, res) => {
@@ -120,7 +131,7 @@ router.route('/profile').get(async (req, res) => {
   if (!helper.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    res.status(403).render("login", {hasErrors: hasErrors, errors: errors});
+      res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors});
   } else {
     const userId = req.session.userId;
     const user = await userData.getByUserId(userId);
@@ -166,7 +177,7 @@ router.route('/update').get(async (req, res) => {
   if (!helper.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    res.status(403).render("login", {hasErrors: hasErrors, errors: errors});
+      res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors});
   } else {
     const user = await userData.getByUserId(req.session.userId);
     return res.status(200).render('update', {
@@ -197,7 +208,9 @@ router.route('/update').post(async (req, res) => {
 
     try {
       validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth);
-      await validation.checkValidDate(dateOfBirth);
+      if (dateOfBirth.length > 0) {
+          await validation.checkValidDate(dateOfBirth);
+      }
     } catch (e) {
       hasErrors = true
       errors.push(e[1]);

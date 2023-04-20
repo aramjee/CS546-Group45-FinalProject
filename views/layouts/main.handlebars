@@ -28,8 +28,7 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
 <body>
 
     <div class="container">
-        <header
-            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
             <div class="col-md-3 mb-2 mb-md-0">
                 <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
                     Gym Application
@@ -42,8 +41,8 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
             </ul>
 
             <div class="col-md-3 text-end">
-                <button type="button" class="btn btn-outline-primary me-2">Login</button>
-                <button type="button" class="btn btn-primary">Sign-up</button>
+                <button type="button" onclick="location.href='/user/login';" class="btn btn-outline-primary me-2">Login</button>
+                <button type="button" onclick="location.href='/user/signup';" class="btn btn-primary">Sign-up</button>
             </div>
         </header>
 
@@ -52,6 +51,10 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
 
 
         <h1>{{title}}</h1>
+
+        {{#if hasErrors}}
+        <p>{{errors}}</p>
+        {{/if}}
 
         {{{body}}}
     </div>
