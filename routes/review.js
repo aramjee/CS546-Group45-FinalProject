@@ -4,6 +4,8 @@
 import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
+import * as helper from '../public/js/helper.js';
+
 const router = Router();
 
 // a logged-in user to create a new post under a specific gym
@@ -16,7 +18,7 @@ router.route('/new').post(async (req, res) => {
     }
     let newReview = req.body;
     await validation.checkArgumentsExist(newReview.gymId, newReview.userId, newReview.dateOfReview, newReview.content, newReview.rating);
-    await alidation.checkNonEmptyStrings(newReview.gymId, newReview.userId, newReview.dateOfReview);
+    await validation.checkNonEmptyStrings(newReview.gymId, newReview.userId, newReview.dateOfReview);
     newReview.gymId = await validation.checkObjectId(newReview.gymId);
     newReview.userId = await validation.checkObjectId(newReview.userId);
     newReview.dateOfReview = await validation.checkValidDate(newReview.dateOfReview);
