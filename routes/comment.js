@@ -4,6 +4,8 @@
 import { Router } from 'express';
 import { gymData, commentData, userData, reviewData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
+import * as helper from '../public/js/helper.js';
+
 const router = Router();
 
 // a logged-in user to create a new comment under a specific gym and specific review
