@@ -22,7 +22,7 @@ try {
         "dohndoe@stevens.edu",
         "NY",
         "NY",
-        "01/01/2000",
+        "2000-01-01",
         0,
         "safdsavd9bjdasnf13456yu*-2"
     );
@@ -40,7 +40,7 @@ try {
         "janefoster@stevens.edu",
         "NY",
         "NY",
-        "01/01/2000",
+        "2000-01-01",
         1,
         "asfjdpojahsr3jsdfo!*-2"
     );
@@ -73,7 +73,7 @@ try {
     reviewA = await reviews.create(
         gymA_id,
         userA_id,
-        "01/04/2023",
+        "2023-01-04",
         "I like this gym",
         5
     )
@@ -87,7 +87,7 @@ try {
     reviewB = await reviews.create(
         gymA_id,
         userA_id,
-        "01/04/2023",
+        "2023-01-04",
         "I like this gym",
         5
     )
@@ -116,7 +116,7 @@ console.log("reviewA grading is updated!")
 try {
     commentA = await comments.create(
         userA_id,
-        "01/04/2023",
+        "2023-01-04",
         "I agree",
         reviewA_id
     )
@@ -131,7 +131,7 @@ let commentA_id = commentA._id.toString();
 try {
     commentB = await comments.create(
         userA_id,
-        "01/04/2023",
+        "2023-04-01",
         "I agree",
         reviewA_id
     )
@@ -148,7 +148,7 @@ let commentB_id = commentB._id.toString();
 // console.log("this is commentB remove!")
 await comments.remove(commentB_id);
 console.log("commentB is removed!")
-await comments.update(commentA_id, "awesome", "04/07/2023");
+await comments.update(commentA_id, "awesome", "2023-04-07");
 console.log("commentA is updated!")
 
 
