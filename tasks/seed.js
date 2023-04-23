@@ -24,7 +24,7 @@ try {
         "NY",
         "2000-01-01",
         0,
-        "safdsavd9bjdasnf13456yu*-2"
+        "JohnDoe@123"
     );
     console.log('userA has been created');
 } catch (e) {
@@ -42,7 +42,7 @@ try {
         "NY",
         "2000-01-01",
         1,
-        "asfjdpojahsr3jsdfo!*-2"
+        "JaneFoster@123"
     );
     console.log('gymOwnerA has been created');
 } catch (e) {
@@ -107,9 +107,9 @@ let reviewB_id = reviewB._id.toString();
 //console.log(await reviews.getUserReviews(userA_id));
 // console.log(await reviews.removeReview(reviewB_id));
 console.log("reviewB is removed!");
-await reviews.updateReviewContent(reviewA_id, "great!", "01/30/2023");
+await reviews.updateReviewContent(reviewA_id, "great!", "2023-01-30");
 console.log("reviewA content is updated!")
-await reviews.updateReviewRating(reviewA_id, 4.5, "01/30/2023");
+await reviews.updateReviewRating(reviewA_id, 4.5, "2023-01-30");
 console.log("reviewA grading is updated!")
 
 
