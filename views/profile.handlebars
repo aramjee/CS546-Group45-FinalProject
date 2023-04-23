@@ -1,0 +1,104 @@
+<main>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">First Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{firstName}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Last Name</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{lastName}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Email</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{email}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Date of Birth</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{dateOfBirth}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Location</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{city}}, {{state}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button type="button" onclick="location.href='/user/update'; " class="btn btn-outline-primary ms-1">Edit Profile</button>
+                    </div>
+                </div>
+                <div class="row">
+                    {{#if isGymOwner}}
+                    <p class="mb-0">Created Gyms</p>
+                    {{else}}
+                    {{#each gymsList}}
+                    <p class="mb-0">Favorited Gyms</p>
+                    <div class="col">
+                        <a href="/gym/{{_id}}" class="card-link">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{gymName}}</h5>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            {{#each category}}
+                                            <span class="badge rounded-pill text-bg-secondary">{{.}}</span>
+                                            {{/each}}
+                                        </div>
+                                        <div>
+                                            <small class="text-body-secondary">{{rating}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {{/each}}
+            <div class="row">
+                <p class="mb-0">Reviews</p>
+
+                {{#each reviewsWithGymsInfo}}
+            <div class="col">
+                <div>
+                    <i>{{r.dateOfReview}}</i>
+                    <input type="button" value="Edit Review" class="btn btn-sm btn-primary pull-right" />
+                </div>
+                <div>
+                    {{rating}} rating
+                </div>
+                <div>
+                    <i>Review:</i> {{content}}
+                </div>
+            </div>
+                    {{/each}}
+                {{/if}}
+            </div>
+            </div>
+            </div>
+</main>

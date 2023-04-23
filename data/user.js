@@ -18,10 +18,13 @@ const create = async (
   hashedPassword
 ) => {
   // Validation
-  validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword);
-  validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, hashedPassword);
+  validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword, isGymOwner);
+  validation.checkNonEmptyStrings(userName, email, hashedPassword);
   await validation.checkValidEmail(email);
-  await validation.checkValidDate(dateOfBirth);
+
+  if (dateOfBirth.length > 0) {
+    await validation.checkValidDate(dateOfBirth);
+  }
 
   const lowerCaseEmail = email.toLowerCase();
 

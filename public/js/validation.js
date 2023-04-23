@@ -3,11 +3,11 @@ import moment from "moment";
 import { ObjectId } from "mongodb";
 
 function checkArgumentsExist(...args) {
-  //console.log('checkAr')
+    console.log(args.length);
   for (let arg of args) {
-    //console.log(arg)
-    if (!arg) {
-      throw [400, `ERROR: All filed must present`];
+      console.log(arg);
+    if (arg == undefined || arg == null) {
+      throw [400, `ERROR: All fields must be present`];
     }
     //arg = arg.trim();
   }
@@ -36,7 +36,7 @@ function checkValidEmail(email) {
 }
 
 function checkValidDate(date) {
-  if (!moment(date, 'MM/DD/YYYY', true).isValid()) {
+  if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
     throw [400, `ERROR: ${date} must be a valid date string in the format MM/DD/YYYY`];
   }
   date = date.trim();
