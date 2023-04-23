@@ -3,9 +3,9 @@ import moment from "moment";
 import { ObjectId } from "mongodb";
 
 function checkArgumentsExist(...args) {
-    console.log(args.length);
+  //console.log(args.length);
   for (let arg of args) {
-      console.log(arg);
+    //console.log(arg);
     if (arg == undefined || arg == null) {
       throw [400, `ERROR: All fields must be present`];
     }
