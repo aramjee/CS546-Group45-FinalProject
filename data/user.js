@@ -5,6 +5,7 @@
 import { ObjectId } from "mongodb";
 import * as validation from '../public/js/validation.js';
 import { userCollection } from '../config/mongoCollections.js';
+import bcrypt from "bcrypt";
 
 const create = async (
   firstName,
@@ -15,11 +16,11 @@ const create = async (
   state,
   dateOfBirth,
   isGymOwner,
-  hashedPassword
+  password
 ) => {
   // Validation
-  validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword, isGymOwner);
-  validation.checkNonEmptyStrings(userName, email, hashedPassword);
+  validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, password, isGymOwner);
+  validation.checkNonEmptyStrings(userName, email, password);
   await validation.checkValidEmail(email);
 
   if (dateOfBirth.length > 0) {
@@ -27,17 +28,22 @@ const create = async (
   }
 
   const lowerCaseEmail = email.toLowerCase();
+  const lowerCaseUserName = userName.toLowerCase();
+
+  // Hash the password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   const newUser = {
-    firstName: firstName.trim(),
-    lastName: lastName.trim(),
-    userName: userName.trim(),
-    email: lowerCaseEmail.trim(),
-    city: city.trim(),
-    state: state.trim(),
+    firstName: firstName,
+    lastName: lastName,
+    userName: lowerCaseUserName,
+    email: lowerCaseEmail,
+    city: city,
+    state: state,
     dateOfBirth: dateOfBirth,
     isGymOwner: Boolean(isGymOwner),
-    hashedPassword: hashedPassword.trim(),
+    hashedPassword: hashedPassword,
     reviews: [],
     comments: [],
     likedGyms: [],
@@ -49,14 +55,19 @@ const create = async (
   const usersDBConnection = await userCollection();
 
   //Check for duplicated email
-  const userExists = await getByUserEmail(lowerCaseEmail);
-  if (userExists) {
+  const userExistsDuplicatedEmail = await getByUserEmail(lowerCaseEmail);
+  if (userExistsDuplicatedEmail) {
     throw [404, `Email already in use`];
+  }
+
+  const userExistsDuplicatedUserName = await getByUserName(lowerCaseUserName);
+  if (userExistsDuplicatedUserName) {
+    throw [404, `UserName already in use`];
   }
 
   const insertInfo = await usersDBConnection.insertOne(newUser);
   if (!insertInfo.acknowledged || !insertInfo.insertedId) {
-    throw `Error: Create user failed`;
+    throw [500, `Error: Create user failed`];
   }
 
   const newId = insertInfo.insertedId.toString();
@@ -79,6 +90,17 @@ const getByUserEmail = async (email) => {
   await validation.checkValidEmail(email);
   const usersDBConnection = await userCollection();
   const userGet = await usersDBConnection.findOne({ email: email });
+  if (userGet === null) {
+    return null;
+  }
+  userGet._id = userGet._id.toString();
+  return userGet;
+};
+
+const getByUserName = async (userName) => {
+  validation.checkNonEmptyStrings(userName);
+  const usersDBConnection = await userCollection();
+  const userGet = await usersDBConnection.findOne({ userName: userName });
   if (userGet === null) {
     return null;
   }
@@ -180,4 +202,22 @@ const removeGymFromUsers = async (gymId) => {
   );
 };
 
-export const userDataFunctions = { create, getAll, getByUserId, getByUserEmail, update, remove, removeGymFromUsers }
+const checkUser = async (emailAddress, password) => {
+  validation.checkValidEmail(emailAddress)
+  await validation.checkValidPassword(password)
+  const user = await getByUserEmail(emailAddress.toLowerCase());
+  if (!user) {
+    throw [404, "ERROR: Either the email address or password is invalid"];
+  }
+
+  // Compare passwords using bcrypt (compare with hashed password)
+  const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
+
+  if (!passwordMatch) {
+    throw [404, "ERROR: Either the email address or password is invalid"];
+  }
+
+  return {userId: user._id.toString()};
+};
+
+export const userDataFunctions = { create, getAll, getByUserId, getByUserEmail, getByUserName, update, remove, removeGymFromUsers, checkUser }
