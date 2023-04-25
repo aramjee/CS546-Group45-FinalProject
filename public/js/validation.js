@@ -100,7 +100,33 @@ const checkValidNonNegativeInteger = async (number) => {
   return number;
 }
 
+const checkValidPassword = async (password) => {
+  let checkValidPassword = true;
+  if (typeof password !== 'string') {
+    checkValidPassword = false;
+  }
+  if (password.length < 8) {
+    checkValidPassword = false;
+  }
+  // Check if password contains at least one uppercase character
+  if (!/[A-Z]/.test(password)) {
+    checkValidPassword = false;
+  }
+  // Check if password contains at least one number
+  if (!/\d/.test(password)) {
+    checkValidPassword = false;
+  }
+  // Check if password contains at least one special character
+  if (!/[\W]/.test(password)) {
+    checkValidPassword = false;
+  }
+  if (!checkValidPassword){
+    throw [400, "ERROR: Password must be a valid string and should be a minimum of 8 characters long. at least one uppercase character, there has to be at least one number and there has to be at least one special character"]
+  }
+  return password;
+}
+
 export {
   checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
-  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating
+  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword
 }

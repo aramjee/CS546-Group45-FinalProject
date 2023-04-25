@@ -40,26 +40,25 @@ router.route('/login').post(async (req, res) => {
     res.redirect("/user/profile");
   } else {
     const { email, password } = req.body;
-    const user = await userData.getByUserEmail(email);
-
-
-    if (!user) {
+    try {
+      validation.checkValidEmail(email);
+      await validation.checkValidPassword(password);
+      const userId = await userData.checkUser(email, password);
+      if (userId){
+        req.session.userId = userId.userId;
+        return res.redirect("/user/profile");
+      }else {
+        hasErrors = true;
+        errors.push("'Invalid username and/or password.'")
+        return res.status(400).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+      }
+    }catch (e){
+      let status = e[0] ? e[0] : 500;
+      let message = e[1] ? e[1] : 'Internal Server Error';
       hasErrors = true;
-      errors.push("Invalid Username");
-      return res.status(400).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+      errors.push(message);
+      return res.status(status).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
     }
-
-    // Compare passwords using bcrypt (compare with hashed password)
-    const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
-
-    if (!passwordMatch) {
-      hasErrors = true;
-      errors.push("Invalid Password");
-      return res.status(401).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
-    }
-
-    req.session.userId = user._id.toString();
-    return res.redirect("/user/profile");
   }
 });
 
@@ -79,7 +78,7 @@ router.route('/signup').post(async (req, res) => {
   const {
     firstName,
     lastName,
-    username,
+    userName,
     email,
     city,
     state,
@@ -90,9 +89,10 @@ router.route('/signup').post(async (req, res) => {
 
   // validation
   try {
-    validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, hashedPassword, isGymOwner);
-    validation.checkNonEmptyStrings(username, email, password);
+    validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner);
+    validation.checkNonEmptyStrings(userName, email, password);
     await validation.checkValidEmail(email);
+    await validation.checkValidPassword(password);
 
     if (dateOfBirth.length > 0) {
       await validation.checkValidDate(dateOfBirth);
@@ -104,70 +104,84 @@ router.route('/signup').post(async (req, res) => {
     return res.status(e[0]).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
   }
 
-  const existingUser = await userData.getByUserEmail(email);
-  if (existingUser) {
+  const duplicateEmail = await userData.getByUserEmail(email.toLowerCase());
+  if (duplicateEmail) {
     hasErrors = true
     errors.push("Email already used, please login");
     return res.status(400).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
   }
 
-  // Hash the password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+  const duplicateUserName = await userData.getByUserName(userName.toLowerCase());
+  if (duplicateUserName) {
+    hasErrors = true
+    errors.push("UserName already used, please login");
+    return res.status(400).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
+  }
 
   try {
-    await userData.create(xss(firstName), xss(lastName), xss(username), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, hashedPassword)
+    await userData.create(xss(firstName), xss(lastName), xss(userName), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, xss(password))
     res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
   } catch (e) {
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
     hasErrors = true;
-    errors.push(e[1]);
-    res.status(e[0]).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
+    errors.push(message);
+    return res.status(status).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
   }
 });
 
 router.route('/profile').get(async (req, res) => {
   let hasErrors = false;
   let errors = [];
-  if (!helper.checkIfLoggedIn(req)) {
-    hasErrors = true;
-    errors.push("Not log in, Please Login");
-    res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
-  } else {
-    const userId = req.session.userId;
-    const user = await userData.getByUserId(userId);
+  try {
+    if (!helper.checkIfLoggedIn(req)) {
+      hasErrors = true;
+      errors.push("Not log in, Please Login");
+      res.status(403).render("login", {title: 'Gym User Login', hasErrors: hasErrors, errors: errors});
+    } else {
+      const userId = req.session.userId;
+      const user = await userData.getByUserId(userId);
 
-    let reviewsWithGymsInfo = [];
-    let favGymList = [];
+      let reviewsWithGymsInfo = [];
+      let favGymList = [];
 
-    for (let i = 0; i < user.reviews.length; i++) {
-      let r = await reviewData.get(user.reviews[i]);
-      let g = await gymData.getByGymId(r.gymId);
-      let reviewWithGymInfo = {
-        review: r,
-        gym: g
+      for (let i = 0; i < user.reviews.length; i++) {
+        let r = await reviewData.get(user.reviews[i]);
+        let g = await gymData.getByGymId(r.gymId);
+        let reviewWithGymInfo = {
+          review: r,
+          gym: g
+        }
+        reviewsWithGymsInfo.push(reviewWithGymInfo);
       }
-      reviewsWithGymsInfo.push(reviewWithGymInfo);
-    }
 
-    for (let i = 0; i < user.favGymList.length; i++) {
-      let g = await gymData.getByGymId(user.favGymList[i]);
-      favGymList.push(g);
-    }
+      for (let i = 0; i < user.favGymList.length; i++) {
+        let g = await gymData.getByGymId(user.favGymList[i]);
+        favGymList.push(g);
+      }
 
-    return res.status(200).render("profile", {
-      id: userId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      userName: user.userName,
-      email: user.email,
-      city: user.city,
-      state: user.state,
-      dateOfBirth: user.dateOfBirth,
-      reviewsWithGymsInfo: reviewsWithGymsInfo,
-      favGymList: favGymList,
-      isGymOwner: user.isGymOwner,
-      userLoggedIn: true
-    });
+      return res.status(200).render("profile", {
+        id: userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userName: user.userName,
+        email: user.email,
+        city: user.city,
+        state: user.state,
+        dateOfBirth: user.dateOfBirth,
+        reviewsWithGymsInfo: reviewsWithGymsInfo,
+        favGymList: favGymList,
+        isGymOwner: user.isGymOwner,
+        userLoggedIn: true
+      });
+    }
+  }catch (e){
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    hasErrors = true;
+    errors.push(message);
+    //TODO: Need to discuss for redirect
+    return res.status(status).render("error", { errors: errors });
   }
 });
 
@@ -179,18 +193,27 @@ router.route('/update').get(async (req, res) => {
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
   } else {
-    const user = await userData.getByUserId(req.session.userId);
-    return res.status(200).render('update', {
-      id: req.session.userId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      userName: user.userName,
-      city: user.city,
-      state: user.state,
-      dateOfBirth: user.dateOfBirth,
-      isGymOwner: user.isGymOwner,
-      userLoggedIn: true
-    });
+    try {
+      const user = await userData.getByUserId(req.session.userId);
+      return res.status(200).render('update', {
+        id: req.session.userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userName: user.userName,
+        city: user.city,
+        state: user.state,
+        dateOfBirth: user.dateOfBirth,
+        isGymOwner: user.isGymOwner,
+        userLoggedIn: true
+      });
+    }catch (e){
+      let status = e[0] ? e[0] : 500;
+      let message = e[1] ? e[1] : 'Internal Server Error';
+      hasErrors = true;
+      errors.push(message);
+      //TODO: Need to discuss for redirect
+      return res.status(status).render("error", { errors: errors });
+    }
   }
 });
 
@@ -201,71 +224,62 @@ router.route('/update').post(async (req, res) => {
   if (!helper.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
+    res.status(403).render("login", {hasErrors: hasErrors, errors: errors});
   } else {
-    const { firstName, lastName, userName, city, state, dateOfBirth, newPassword, confirm, isGymOwner } = req.body;
+    const {firstName, lastName, userName, city, state, dateOfBirth, password, confirm, isGymOwner} = req.body;
     let user = await userData.getByUserId(req.session.userId);
 
     try {
       validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth);
+      validation.checkNonEmptyStrings(firstName, lastName, userName, city, state);
       if (dateOfBirth.length > 0) {
         await validation.checkValidDate(dateOfBirth);
       }
-    } catch (e) {
-      hasErrors = true
-      errors.push(e[1]);
-      return res.render("update", {
-        id: req.session.userId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        userName: user.userName,
-        city: user.city,
-        state: user.state,
-        dateOfBirth: user.dateOfBirth,
-        isGymOwner: user.isGymOwner,
-        userLoggedIn: true,
-        hasErrors: hasErrors,
-        errors: errors
-      });
-    }
+      if (password !== confirm) {
+        throw [400, `ERROR: Passwords must match`];
+      }
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        user.hashedPassword = await bcrypt.hash(password, salt);
+      }
 
 
-    if (newPassword !== confirm) {
-      hasErrors = true;
-      errors.push("Passwords must match");
-      return res.render("update", {
-        id: req.session.userId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        userName: user.userName,
-        city: user.city,
-        state: user.state,
-        dateOfBirth: user.dateOfBirth,
-        isGymOwner: user.isGymOwner,
-        userLoggedIn: true,
-        hasErrors: hasErrors,
-        errors: errors
-      });
-    }
-    if (newPassword) {
-      const salt = await bcrypt.genSalt(10);
-      user.hashedPassword = await bcrypt.hash(newPassword, salt);
-    }
+      const duplicateUserName = await userData.getByUserName(userName.toLowerCase());
+      if (duplicateUserName && duplicateUserName.userName !== user.userName) {
+        throw [400, `ERROR: UserName is used`];
+      }
 
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.userName = userName;
-    user.city = city;
-    user.state = state;
-    user.dateOfBirth = dateOfBirth;
-    user.isGymOwner = isGymOwner;
+      user.firstName = firstName;
+      user.lastName = lastName;
+      user.userName = userName;
+      user.city = city;
+      user.state = state;
+      user.dateOfBirth = dateOfBirth;
+      user.isGymOwner = isGymOwner;
 
-    try {
       await userData.update(req.session.userId, user);
     } catch (e) {
-      res.status(500).json({ message: e.toString() });
+      let status = e[0] ? e[0] : 500;
+      let message = e[1] ? e[1] : 'Internal Server Error';
+      hasErrors = true;
+      errors.push(message);
+      return res.status(status).render("update", {
+        id: req.session.userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        userName: user.userName,
+        city: user.city,
+        state: user.state,
+        dateOfBirth: user.dateOfBirth,
+        isGymOwner: user.isGymOwner,
+        userLoggedIn: true,
+        hasErrors: hasErrors,
+        errors: errors
+      });
     }
-    res.status(200).redirect("user/profile")
+    // return res.status(200).redirect("user/profile")
+    res.redirect("/user/profile");
+
   }
 });
 

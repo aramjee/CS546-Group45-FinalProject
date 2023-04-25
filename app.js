@@ -36,7 +36,7 @@ app.use(
     secret: 'zft7mxy2xvc.gax!WXD',
     resave: false,
     saveUninitialized: true,
-    cookie: {maxAge: 60000}
+    cookie: {maxAge: 3600000}
   })
 );
 
