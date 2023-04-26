@@ -7,3 +7,24 @@
 .card-link {
   text-decoration: none;
 }
+.review-card{
+  font-size:14px;
+}
+
+.comment-box{
+  margin-top:10px;
+  background-color: aliceblue;
+}
+.comment-box .card-body{
+  padding:5px;
+}
+.comment-box .card-body p {
+  margin-bottom:0px;
+}
+.username{
+  color: dodgerblue;
+  font-size:16px;
+}
+.edit-delete-wrapper{
+  margin-left:5px;
+}

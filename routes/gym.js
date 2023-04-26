@@ -32,14 +32,10 @@ router.route('/:id').get(async (req, res) => {
     if(gym.reviews){
       for (const reviewId of gym.reviews) {
         const review = await reviewData.get(reviewId);
-        let commentList = [];
-        // Retrieve comments
+        // Marking comments by current user
         for (const comm of review.comments) {
-          const comment = await commentData.get(comm._id);
-          comment.isCurrentUser = comment.userId === currentUserId;
-          commentList.push(comment);
+          comm.isCurrentUser = comm.userId === currentUserId;
         }
-        review.commentsList = commentList
         review.isCurrentUser = review.userId === currentUserId;
         reviewsList.push(review);
       }
