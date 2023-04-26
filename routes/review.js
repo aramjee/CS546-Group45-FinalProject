@@ -15,11 +15,11 @@ const router = Router();
 // TODO: comment date cannot before reivew date
 
 router.route('/new/:id').get(async (req, res) => {
-    console.log(req.params);
+    //console.log(req.params);
     if (!helper.checkIfLoggedIn(req)) {
         res.redirect(`/gym/${req.params.id}`);
     } else {
-        res.render('newReview', { title: 'Gym User Signup' });
+        res.render('newReview', { title: 'Review Gym', id: req.params.id });
     }
 });
 
