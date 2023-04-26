@@ -14,10 +14,17 @@ const router = Router();
 //TODO: a user post a review cannot add a comment under his/her own review!
 // TODO: comment date cannot before reivew date
 
-
+router.route('/new/:id').get(async (req, res) => {
+    console.log(req.params);
+    if (!helper.checkIfLoggedIn(req)) {
+        res.redirect(`/gym/${req.params.id}`);
+    } else {
+        res.render('newReview', { title: 'Gym User Signup' });
+    }
+});
 
 // a logged-in user to create a new post under a specific gym
-router.route('/new').post(async (req, res) => {
+router.route('/new/:id').post(async (req, res) => {
   //code here for POST
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);

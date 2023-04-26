@@ -7,6 +7,7 @@ function checkArgumentsExist(...args) {
   for (let arg of args) {
     //console.log(arg);
     if (arg == undefined || arg == null) {
+        //console.log(arg);
       throw [400, `ERROR: All fields must be present`];
     }
     //arg = arg.trim();
