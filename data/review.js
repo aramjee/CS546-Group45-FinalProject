@@ -11,7 +11,7 @@ import { gymDataFunctions } from './gym.js'
 
 // get review by review's id, return the review object
 async function get(id) {
-    await validation.checkArgumentsExist(id);
+    validation.checkArgumentsExist(id);
     id = await validation.checkObjectId(id, 'review id')
     const reviewsCollection = await reviewCollection();
     const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
@@ -38,7 +38,7 @@ async function getAll() {
 
 // get a gym's all  review, return a list of reviewIds (string)
 async function getGymReviews(gymId) {
-    await validation.checkArgumentsExist(gymId);
+    validation.checkArgumentsExist(gymId);
     gymId = await validation.checkObjectId(gymId, 'gym id')
     const reviewsCollection = await reviewCollection();
     if (!await gymDataFunctions.getByGymId(gymId)) {
@@ -55,7 +55,7 @@ async function getGymReviews(gymId) {
 
 // get a user's all previous review, return a list of reviewIds (string)
 async function getUserReviews(userId) {
-    await validation.checkArgumentsExist(userId);
+    validation.checkArgumentsExist(userId);
     userId = await validation.checkObjectId(userId, 'userId')
     const reviewsCollection = await reviewCollection();
     // check is user id exist in database, TBD.
@@ -148,7 +148,7 @@ async function create(
 
 // remove a review
 async function removeReview(id) {
-    await validation.checkArgumentsExist(id);
+    validation.checkArgumentsExist(id);
     id = await validation.checkObjectId(id, 'review id');
     if (!await this.get(id)) {
         throw `no review have this id`;
@@ -198,7 +198,7 @@ async function updateReviewContent(
     content,
     dateOfReview
 ) {
-    await validation.checkArgumentsExist(id, content, dateOfReview);
+    validation.checkArgumentsExist(id, content, dateOfReview);
     dateOfReview = await validation.checkValidDate(dateOfReview);
     id = await validation.checkObjectId(id, 'review id');
     // how to check content and date?
@@ -263,7 +263,7 @@ async function updateReviewRating(
 }
 
 async function updateReviewComment(id, updatedReview) {
-    await validation.checkArgumentsExist(id, updatedReview);
+    validation.checkArgumentsExist(id, updatedReview);
     id = await validation.checkObjectId(id, 'review id');
 
     const reviewsCollection = await reviewCollection();
