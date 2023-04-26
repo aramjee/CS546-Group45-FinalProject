@@ -19,9 +19,13 @@ async function get(id) {
         throw [400, `ERROR: ${id} No review with that id`]
     // convert all objectId to string
     review._id = review._id.toString();
+    let userNameR = await userDataFunctions.getUserName(review.userId)
+    review.userName = userNameR
     review.user = await userDataFunctions.getByUserId(review.userId);
     for (const comment of review.comments) {
         comment._id = comment._id.toString()
+        let userNameC = await userDataFunctions.getUserName(comment.userId)
+        comment.userName = userNameC;
         comment.user = await userDataFunctions.getByUserId(comment.userId);
     }
     return review;
@@ -52,6 +56,35 @@ async function getGymReviews(gymId) {
     }
     return gymReview;
 }
+
+async function getGymReviewsListObjects(gymId) {
+    validation.checkArgumentsExist(gymId);
+    gymId = await validation.checkObjectId(gymId, 'gym id')
+    const reviewsCollection = await reviewCollection();
+    if (!await gymDataFunctions.getByGymId(gymId)) {
+        throw `no gym have such id`
+    }
+    gym = gymData.getByGymId(newReview.gymId);
+    if (gym.reviews) {
+        for (const reviewId of gym.reviews) {
+            const review = await this.get(reviewId);
+            let userNameR = await userDataFunctions.getUserName(review.userId)
+            review.userName = userNameR;
+            let commentList = [];
+            // Retrieve comments
+            for (const comm of review.comments) {
+                const comment = await commentData.get(comm._id);
+                let userNameC = await userDataFunctions.getUserName(comment.userId)
+                comment.userName = userNameC;
+                commentList.push(comment);
+            }
+            review.commentsList = commentList
+            reviewsList.push(review);
+        }
+    }
+    return gymReview;
+}
+
 
 // get a user's all previous review, return a list of reviewIds (string)
 async function getUserReviews(userId) {
@@ -94,11 +127,20 @@ async function create(
     if (!gymDataFunctions.getByGymId(gymId)) {
         throw `no gym have such id`;
     }
-    const gymGet = await gymDataFunctions.getByGymId(gymId);
 
+    let gym = await gymDataFunctions.getByGymId(gymId);
+    for (let rId of gym.reviews) {
+        let r = await this.get(rId);
+        if (r.userId === userId) {
+            throw [400, `User have posted review for this gym!`]
+        }
+    }
+    let user = await userDataFunctions.getByUserId(userId)
+    let userName = user.userName;
     let newReview = {
         gymId: gymId,
         userId: userId,
+        userName: userName,
         dateOfReview: dateOfReview,
         content: content,
         comments: [],
@@ -125,7 +167,6 @@ async function create(
         UpdatedgymReviews.push(await this.get(reviewIds))
     }
     let updatedGym = await gymDataFunctions.getByGymId(gymId)
-    // console.log(UpdatedgymReviews)
     let ratings = []
     for (let review of UpdatedgymReviews) {
         ratings.push(review.rating)
@@ -134,8 +175,7 @@ async function create(
     ratings.push(rating)
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
-    console.log(grade)
-    updatedGym.reviews = UpdatedgymReviews;
+    updatedGym.reviews = UpdatedgymReviewsIds;
     updatedGym.rating = grade;
 
 
@@ -279,4 +319,4 @@ async function updateReviewComment(id, updatedReview) {
 
 }
 
-export const reviewDataFunctions = { get, getAll, getGymReviews, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
+export const reviewDataFunctions = { get, getAll, getGymReviews, getGymReviewsListObjects, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
