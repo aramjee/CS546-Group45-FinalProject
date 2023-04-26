@@ -8,8 +8,16 @@ import * as helper from '../public/js/helper.js';
 
 const router = Router();
 
+router.route('/new/:id').get(async (req, res) => {
+    //console.log(req.params);
+    if (!helper.checkIfLoggedIn(req)) {
+        res.redirect(`/gym/${req.params.id}`);
+    } else {
+        res.render('newComment', { title: 'Comment on Review', id: req.params.id });
+    }
+});
 // a logged-in user to create a new comment under a specific gym and specific review
-router.route('/new').post(async (req, res) => {
+router.route('/new/:id').post(async (req, res) => {
   //code here for POST
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -22,7 +30,7 @@ router.route('/new').post(async (req, res) => {
     await validation.checkArgumentsExist(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
     newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId = await validation.checkNonEmptyStrings(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
     newComment.userId = await validation.checkObjectId(newComment.userId);
-    newComment.reviewId = await validation.checkObjectId(newComment.reviewId);
+    newComment.reviewId = await validation.checkObjectId(req.params.id);
     dateOfReview = await validation.checkValidDate(newComment.dateOfReview);
 
     let review = await reviewData.get(newComment.reviewId);

@@ -30,7 +30,7 @@
         {{#each gym.reviewsList}}
             <div>
                 {{user.username}} <i>{{dateOfReview}}</i>
-                <input type="button" value="Respond with a comment" class="btn btn-sm btn-primary pull-right"/>
+                <input type="button" onclick="location.href = '/comment/new/{{_id}}'" value="Respond with a comment" class="btn btn-sm btn-primary pull-right"/>
             </div>
             <div>
                 {{rating}} rating
