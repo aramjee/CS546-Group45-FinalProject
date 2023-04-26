@@ -8,6 +8,14 @@ import * as helper from '../public/js/helper.js';
 
 const router = Router();
 
+
+//TODO: date must be after birthday
+// TODO: duplicate userName
+//TODO: a user post a review cannot add a comment under his/her own review!
+// TODO: comment date cannot before reivew date
+
+
+
 // a logged-in user to create a new post under a specific gym
 router.route('/new').post(async (req, res) => {
   //code here for POST
