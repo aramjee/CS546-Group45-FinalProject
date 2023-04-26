@@ -11,7 +11,7 @@ import { gymDataFunctions } from './gym.js'
 
 // get review by review's id, return the review object
 async function get(id) {
-    await validation.checkArgumentsExist(id);
+    validation.checkArgumentsExist(id);
     id = await validation.checkObjectId(id, 'review id')
     const reviewsCollection = await reviewCollection();
     const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
@@ -19,9 +19,13 @@ async function get(id) {
         throw [400, `ERROR: ${id} No review with that id`]
     // convert all objectId to string
     review._id = review._id.toString();
+    let userNameR = await userDataFunctions.getUserName(review.userId)
+    review.userName = userNameR
     review.user = await userDataFunctions.getByUserId(review.userId);
     for (const comment of review.comments) {
         comment._id = comment._id.toString()
+        let userNameC = await userDataFunctions.getUserName(comment.userId)
+        comment.userName = userNameC;
         comment.user = await userDataFunctions.getByUserId(comment.userId);
     }
     return review;
@@ -38,7 +42,7 @@ async function getAll() {
 
 // get a gym's all  review, return a list of reviewIds (string)
 async function getGymReviews(gymId) {
-    await validation.checkArgumentsExist(gymId);
+    validation.checkArgumentsExist(gymId);
     gymId = await validation.checkObjectId(gymId, 'gym id')
     const reviewsCollection = await reviewCollection();
     if (!await gymDataFunctions.getByGymId(gymId)) {
@@ -53,9 +57,38 @@ async function getGymReviews(gymId) {
     return gymReview;
 }
 
+async function getGymReviewsListObjects(gymId) {
+    validation.checkArgumentsExist(gymId);
+    gymId = await validation.checkObjectId(gymId, 'gym id')
+    const reviewsCollection = await reviewCollection();
+    if (!await gymDataFunctions.getByGymId(gymId)) {
+        throw `no gym have such id`
+    }
+    gym = gymData.getByGymId(newReview.gymId);
+    if (gym.reviews) {
+        for (const reviewId of gym.reviews) {
+            const review = await this.get(reviewId);
+            let userNameR = await userDataFunctions.getUserName(review.userId)
+            review.userName = userNameR;
+            let commentList = [];
+            // Retrieve comments
+            for (const comm of review.comments) {
+                const comment = await commentData.get(comm._id);
+                let userNameC = await userDataFunctions.getUserName(comment.userId)
+                comment.userName = userNameC;
+                commentList.push(comment);
+            }
+            review.commentsList = commentList
+            reviewsList.push(review);
+        }
+    }
+    return gymReview;
+}
+
+
 // get a user's all previous review, return a list of reviewIds (string)
 async function getUserReviews(userId) {
-    await validation.checkArgumentsExist(userId);
+    validation.checkArgumentsExist(userId);
     userId = await validation.checkObjectId(userId, 'userId')
     const reviewsCollection = await reviewCollection();
     // check is user id exist in database, TBD.
@@ -94,11 +127,20 @@ async function create(
     if (!gymDataFunctions.getByGymId(gymId)) {
         throw `no gym have such id`;
     }
-    const gymGet = await gymDataFunctions.getByGymId(gymId);
 
+    let gym = await gymDataFunctions.getByGymId(gymId);
+    for (let rId of gym.reviews) {
+        let r = await this.get(rId);
+        if (r.userId === userId) {
+            throw [400, `User have posted review for this gym!`]
+        }
+    }
+    let user = await userDataFunctions.getByUserId(userId)
+    let userName = user.userName;
     let newReview = {
         gymId: gymId,
         userId: userId,
+        userName: userName,
         dateOfReview: dateOfReview,
         content: content,
         comments: [],
@@ -119,7 +161,11 @@ async function create(
     await userDataFunctions.update(userId, updatedUser)
 
     // gym collection add a review
-    let UpdatedgymReviews = await this.getGymReviews(gymId)
+    let UpdatedgymReviewsIds = await this.getGymReviews(gymId)
+    let UpdatedgymReviews = []
+    for (let reviewIds of UpdatedgymReviewsIds) {
+        UpdatedgymReviews.push(await this.get(reviewIds))
+    }
     let updatedGym = await gymDataFunctions.getByGymId(gymId)
     let ratings = []
     for (let review of UpdatedgymReviews) {
@@ -129,7 +175,7 @@ async function create(
     ratings.push(rating)
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
-    updatedGym.reviews = UpdatedgymReviews;
+    updatedGym.reviews = UpdatedgymReviewsIds;
     updatedGym.rating = grade;
 
 
@@ -142,7 +188,7 @@ async function create(
 
 // remove a review
 async function removeReview(id) {
-    await validation.checkArgumentsExist(id);
+    validation.checkArgumentsExist(id);
     id = await validation.checkObjectId(id, 'review id');
     if (!await this.get(id)) {
         throw `no review have this id`;
@@ -192,7 +238,7 @@ async function updateReviewContent(
     content,
     dateOfReview
 ) {
-    await validation.checkArgumentsExist(id, content, dateOfReview);
+    validation.checkArgumentsExist(id, content, dateOfReview);
     dateOfReview = await validation.checkValidDate(dateOfReview);
     id = await validation.checkObjectId(id, 'review id');
     // how to check content and date?
@@ -257,7 +303,7 @@ async function updateReviewRating(
 }
 
 async function updateReviewComment(id, updatedReview) {
-    await validation.checkArgumentsExist(id, updatedReview);
+    validation.checkArgumentsExist(id, updatedReview);
     id = await validation.checkObjectId(id, 'review id');
 
     const reviewsCollection = await reviewCollection();
@@ -273,4 +319,4 @@ async function updateReviewComment(id, updatedReview) {
 
 }
 
-export const reviewDataFunctions = { get, getAll, getGymReviews, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
+export const reviewDataFunctions = { get, getAll, getGymReviews, getGymReviewsListObjects, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }

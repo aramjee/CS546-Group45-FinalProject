@@ -19,8 +19,8 @@ router.route('/new').post(async (req, res) => {
 
     let newComment = req.body;
 
-    await validation.checkArgumentsExist(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
-    newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId = await validation.checkNonEmptyStrings(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
+    validation.checkArgumentsExist(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
+    newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId = validation.checkNonEmptyStrings(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
     newComment.userId = await validation.checkObjectId(newComment.userId);
     newComment.reviewId = await validation.checkObjectId(newComment.reviewId);
     dateOfReview = await validation.checkValidDate(newComment.dateOfReview);
@@ -45,9 +45,9 @@ router.route('/update/:id').put(async (req, res) => {
     }
     let commentId = req.params.id;
     let updatedComment = req.body;
-    await validation.checkArgumentsExist(commentId, updatedComment.content, updatedComment.dateOfComment);
+    validation.checkArgumentsExist(commentId, updatedComment.content, updatedComment.dateOfComment);
     updatedComment.dateOfComment = await validation.checkValidDate(updatedComment.dateOfComment);
-    updatedComment.content = await validation.checkNonEmptyStrings(updatedComment.content);
+    updatedComment.content = validation.checkNonEmptyStrings(updatedComment.content);
     updatedComment.commentId = await validation.checkObjectId(commentId, 'comment id');
 
 
