@@ -119,8 +119,13 @@ async function create(
     await userDataFunctions.update(userId, updatedUser)
 
     // gym collection add a review
-    let UpdatedgymReviews = await this.getGymReviews(gymId)
+    let UpdatedgymReviewsIds = await this.getGymReviews(gymId)
+    let UpdatedgymReviews = []
+    for (let reviewIds of UpdatedgymReviewsIds) {
+        UpdatedgymReviews.push(await this.get(reviewIds))
+    }
     let updatedGym = await gymDataFunctions.getByGymId(gymId)
+    // console.log(UpdatedgymReviews)
     let ratings = []
     for (let review of UpdatedgymReviews) {
         ratings.push(review.rating)
@@ -129,6 +134,7 @@ async function create(
     ratings.push(rating)
     let total = ratings.reduce((acc, c) => acc + c, 0)
     let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
+    console.log(grade)
     updatedGym.reviews = UpdatedgymReviews;
     updatedGym.rating = grade;
 
