@@ -1,9 +1,19 @@
 /*This file should have CSS rulesets */
 
+/* Text Formatting Styles */
+.bold{
+  font-weight: bold;
+}
+.italic{
+  font-style:italic;
+}
+
+/* Other styles */
 .checked {
   color: orange;
 }
 
+/* Card Styles */
 .card-link {
   text-decoration: none;
 }
@@ -11,6 +21,7 @@
   font-size:14px;
 }
 
+/* Comment box styles */
 .comment-box{
   margin-top:10px;
   background-color: aliceblue;

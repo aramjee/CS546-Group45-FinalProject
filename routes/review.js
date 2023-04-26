@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
-import * as helper from '../public/js/helper.js';
+import middleware from '../middleware.js';
 
 const router = Router();
 
@@ -12,7 +12,7 @@ const router = Router();
 router.route('/new').post(async (req, res) => {
   //code here for POST
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = middleware.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -37,7 +37,7 @@ router.route('/new').post(async (req, res) => {
 // a logged-in user to update a old post under a specific gym
 router.route('/updateContent/:id').put(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = middleware.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -63,7 +63,7 @@ router.route('/updateContent/:id').put(async (req, res) => {
 
 router.route('/updateRating/:id').put(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = middleware.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -90,7 +90,7 @@ router.route('/updateRating/:id').put(async (req, res) => {
 
 router.route('/delete/:id').delete(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = middleware.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }

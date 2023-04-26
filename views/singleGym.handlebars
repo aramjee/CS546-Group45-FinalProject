@@ -14,11 +14,11 @@
             {{/each}}
         </div>
         <div>
-            <b>Average Rating:</b> {{{showRating gym.rating}}} {{gym.rating}}
+            <span class="bold">Average Rating:</span> {{{showRating gym.rating}}} {{gym.rating}}
         </div>
         <div>
-            <div><b>Address:</b> {{gym.address}}</div>
-            <div><b>Website:</b> {{gym.website}}</div>
+            <div><span class="bold">Address:</span> {{gym.address}}</div>
+            <div><span class="bold">Website:</span> {{gym.website}}</div>
         </div>
         <div>
             <input class="btnLikeGym btn btn-sm btn-success" type="button" data-gymid={{gym._id}}
@@ -36,7 +36,7 @@
         <div class="card review-card">
             <div class="card-body">
                 <div>
-                    <b class="username">{{user.username}}</b> <i>{{dateOfReview}}</i>
+                    <span class="username bold">{{user.username}}</span> <span class="italic">{{dateOfReview}}</span>
 
                     {{#if isCurrentUser}}
                     <div class="pull-right edit-delete-wrapper">
@@ -51,17 +51,17 @@
                     {{/if}}
                 </div>
                 <div>
-                    <b>User Rating:</b> {{{showRating rating}}} {{rating}}
+                    <span class="bold">User Rating:</span> {{{showRating rating}}} {{rating}}
                 </div>
                 <div>
-                    <b>Review:</b> {{content}}
+                    <span class="bold">Review:</span> {{content}}
                 </div><br />
-                <p><b>Comments:</b></p>
+                <p><span class="bold">Comments:</span></p>
                 {{#each comments}}
                 <div class="card comment-box">
                     <div class="card-body">
                         <p>
-                            <b class="username">{{user.username}}</b>
+                            <span class="username bold">{{user.username}}</span>
                             {{#if isCurrentUser}}
                             <span class="pull-right edit-delete-wrapper">
                                 <input type="button" value="Edit" class="btn btn-sm btn-outline-dark" />

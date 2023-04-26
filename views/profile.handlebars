@@ -86,14 +86,14 @@
                 {{#each reviewsWithGymsInfo}}
             <div class="col">
                 <div>
-                    <i>{{r.dateOfReview}}</i>
+                    <span class="italic">{{r.dateOfReview}}</span>
                     <input type="button" value="Edit Review" class="btn btn-sm btn-primary pull-right" />
                 </div>
                 <div>
                     {{rating}} rating
                 </div>
                 <div>
-                    <i>Review:</i> {{content}}
+                    <span class="italic">Review:</span> {{content}}
                 </div>
             </div>
                     {{/each}}
