@@ -4,7 +4,7 @@ import gymRoutes from './gym.js';
 import userRoutes from './user.js';
 import commentRoutes from './comment.js';
 import reviewRoutes from './review.js';
-import middleware from '../middleware.js';
+import helpers from '../helpers.js';
 
 const constructorMethod = (app) => {
   //app.use('/posts', postRoutes);
@@ -14,7 +14,7 @@ const constructorMethod = (app) => {
   app.use('/comment', commentRoutes);
   app.use('/review', reviewRoutes);
   app.use('*', (req, res) => {
-    let userLoggedIn = middleware.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     res.status(200).render('homepage', { userLoggedIn: userLoggedIn });
   });
 };

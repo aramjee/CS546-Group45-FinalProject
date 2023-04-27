@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { gymData, commentData, userData, reviewData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
-import middleware from '../middleware.js';
+import helpers from '../helpers.js';
 
 const router = Router();
 
@@ -12,7 +12,7 @@ const router = Router();
 router.route('/new').post(async (req, res) => {
   //code here for POST
   try {
-    let userLoggedIn = middleware.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -39,7 +39,7 @@ router.route('/new').post(async (req, res) => {
 // a logged-in user to update a old post under a specific gym and specific review
 router.route('/update/:id').put(async (req, res) => {
   try {
-    let userLoggedIn = middleware.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -65,7 +65,7 @@ router.route('/update/:id').put(async (req, res) => {
 
 router.route('/delete/:id').delete(async (req, res) => {
   try {
-    let userLoggedIn = middleware.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
