@@ -8,8 +8,16 @@ import helpers from '../helpers.js';
 
 const router = Router();
 
+router.route('/new/:id').get(async (req, res) => {
+    //console.log(req.params);
+    if (!helper.checkIfLoggedIn(req)) {
+        res.redirect(`/gym/${req.params.id}`);
+    } else {
+        res.render('newComment', { title: 'Comment on Review', id: req.params.id });
+    }
+});
 // a logged-in user to create a new comment under a specific gym and specific review
-// here the :id is reviewId
+
 router.route('/new/:id').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);

@@ -97,6 +97,7 @@ router.route('/signup').post(async (req, res) => {
     password,
   } = req.body;
 
+    console.log(req.body);
   // validation
   try {
     validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, password);
