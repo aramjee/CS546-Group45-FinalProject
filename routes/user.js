@@ -44,15 +44,15 @@ router.route('/login').post(async (req, res) => {
       validation.checkValidEmail(email);
       await validation.checkValidPassword(password);
       const userId = await userData.checkUser(email, password);
-      if (userId){
+      if (userId) {
         req.session.userId = userId.userId;
         return res.redirect("/user/profile");
-      }else {
+      } else {
         hasErrors = true;
         errors.push("'Invalid username and/or password.'")
         return res.status(400).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
       }
-    }catch (e){
+    } catch (e) {
       let status = e[0] ? e[0] : 500;
       let message = e[1] ? e[1] : 'Internal Server Error';
       hasErrors = true;
@@ -138,7 +138,7 @@ router.route('/profile').get(async (req, res) => {
     if (!helper.checkIfLoggedIn(req)) {
       hasErrors = true;
       errors.push("Not log in, Please Login");
-      res.status(403).render("login", {title: 'Gym User Login', hasErrors: hasErrors, errors: errors});
+      res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
     } else {
       const userId = req.session.userId;
       const user = await userData.getByUserId(userId);
@@ -176,7 +176,7 @@ router.route('/profile').get(async (req, res) => {
         userLoggedIn: true
       });
     }
-  }catch (e){
+  } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     hasErrors = true;
@@ -207,7 +207,7 @@ router.route('/update').get(async (req, res) => {
         isGymOwner: user.isGymOwner,
         userLoggedIn: true
       });
-    }catch (e){
+    } catch (e) {
       let status = e[0] ? e[0] : 500;
       let message = e[1] ? e[1] : 'Internal Server Error';
       hasErrors = true;
@@ -225,9 +225,9 @@ router.route('/update').post(async (req, res) => {
   if (!helper.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    res.status(403).render("login", {hasErrors: hasErrors, errors: errors});
+    res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
-    const {firstName, lastName, userName, city, state, dateOfBirth, password, confirm, isGymOwner} = req.body;
+    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm, isGymOwner } = req.body;
     let user = await userData.getByUserId(req.session.userId);
 
     try {

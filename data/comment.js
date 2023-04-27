@@ -7,11 +7,12 @@ import { ObjectId } from 'mongodb';
 import * as validation from '../public/js/validation.js';
 import { userDataFunctions } from './user.js'
 import { reviewDataFunctions } from './review.js'
+import { gymDataFunctions } from './gym.js'
 import { reviewCollection } from '../config/mongoCollections.js';
 
 // return one comment object
 async function get(commentId) {
-    await validation.checkArgumentsExist(commentId);
+    validation.checkArgumentsExist(commentId);
     commentId = await validation.checkObjectId(commentId, 'commentId')
     const allReviewIds = await reviewDataFunctions.getAll();
     const allReview = []
@@ -23,6 +24,7 @@ async function get(commentId) {
         for (const comment of review.comments) {
             if (comment._id.toString() === commentId) {
                 comment._id = comment._id.toString()
+                comment.userName = await userDataFunctions.getUserName(comment.userId);
                 return comment;
             }
         }
@@ -31,8 +33,7 @@ async function get(commentId) {
 }
 // return a list of comment ids under a review
 async function getAllByReview(reviewId) {
-    await validation.checkArgumentsExist(reviewId);
-
+    validation.checkArgumentsExist(reviewId);
     reviewId = await validation.checkObjectId(reviewId, 'reviewId')
     const review = await reviewDataFunctions.get(reviewId);
     if (review.length === 0) {
@@ -51,7 +52,7 @@ async function getAllByReview(reviewId) {
 
 // return a list of comment ids posted by the user
 async function getAllByUser(userId) {
-    await validation.checkArgumentsExist(userId);
+    validation.checkArgumentsExist(userId);
     userId = await validation.checkObjectId(userId, 'userId');
     if (!userDataFunctions.getByUserId(userId)) {
         throw `no user have such id`
@@ -79,17 +80,25 @@ async function create(
     content,
     reviewId
 ) {
-    await validation.checkArgumentsExist(userId, dateOfComment, content, reviewId);
+    validation.checkArgumentsExist(userId, dateOfComment, content, reviewId);
     dateOfComment = validation.checkValidDate(dateOfComment);
     content = validation.checkNonEmptyStrings(content)[0];
     userId = await validation.checkObjectId(userId);
     reviewId = await validation.checkObjectId(reviewId);
+    let userName = await userDataFunctions.getUserName(userId)
+    let review = await reviewDataFunctions.get(reviewId)
+    for (let c of review.comments) {
+        if (userId === c.userId) {
+            throw [400, `User have posted comment for this review! You can still post comments under other reviews for this gym`]
+        }
+    }
 
     let newComment = {
         _id: new ObjectId(),
         userId: userId,
         dateOfComment: dateOfComment,
         content: content,
+        userName: userName,
         reviewId: reviewId
     };
     const newCommentId = newComment._id.toString()
@@ -147,7 +156,7 @@ async function update(
     content,
     dateOfComment
 ) {
-    await validation.checkArgumentsExist(id, content, dateOfComment);
+    validation.checkArgumentsExist(id, content, dateOfComment);
     dateOfComment = validation.checkValidDate(dateOfComment);
     content = validation.checkNonEmptyStrings(content)[0];
     id = await validation.checkObjectId(id, 'id');
