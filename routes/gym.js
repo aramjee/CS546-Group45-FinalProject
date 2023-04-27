@@ -23,33 +23,17 @@ router.route('/').get(async (req, res) => {
 //Individual Gym page
 router.route('/:id').get(async (req, res) => {
   try {
-    let reviewsList = [];
     let userLoggedIn = helper.checkIfLoggedIn(req);
     const currentUserId = userLoggedIn ? req.session.userId : null;
-
-    const gym = await gymData.getByGymId(req.params.id);
-    // Retrieve review
-    if(gym.reviews){
-      for (const reviewId of gym.reviews) {
-        const review = await reviewData.get(reviewId);
-        let commentList = [];
-        // Retrieve comments
-        for (const comm of review.comments) {
-          const comment = await commentData.get(comm._id);
-          comment.isCurrentUser = comment.userId === currentUserId;
-          commentList.push(comment);
-        }
-        review.commentsList = commentList
-        review.isCurrentUser = review.userId === currentUserId;
-        reviewsList.push(review);
-      }
-    }
-    gym.reviewsList = reviewsList;
-    res.status(200).render("singleGym", {gym: gym, userLoggedIn: userLoggedIn});
+    let gym = await gymData.getByGymId(req.params.id);
+    // Retrieve review, using the data function from reviewData - Chloe
+    let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
+    gym.reviews = reviewList;
+    res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 

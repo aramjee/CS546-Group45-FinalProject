@@ -60,11 +60,11 @@ async function getGymReviews(gymId) {
 async function getGymReviewsListObjects(gymId) {
     validation.checkArgumentsExist(gymId);
     gymId = await validation.checkObjectId(gymId, 'gym id')
-    const reviewsCollection = await reviewCollection();
     if (!await gymDataFunctions.getByGymId(gymId)) {
         throw `no gym have such id`
     }
     gym = gymData.getByGymId(newReview.gymId);
+    let reviewList = []
     if (gym.reviews) {
         for (const reviewId of gym.reviews) {
             const review = await this.get(reviewId);
@@ -79,10 +79,10 @@ async function getGymReviewsListObjects(gymId) {
                 commentList.push(comment);
             }
             review.commentsList = commentList
-            reviewsList.push(review);
+            reviewList.push(review);
         }
     }
-    return gymReview;
+    return reviewList;
 }
 
 
