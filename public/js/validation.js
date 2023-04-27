@@ -7,6 +7,7 @@ function checkArgumentsExist(...args) {
   for (let arg of args) {
     //console.log(arg);
     if (arg == undefined || arg == null) {
+        //console.log(arg);
       throw [400, `ERROR: All fields must be present`];
     }
     //arg = arg.trim();
@@ -57,7 +58,8 @@ const checkObjectId = async (id, idName) => {
   if (id.trim().length === 0)
     throw [400, `ERROR: ${idName} cannot be an empty string or just spaces`];
   id = id.trim();
-  if (!ObjectId.isValid(id)) {
+    if (!ObjectId.isValid(id)) {
+        console.log(id);
     throw [400, `ERROR: ${idName} is not a valid Object ID`];
   }
   return id;

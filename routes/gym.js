@@ -20,6 +20,78 @@ router.route('/').get(async (req, res) => {
   }
 });
 
+//Wild Card Search bar
+router.route('/search').get(async (req, res) => {
+    try {
+        let userLoggedIn = helper.checkIfLoggedIn(req);
+        const searchName = req.query.name;
+        const gymsList = await gymData.searchByValue(searchName);
+        res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
+    } catch (e) {
+        let status = e[0] ? e[0] : 500;
+        let message = e[1] ? e[1] : 'Internal Server Error';
+        res.status(status).json({ error: message });
+    }
+});
+
+//Gym Manage Page, Ideally should be entered in user profile --> manage gym (if user is gym owner)
+router.route('/manage').get(async (req, res) => {
+    //console.log("In manage route");
+    try {
+        let userLoggedIn = helper.checkIfLoggedIn(req);
+        if (!userLoggedIn) {
+            res.status(401).redirect("/user/login");
+        }
+        let checkIfGymOwner = helper.checkIfGymOwner(req);
+        if (!checkIfGymOwner) {
+            // res.status(401).redirect("/users/profile");
+            return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+        }
+
+        const gymOwnerId = req.session.userId;
+        //console.log("Gym owner ID: " + gymOwnerId);
+        await validation.checkObjectId(gymOwnerId, "gymOwnerId");
+        const gymsList = await gymData.getByGymOwnerId(gymOwnerId);
+
+        console.log(gymsList);
+        // if (!gymsList) {
+        //   return res.status(404).json({error: 'No gym found for the current gym owner'});
+        // }
+        res.status(200).render('manageGyms', { title: "Create Gyms", gymsList: gymsList, userLoggedIn: userLoggedIn });
+    } catch (e) {
+        let status = e[0] ? e[0] : 500;
+        let message = e[1] ? e[1] : 'Internal Server Error';
+        res.status(status).json({ error: message });
+    }
+});
+
+//Add gym function in gym manage page
+router.route('/add').post(async (req, res) => {
+    try {
+        let userLoggedIn = helper.checkIfLoggedIn(req);
+        if (!userLoggedIn) {
+            res.status(401).redirect("/user/login");
+        }
+        let checkIfGymOwner = helper.checkIfGymOwner(req);
+        if (!checkIfGymOwner) {
+            // res.status(401).redirect("/users/profile");
+            return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+        }
+
+        validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
+        validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
+        await validation.checkValidWebsite(req.body.website);
+        await validation.checkObjectId(req.session.userId, "gymOwnerId");
+
+        await gymData.create(req.body.gymName, req.body.website, req.body.category, req.session.userId, req.body.address, req.body.city, req.body.state, req.body.zip);
+        res.status(201).redirect("/gym/manage");
+    } catch (e) {
+        let status = e[0] ? e[0] : 500;
+        let message = e[1] ? e[1] : 'Internal Server Error';
+        res.status(status).json({ error: message });
+    }
+});
+
 //Individual Gym page
 router.route('/:id').get(async (req, res) => {
   try {
@@ -38,81 +110,12 @@ router.route('/:id').get(async (req, res) => {
   }
 });
 
-//Wild Card Search bar
-router.route('/search').get(async (req, res) => {
-  try {
-    let userLoggedIn = helpers.checkIfLoggedIn(req);
-    const searchName = req.query.name;
-    const gymsList = await gymData.searchByValue(searchName);
-    res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
-  } catch (e) {
-    let status = e[0] ? e[0] : 500;
-    let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
-  }
-});
-
-//Gym Manage Page, Ideally should be entered in user profile --> manage gym (if user is gym owner)
-router.route('/manage').get(async (req, res) => {
-  try {
-    let userLoggedIn = helpers.checkIfLoggedIn(req);
-    if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
-    }
-    let checkIfGymOwner = helpers.checkIfGymOwner(req);
-    if (!checkIfGymOwner) {
-      // res.status(401).redirect("/users/profile");
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
-    }
-
-    const gymOwnerId = req.session.userId;
-    await validation.checkObjectId(gymOwnerId, "gymOwnerId");
-
-    const gymsList = await gymData.getByGymOwnerId(gymOwnerId);
-    // if (!gymsList) {
-    //   return res.status(404).json({error: 'No gym found for the current gym owner'});
-    // }
-    res.status(200).render('manageGyms', { gymsList: gymsList, userLoggedIn: userLoggedIn });
-  } catch (e) {
-    let status = e[0] ? e[0] : 500;
-    let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
-  }
-});
-
-//Add gym function in gym manage page
-router.route('/add').post(async (req, res) => {
-  try {
-    let userLoggedIn = helpers.checkIfLoggedIn(req);
-    if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
-    }
-    let checkIfGymOwner = helpers.checkIfGymOwner(req);
-    if (!checkIfGymOwner) {
-      // res.status(401).redirect("/users/profile");
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
-    }
-
-    validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
-    validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
-    await validation.checkValidWebsite(req.body.website);
-    await validation.checkObjectId(req.session.userId, "gymOwnerId");
-
-    await gymData.create(req.body.gymName, req.body.website, req.body.category, req.session.userId, req.body.address, req.body.city, req.body.state, req.body.zip);
-    res.status(201).redirect("/gym/manage");
-  } catch (e) {
-    let status = e[0] ? e[0] : 500;
-    let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
-  }
-});
-
 //Delete gym function in gym manage function
 router.route('/delete/:gymId').delete(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
@@ -132,12 +135,32 @@ router.route('/delete/:gymId').delete(async (req, res) => {
   }
 });
 
+router.route('/edit/:gymId').get(async (req, res) => {
+    //console.log(req.params);
+    try {
+        let userLoggedIn = helper.checkIfLoggedIn(req);
+        if (!userLoggedIn) {
+            res.status(401).redirect("/user/login");
+        }
+        let checkIfGymOwner = helper.checkIfGymOwner(req);
+        if (!checkIfGymOwner) {
+            // res.status(401).redirect("/users/profile");
+            return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+        }
+        res.status(200).render("editGym", { title: 'Edit Gym', gymId: req.params.gymId, userLoggedIn: userLoggedIn });
+    } catch (e) {
+        let status = e[0] ? e[0] : 500;
+        let message = e[1] ? e[1] : 'Internal Server Error';
+        res.status(status).json({ error: message });
+    }
+});
+
 //Edit gym function in manage page
 router.route('/edit/:gymId').put(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
@@ -178,7 +201,7 @@ router.route('/:id/like').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     await validation.checkObjectId(req.params.id);
     await gymData.updateLikedGymsCnt(req.params.id);
@@ -195,7 +218,7 @@ router.route('/:id/dislike').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     await validation.checkObjectId(req.params.id);
     await gymData.updateDislikedGymsCnt(req.params.id);
