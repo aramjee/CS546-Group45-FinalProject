@@ -9,34 +9,46 @@ import * as helper from '../public/js/helper.js';
 const router = Router();
 
 // a logged-in user to create a new comment under a specific gym and specific review
-router.route('/new').post(async (req, res) => {
-  //code here for POST
+// here the :id is reviewId
+router.route('/new/:id').post(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
-
+    // get the gym for singleGym page
+    let reviewId = req.params.id;
+    reviewId = await validation.checkObjectId(newComment.reviewId);
+    let review = await reviewData.get(reviewId);
+    let gym = await gymData.getByGymId(review.gymId);
+    let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
+    gym.reviews = reviewList;
+    // input check
     let newComment = req.body;
-
     validation.checkArgumentsExist(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
-    newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId = validation.checkNonEmptyStrings(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
-    newComment.userId = await validation.checkObjectId(newComment.userId);
-    newComment.reviewId = await validation.checkObjectId(newComment.reviewId);
-    dateOfReview = await validation.checkValidDate(newComment.dateOfReview);
-
-    let review = await reviewData.get(newComment.reviewId);
-    await commentData.create(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
-    res.status(200).render('gym', { gym: review.gymId, userLoggedIn: userLoggedIn });
+    newComment.userId, newComment.dateOfComment, content, newComment.reviewId = validation.checkNonEmptyStrings(newComment.userId, newComment.dateOfComment, newComment.content, newComment.reviewId);
+    let userId = await validation.checkObjectId(newComment.userId);
+    let dateOfComment = await validation.checkValidDate(newComment.dateOfComment);
+    // create the comment
+    await commentData.create(userId, dateOfComment, content, reviewId);
+    // render the singleGym
+    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    if (!gym) {
+      let title = 'ERROR'
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+    }
+    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
   }
-
 });
 
 // a logged-in user to update a old post under a specific gym and specific review
+// here the :id is reviewId
 router.route('/update/:id').put(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
@@ -50,36 +62,51 @@ router.route('/update/:id').put(async (req, res) => {
     updatedComment.content = validation.checkNonEmptyStrings(updatedComment.content);
     updatedComment.commentId = await validation.checkObjectId(commentId, 'comment id');
 
-
-
     await commentData.update(commentId, updatedComment.content, updatedComment.dateOfComment);
-    let comment = commentData.get(commentId);
+    let comment = await commentData.get(commentId);
     let review = await reviewData.get(comment.reviewId);
-    res.status(200).render('gym', { gym: review.gymId, userLoggedIn: userLoggedIn });
+    res.status(200).render('singleGym', { gym: review.gymId, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    if (!gym) {
+      let title = 'ERROR'
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+    }
+    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
+
   }
 })
 
+// here the :id is reviewId
 router.route('/delete/:id').delete(async (req, res) => {
   try {
     let userLoggedIn = helper.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
+
     let commentId = req.params.id;
     commentId = validation.checkObjectId(commentId);
     let comment = await commentData.get(commentId);
     let review = await reviewData.get(comment.reviewId);
     let gym = review.gymId;
     await commentData.removeReview(commentId);
-    res.status(200).render('gym', { gym: gym, userLoggedIn: userLoggedIn });
+    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    if (!gym) {
+      let title = 'ERROR'
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+    }
+    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
   }
 })
 export default router;
