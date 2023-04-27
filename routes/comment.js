@@ -39,6 +39,7 @@ router.route('/new/:id').post(async (req, res) => {
     let errors = []
     let hasErrors = true
     errors.push(message);
+    // if not known single gym, redirect to error page (there exist an input error)
     if (!gym) {
       let title = 'ERROR'
       return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
@@ -72,6 +73,7 @@ router.route('/update/:id').put(async (req, res) => {
     let errors = []
     let hasErrors = true
     errors.push(message);
+    // if not known single gym, redirect to error page (there exist an input error)
     if (!gym) {
       let title = 'ERROR'
       return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
@@ -102,6 +104,7 @@ router.route('/delete/:id').delete(async (req, res) => {
     let errors = []
     let hasErrors = true
     errors.push(message);
+    // if not known single gym, redirect to error page (there exist an input error)
     if (!gym) {
       let title = 'ERROR'
       return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });

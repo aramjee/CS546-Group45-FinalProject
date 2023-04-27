@@ -29,7 +29,7 @@ async function get(commentId) {
             }
         }
     }
-    throw `the comment doesn't exist`
+    throw [400, `the comment doesn't exist`]
 }
 // return a list of comment ids under a review
 async function getAllByReview(reviewId) {
@@ -37,7 +37,7 @@ async function getAllByReview(reviewId) {
     reviewId = await validation.checkObjectId(reviewId, 'reviewId')
     const review = await reviewDataFunctions.get(reviewId);
     if (review.length === 0) {
-        throw `invalid reviewId`;
+        throw [400, `invalid reviewId`];
     }
     // console.log(reviewList)
     // If there are no comment for the review, this function will return an empty array
@@ -55,7 +55,7 @@ async function getAllByUser(userId) {
     validation.checkArgumentsExist(userId);
     userId = await validation.checkObjectId(userId, 'userId');
     if (!userDataFunctions.getByUserId(userId)) {
-        throw `no user have such id`
+        throw [400, `no user have such id`]
     }
     const allReviewsIds = await reviewDataFunctions.getAll();
     const allReviews = []
