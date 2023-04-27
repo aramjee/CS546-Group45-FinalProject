@@ -14,7 +14,7 @@ router.route('/').get(async (req, res) => {
     //User does not necessarily be logged in to view the gyms, only publish a review so had to comment this out....
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     const gymList = await gymData.getAll();
-    res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn }); 
+    res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn });
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -23,29 +23,18 @@ router.route('/').get(async (req, res) => {
 //Individual Gym page
 router.route('/:id').get(async (req, res) => {
   try {
-    let reviewsList = [];
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     const currentUserId = userLoggedIn ? req.session.userId : null;
-
-    const gym = await gymData.getByGymId(req.params.id);
-    // Retrieve review
-    if(gym.reviews){
-      for (const reviewId of gym.reviews) {
-        const review = await reviewData.get(reviewId);
-        // Marking comments by current user
-        for (const comm of review.comments) {
-          comm.isCurrentUser = comm.userId === currentUserId;
-        }
-        review.isCurrentUser = review.userId === currentUserId;
-        reviewsList.push(review);
-      }
-    }
-    gym.reviewsList = reviewsList;
-    res.status(200).render("singleGym", {gym: gym, userLoggedIn: userLoggedIn});
+    let gym = await gymData.getByGymId(req.params.id);
+    // Retrieve review, using the data function from reviewData - Chloe
+    let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
+    gym.reviews = reviewList;
+    console.log(gym);
+    res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 });
 

@@ -33,18 +33,18 @@
 <hr>
 <div class="row">
     <div class="col">
-        {{#each gym.reviewsList}}
+        {{#each gym.reviews}}
         <div class="card review-card">
             <div class="card-body">
                 <div>
                     <span class="username bold">{{user.username}}</span> <span class="italic">{{dateOfReview}}</span>
 
-                    {{#if isCurrentUser}}
+                    {{!-- Removed if condition temporarily, will update for logic later --}}
                     <div class="pull-right edit-delete-wrapper">
                         <input type="button" value="Edit" class="btn btn-sm btn-outline-dark" />
                         <input type="button" value="Delete" class="btn btn-sm btn-outline-danger" />
                     </div>
-                    {{/if}}
+
 
                     {{#if ../userLoggedIn}}
                     <input type="button" value="Respond with a comment"
@@ -63,12 +63,12 @@
                     <div class="card-body">
                         <p>
                             <span class="username bold">{{user.username}}</span>
-                            {{#if isCurrentUser}}
+                            {{!-- Removed if currentUser condition temporarily, will update for logic later --}}
                             <span class="pull-right edit-delete-wrapper">
                                 <input type="button" value="Edit" class="btn btn-sm btn-outline-dark" />
                                 <input type="button" value="Delete" class="btn btn-sm btn-outline-danger" />
                             </span>
-                            {{/if}}
+
                         </p>
                         <p>{{content}}</p>
                     </div>

@@ -8,6 +8,7 @@ import { ObjectId } from 'mongodb';
 import * as validation from '../public/js/validation.js';
 import { userDataFunctions } from './user.js'
 import { gymDataFunctions } from './gym.js'
+import { commentDataFunctions } from './comment.js';
 
 // get review by review's id, return the review object
 async function get(id) {
@@ -46,7 +47,7 @@ async function getGymReviews(gymId) {
     gymId = await validation.checkObjectId(gymId, 'gym id')
     const reviewsCollection = await reviewCollection();
     if (!await gymDataFunctions.getByGymId(gymId)) {
-        throw `no gym have such id`
+        throw [400, `no gym have such id`]
     }
     const reviewList = await reviewsCollection.find({ gymId: gymId }).toArray();
     // If there are no review for the user, this function will return an empty array
@@ -60,11 +61,11 @@ async function getGymReviews(gymId) {
 async function getGymReviewsListObjects(gymId) {
     validation.checkArgumentsExist(gymId);
     gymId = await validation.checkObjectId(gymId, 'gym id')
-    const reviewsCollection = await reviewCollection();
     if (!await gymDataFunctions.getByGymId(gymId)) {
-        throw `no gym have such id`
+        throw [400, `no gym have such id`]
     }
-    gym = gymData.getByGymId(newReview.gymId);
+    let gym = await gymDataFunctions.getByGymId(gymId);
+    let reviewList = []
     if (gym.reviews) {
         for (const reviewId of gym.reviews) {
             const review = await this.get(reviewId);
@@ -73,16 +74,16 @@ async function getGymReviewsListObjects(gymId) {
             let commentList = [];
             // Retrieve comments
             for (const comm of review.comments) {
-                const comment = await commentData.get(comm._id);
+                const comment = await commentDataFunctions.get(comm._id);
                 let userNameC = await userDataFunctions.getUserName(comment.userId)
                 comment.userName = userNameC;
                 commentList.push(comment);
             }
             review.commentsList = commentList
-            reviewsList.push(review);
+            reviewList.push(review);
         }
     }
-    return gymReview;
+    return reviewList;
 }
 
 
@@ -93,7 +94,7 @@ async function getUserReviews(userId) {
     const reviewsCollection = await reviewCollection();
     // check is user id exist in database, TBD.
     if (!userDataFunctions.getByUserId(userId)) {
-        throw `no user have such id`
+        throw [400, `no user have such id`]
     }
     const reviewList = await reviewsCollection.find({ userId: userId }).toArray();
 
@@ -122,10 +123,10 @@ async function create(
     rating = await validation.checkValidRating(rating);
 
     if (!userDataFunctions.getByUserId(userId)) {
-        throw `no user have such id`;
+        throw [400, `no user have such id`];
     }
     if (!gymDataFunctions.getByGymId(gymId)) {
-        throw `no gym have such id`;
+        throw [400, `no gym have such id`];
     }
 
     let gym = await gymDataFunctions.getByGymId(gymId);
@@ -149,7 +150,7 @@ async function create(
     const reviewsCollection = await reviewCollection();
     const insertInfo = await reviewsCollection.insertOne(newReview);
     if (!insertInfo || !insertInfo.insertedId) {
-        throw 'Could not add review';
+        throw [400, 'Could not add review'];
     }
     const newId = insertInfo.insertedId.toString();
 
@@ -191,7 +192,7 @@ async function removeReview(id) {
     validation.checkArgumentsExist(id);
     id = await validation.checkObjectId(id, 'review id');
     if (!await this.get(id)) {
-        throw `no review have this id`;
+        throw [400, `no review have this id`];
     }
     //get the user and gym before deletion
     let review = await this.get(id)
@@ -203,7 +204,7 @@ async function removeReview(id) {
         _id: new ObjectId(id)
     });
     if (deletionInfo.lastErrorObject.n === 0) {
-        throw `Could not delete review with id of ${id}`;
+        throw [400, `Could not delete review with id of ${id}`];
     }
 
     // user collection remove a review
@@ -251,10 +252,10 @@ async function updateReviewContent(
     );
     const newReview = await get(id);
     if (JSON.stringify(newReview) === JSON.stringify(oldReview)) {
-        throw `there's no real update, everything is the same`;
+        throw [400, `there's no real update, everything is the same`];
     }
     if (updatedInfo.lastErrorObject.n === 0) {
-        throw 'could not update review successfully';
+        throw [400, 'could not update review successfully'];
     }
     return await this.get(id);
 }
@@ -277,10 +278,10 @@ async function updateReviewRating(
     );
     const newReview = await get(id);
     if (JSON.stringify(oldReview) === JSON.stringify(newReview)) {
-        throw `there's no real update, everything is the same`;
+        throw [400, `there's no real update, everything is the same`];
     }
     if (updatedInfo.lastErrorObject.n === 0) {
-        throw 'could not update review successfully';
+        throw [400, 'could not update review successfully'];
     }
     let review = await this.get(id);
     let gymId = await review.gymId; // get the gym of the review
@@ -313,7 +314,7 @@ async function updateReviewComment(id, updatedReview) {
         { returnDocument: 'after' }
     );
     if (updatedInfo.lastErrorObject.n === 0) {
-        throw 'could not update review successfully';
+        throw [400, 'could not update review successfully'];
     }
     return await get(id);
 
