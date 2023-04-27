@@ -165,23 +165,23 @@ const getByGymOwnerId = async (gymOwnerId) => {
   return await gymsDBConnection.find({ gymOwnerId: gymOwnerId });
 };
 
-const updateLikedGymsCnt = async (id) => {
+const updateLikedGymsCnt = async (id, change) => {
   await validation.checkObjectId(id);
   const gymsDBConnection = await gymCollection();
   let updateOne = await gymsDBConnection.updateOne(
     { _id: new ObjectId(id) },
-    { $inc: { likedGymsCnt: 1 } }
+    { $inc: { likedGymsCnt: change } }
   );
   if (updateOne.matchedCount === 0)
     throw [404, `Could not update likedGymsCnt in gym: ${id}`];
 };
 
-const updateDislikedGymsCnt = async (id) => {
+const updateDislikedGymsCnt = async (id, change) => {
   await validation.checkObjectId(id);
   const gymsDBConnection = await gymCollection();
   let updateOne = await gymsDBConnection.updateOne(
     { _id: new ObjectId(id) },
-    { $inc: { dislikedGymsCnt: 1 } }
+    { $inc: { dislikedGymsCnt: change } }
   );
   if (updateOne.matchedCount === 0)
     throw [404, `Could not update dislikedGymsCnt in gym: ${id}`];

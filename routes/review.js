@@ -21,7 +21,7 @@ router.route('/new/:id').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     // get the gym, for rendering the singleGym page
     let gym = await gymData.getByGymId(req.params.id);
@@ -62,7 +62,7 @@ router.route('/updateContent/:id').put(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     // get the gym, for rendering the singleGym page
     let reviewId = req.params.id;
@@ -107,7 +107,7 @@ router.route('/updateRating/:id').put(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     // get the gym, for rendering the singleGym page
     let reviewId = req.params.id;
@@ -152,7 +152,7 @@ router.route('/delete/:id').delete(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     let reviewId = req.params.id;
     reviewId = validation.checkObjectId(reviewId);

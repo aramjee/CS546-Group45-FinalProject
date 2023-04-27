@@ -21,6 +21,16 @@ router.route('/login').get(async (req, res) => {
   }
 });
 
+// Alternate rout for login, since the POST and GET in the same url /login
+router.route('/loginPage').get(async (req, res) => {
+  //console.log(req.body);
+  if (helpers.checkIfLoggedIn(req)) {
+    res.redirect("/user/profile");
+  } else {
+    res.render('login', { title: 'Gym User Login' });
+  }
+});
+
 router.route('/logout').get(async (req, res) => {
   req.session.destroy(function (err) {
     console.log("User logged out");

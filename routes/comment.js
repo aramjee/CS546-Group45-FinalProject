@@ -14,7 +14,7 @@ router.route('/new/:id').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     // get the gym for singleGym page
     let reviewId = req.params.id;
@@ -54,7 +54,7 @@ router.route('/update/:id').put(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
     let commentId = req.params.id;
     let updatedComment = req.body;
@@ -88,7 +88,7 @@ router.route('/delete/:id').delete(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/users/login");
+      res.status(401).redirect("/user/login");
     }
 
     let commentId = req.params.id;
