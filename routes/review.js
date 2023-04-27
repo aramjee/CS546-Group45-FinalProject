@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
-import * as helper from '../public/js/helper.js';
+import helpers from '../helpers.js';
 
 const router = Router();
 
@@ -19,7 +19,7 @@ const router = Router();
 // here the :id is gymId
 router.route('/new/:id').post(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -60,7 +60,7 @@ router.route('/new/:id').post(async (req, res) => {
 // here the :id is the reviewId
 router.route('/updateContent/:id').put(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -105,7 +105,7 @@ router.route('/updateContent/:id').put(async (req, res) => {
 router.route('/updateRating/:id').put(async (req, res) => {
   //const currentUserId = userLoggedIn ? req.session.userId : null;
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -150,7 +150,7 @@ router.route('/updateRating/:id').put(async (req, res) => {
 router.route('/delete/:id').delete(async (req, res) => {
   const currentUserId = userLoggedIn ? req.session.userId : null;
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }

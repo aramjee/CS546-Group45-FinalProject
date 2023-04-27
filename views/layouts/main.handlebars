@@ -28,7 +28,8 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
 <body>
 
     <div class="container">
-        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <header
+            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
             <div class="col-md-3 mb-2 mb-md-0">
                 <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
                     Gym Application
@@ -40,10 +41,27 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
                 <li><a href="/gym" class="nav-link px-2">Hoboken Gyms</a></li>
             </ul>
 
-            <div class="col-md-3 text-end">
-                <button type="button" onclick="location.href='/user/login';" class="btn btn-outline-primary me-2">Login</button>
-                <button type="button" onclick="location.href='/user/signup';" class="btn btn-primary">Sign-up</button>
+            {{#if userLoggedIn}}
+            {{!-- User Profile Button --}}
+            <div class="dropdown text-end">
+                <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Amit
+                </a>
+                <ul class="dropdown-menu text-small" style="">
+                    <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="/user/logout">Sign out</a></li>
+                </ul>
             </div>
+            {{else}}
+            <div class="col-md-3 text-end">
+                <a href="/user/login" class="btn btn-outline-primary me-2">Login</a>
+                <a href="/user/signup" class="btn btn-outline-primary me-2">Sign-up</a>
+            </div>
+            {{/if}}
         </header>
 
 

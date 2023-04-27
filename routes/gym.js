@@ -3,7 +3,7 @@
 // placeholder: API GoogleDoc link
 import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
-import * as helper from '../public/js/helper.js';
+import helpers from '../helpers.js';
 import * as validation from "../public/js/validation.js";
 
 const router = Router();
@@ -12,9 +12,9 @@ const router = Router();
 router.route('/').get(async (req, res) => {
   try {
     //User does not necessarily be logged in to view the gyms, only publish a review so had to comment this out....
-    //let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     const gymList = await gymData.getAll();
-    res.status(200).render('gymList', { gymsList: gymList }); // removed , userLoggedIn: userLoggedIn
+    res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn });
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -23,12 +23,13 @@ router.route('/').get(async (req, res) => {
 //Individual Gym page
 router.route('/:id').get(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     const currentUserId = userLoggedIn ? req.session.userId : null;
     let gym = await gymData.getByGymId(req.params.id);
     // Retrieve review, using the data function from reviewData - Chloe
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
     gym.reviews = reviewList;
+    console.log(gym);
     res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
@@ -40,7 +41,7 @@ router.route('/:id').get(async (req, res) => {
 //Wild Card Search bar
 router.route('/search').get(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     const searchName = req.query.name;
     const gymsList = await gymData.searchByValue(searchName);
     res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
@@ -54,11 +55,11 @@ router.route('/search').get(async (req, res) => {
 //Gym Manage Page, Ideally should be entered in user profile --> manage gym (if user is gym owner)
 router.route('/manage').get(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
-    let checkIfGymOwner = helper.checkIfGymOwner(req);
+    let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
@@ -82,11 +83,11 @@ router.route('/manage').get(async (req, res) => {
 //Add gym function in gym manage page
 router.route('/add').post(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
-    let checkIfGymOwner = helper.checkIfGymOwner(req);
+    let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
@@ -109,11 +110,11 @@ router.route('/add').post(async (req, res) => {
 //Delete gym function in gym manage function
 router.route('/delete/:gymId').delete(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
-    let checkIfGymOwner = helper.checkIfGymOwner(req);
+    let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
@@ -134,11 +135,11 @@ router.route('/delete/:gymId').delete(async (req, res) => {
 //Edit gym function in manage page
 router.route('/edit/:gymId').put(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
-    let checkIfGymOwner = helper.checkIfGymOwner(req);
+    let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
       // res.status(401).redirect("/users/profile");
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
@@ -175,7 +176,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
 // Thumb up in gym detail page
 router.route('/:id/like').post(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -192,7 +193,7 @@ router.route('/:id/like').post(async (req, res) => {
 // Thumb down in gym detail page
 router.route('/:id/dislike').post(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }

@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { gymData, commentData, userData, reviewData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
-import * as helper from '../public/js/helper.js';
+import helpers from '../helpers.js';
 
 const router = Router();
 
@@ -12,7 +12,7 @@ const router = Router();
 // here the :id is reviewId
 router.route('/new/:id').post(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -52,7 +52,7 @@ router.route('/new/:id').post(async (req, res) => {
 // here the :id is reviewId
 router.route('/update/:id').put(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
@@ -86,7 +86,7 @@ router.route('/update/:id').put(async (req, res) => {
 // here the :id is reviewId
 router.route('/delete/:id').delete(async (req, res) => {
   try {
-    let userLoggedIn = helper.checkIfLoggedIn(req);
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
