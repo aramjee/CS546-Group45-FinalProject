@@ -217,7 +217,13 @@ const checkUser = async (emailAddress, password) => {
     throw [404, "ERROR: Either the email address or password is invalid"];
   }
 
-  return {userId: user._id.toString()};
+  return { userId: user._id.toString() };
+};
+const getUserName = async (id) => {
+  await validation.checkObjectId(id, "UserId");
+  let user = await getByUserId(id)
+  let userName = user.userName;
+  return userName;
 };
 
-export const userDataFunctions = { create, getAll, getByUserId, getByUserEmail, getByUserName, update, remove, removeGymFromUsers, checkUser }
+export const userDataFunctions = { create, getAll, getByUserId, getByUserEmail, getByUserName, update, remove, removeGymFromUsers, checkUser, getUserName }

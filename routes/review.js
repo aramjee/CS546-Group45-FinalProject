@@ -8,28 +8,47 @@ import middleware from '../middleware.js';
 
 const router = Router();
 
+
+//TODO: date must be after birthday
+// TODO: duplicate userName
+//TODO: a user post a review cannot add a comment under his/her own review!
+// TODO: comment date cannot before reivew date
+//TODO: errors display
+
+
 // a logged-in user to create a new post under a specific gym
 router.route('/new').post(async (req, res) => {
-  //code here for POST
   try {
     let userLoggedIn = middleware.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
+    const currentUserId = userLoggedIn ? req.session.userId : null;
     let newReview = req.body;
-    await validation.checkArgumentsExist(newReview.gymId, newReview.userId, newReview.dateOfReview, newReview.content, newReview.rating);
-    await validation.checkNonEmptyStrings(newReview.gymId, newReview.userId, newReview.dateOfReview);
+    // input check
+    validation.checkArgumentsExist(newReview.gymId, newReview.userId, newReview.dateOfReview, newReview.content, newReview.rating);
+    validation.checkNonEmptyStrings(newReview.gymId, newReview.userId, newReview.dateOfReview);
     newReview.gymId = await validation.checkObjectId(newReview.gymId);
+    // get the gym, for rendering the singleGym page
+    let gym = await gymData.getByGymId(newReview.gymId);
     newReview.userId = await validation.checkObjectId(newReview.userId);
     newReview.dateOfReview = await validation.checkValidDate(newReview.dateOfReview);
     newReview.rating = await validation.checkValidRating(newReview.rating);
-
     await reviewData.create(newReview.gymId, newReview.userId, newReview.dateOfReview, newReview.content, newReview.rating);
-    res.status(200).render('gym', { gym: newReview.gym, userLoggedIn: userLoggedIn });
+    // make reviewList ids => review objects
+    gym = gymData.getByGymId(newReview.gymId);
+    if (gym.reviews) {
+      let reviewList = await reviewData.getGymReviewsListObjects(newReview.gymId)
+    }
+    gym.reviewsList = reviewList;
+    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
   }
 
 });
@@ -41,27 +60,38 @@ router.route('/updateContent/:id').put(async (req, res) => {
     if (!userLoggedIn) {
       res.status(401).redirect("/users/login");
     }
+    const currentUserId = userLoggedIn ? req.session.userId : null;
+    // input check
     let reviewId = req.params.id;
     let updatedReview = req.body;
     let content = updatedReview.content;
     let date = updatedReview.dateOfReview;
-    await validation.checkArgumentsExist(reviewId, content, date);
-    await validation.checkNonEmptyStrings(reviewId, content, date);
+    validation.checkArgumentsExist(reviewId, content, date);
+    validation.checkNonEmptyStrings(reviewId, content, date);
     reviewId = validation.checkObjectId(reviewId);
+    let review = reviewData.get(reviewId);
     date = await validation.checkValidDate(date);
-
+    let gym = await gymData.getByGymId(review.gymId)
     await reviewData.updateReviewContent(reviewId, content, date);
-    let review = await reviewData.get(reviewId);
-    let gym = review.gymId;
+
+    gym = gymData.getByGymId(newReview.gymId);
+    if (gym.reviews) {
+      let reviewList = await reviewData.getGymReviewsListObjects(newReview.gymId)
+    }
+    gym.reviewsList = reviewList;
     res.status(200).render('gym', { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
   }
 })
 
 router.route('/updateRating/:id').put(async (req, res) => {
+  const currentUserId = userLoggedIn ? req.session.userId : null;
   try {
     let userLoggedIn = middleware.checkIfLoggedIn(req);
     if (!userLoggedIn) {
@@ -71,24 +101,35 @@ router.route('/updateRating/:id').put(async (req, res) => {
     let updatedReview = req.body;
     let rating = updatedReview.rating;
     let date = updatedReview.dateOfReview;
-    await validation.checkArgumentsExist(reviewId, rating, date);
-    await validation.checkNonEmptyStrings(reviewId, date);
-    await validation.checkValidRating(rating);
+    validation.checkArgumentsExist(reviewId, rating, date);
+    validation.checkNonEmptyStrings(reviewId, date);
+    validation.checkValidRating(rating);
     reviewId = validation.checkObjectId(reviewId);
     date = await validation.checkValidDate(date);
 
     await reviewData.updateReviewRating(reviewId, rating, date);
     let review = await reviewData.get(reviewId);
-    let gym = review.gymId;
+    gym = gymData.getByGymId(newReview.gymId);
+    if (gym.reviews) {
+      let reviewList = await reviewData.getGymReviewsListObjects(newReview.gymId)
+    }
+    gym.reviewsList = reviewList;
     res.status(200).render('gym', { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let reviewId = req.params.id;
+    let review = await reviewData.get(reviewId);
+    let gym = await gymData.getByGymId(review.gymId);
+    return res.status(status).render("gym", { gym: gym, hasErrors: hasErrors, errors: errors });
   }
 })
 
 router.route('/delete/:id').delete(async (req, res) => {
+  const currentUserId = userLoggedIn ? req.session.userId : null;
   try {
     let userLoggedIn = middleware.checkIfLoggedIn(req);
     if (!userLoggedIn) {
@@ -98,13 +139,20 @@ router.route('/delete/:id').delete(async (req, res) => {
     reviewId = validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
 
-    let gym = review.gymId;
+    gym = gymData.getByGymId(review.gymId);
+    if (gym.reviews) {
+      let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
+    }
+    gym.reviewsList = reviewList;
     await reviewData.removeReview(reviewId);
     res.status(200).render('gym', { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    return res.status(status).render("gym", { hasErrors: hasErrors, errors: errors });
   }
 })
 export default router;
