@@ -2,49 +2,78 @@
     <div class="col">
         {{!-- Change this to title of gym when available --}}
         <h2>{{gym.gymName}}</h2>
+        {{#if userLoggedIn}}
         <div class="pull-right">
             <input type="button" value="Add to Favorites" class="btn btn-sm btn-primary"/>
             <input type="button" onclick="location.href = '/review/new/{{gym._id}}'"; value="Post a New Review" class="btn btn-sm btn-dark"/>
         </div>
+        {{/if}}
         <div>
             {{#each gym.category}}
             <span class="badge rounded-pill text-bg-secondary">{{.}}</span>
             {{/each}}
         </div>
         <div>
-            Average rating: {{gym.rating}}
+            <span class="bold">Average Rating:</span> {{{showRating gym.rating}}} {{gym.rating}}
         </div>
         <div>
-            <div><b>Address:</b> {{gym.address}}</div>
-            <div><b>Website:</b> {{gym.website}}</div>
+            <div><span class="bold">Address:</span> {{gym.address}}</div>
+            <div><span class="bold">Website:</span> {{gym.website}}</div>
         </div>
         <div>
-            <input type="button" value="Like ({{gym.likedGymsCnt}})" class="btn btn-sm btn-success" />
-            <input type="button" value="Dislike ({{gym.dislikedGymsCnt}})" class="btn btn-sm btn-danger" />
+            <input class="btnLikeGym btn btn-sm btn-success" type="button" data-gymid={{gym._id}}
+                value="Like ({{gym.likedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} />
+
+            <input class="btnDislikeGym btn btn-sm btn-danger" type="button" data-gymid={{gym._id}}
+                value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} />
         </div>
     </div>
 </div>
 <hr>
 <div class="row">
     <div class="col">
-        {{#each gym.reviewsList}}
-        <div>
-            <b>{{userName}}</b> gave a rating of <b>{{rating}}</b>
-            <input type="button" onclick="location.href = '/comment/new/{{_id}}'" value="Respond with a comment" class="btn btn-sm btn-primary pull-right" />
+        {{#each gym.reviews}}
+        <div class="card review-card">
+            <div class="card-body">
+                <div>
+                    <span class="username bold">{{user.username}}</span> <span class="italic">{{dateOfReview}}</span>
+                    {{!-- Removed if condition temporarily, will update for logic later --}}
+                    <div class="pull-right edit-delete-wrapper">
+                        <input type="button" value="Edit" class="btn btn-sm btn-outline-dark" />
+                        <input type="button" value="Delete" class="btn btn-sm btn-outline-danger" />
+                    </div>
+
+
+                    {{#if ../userLoggedIn}}
+                    <input type="button" value="Respond with a comment" onclick="location.href = '/comment/new/{{_id}}'"
+                        class="btn btn-sm btn-outline-primary pull-right" />
+                    {{/if}}
+                </div>
+                <div>
+                    <span class="bold">User Rating:</span> {{{showRating rating}}} {{rating}}
+                </div>
+                <div>
+                    <span class="bold">Review:</span> {{content}}
+                </div><br />
+                <p><span class="bold">Comments:</span></p>
+                {{#each comments}}
+                <div class="card comment-box">
+                    <div class="card-body">
+                        <p>
+                            <span class="username bold">{{user.username}}</span>
+                            {{!-- Removed if currentUser condition temporarily, will update for logic later --}}
+                            <span class="pull-right edit-delete-wrapper">
+                                <input type="button" value="Edit" class="btn btn-sm btn-outline-dark" />
+                                <input type="button" value="Delete" class="btn btn-sm btn-outline-danger" />
+                            </span>
+
+                        </p>
+                        <p>{{content}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
         </div>
-
-        <div>
-            <i>Review:</i> {{content}}
-            <br>
-            <i> {{dateOfReview}}</i>
-        </div><br />
-        {{#each comments}}
-        <p>
-            Comment from <i><b>{{userName}}</i></b> on <i> {{dateOfComment}}</i><br>
-            {{content}}
-
-        </p>
-        {{/each}}
         <hr>
         {{/each}}
     </div>

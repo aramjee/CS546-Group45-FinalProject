@@ -2,7 +2,7 @@
 // team members:Amit Ramjee, Chuqing Ke, Gabriel Souza, Xinxuan Lyu
 // placeholder: API GoogleDoc link
 import { Router } from 'express';
-import * as helper from '../public/js/helper.js';
+import helpers from '../helpers.js';
 import { gymData, reviewData, userData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
 import bcrypt from 'bcrypt';
@@ -14,7 +14,7 @@ const router = Router();
 
 router.route('/login').get(async (req, res) => {
   //console.log(req.body);
-  if (helper.checkIfLoggedIn(req)) {
+  if (helpers.checkIfLoggedIn(req)) {
     res.redirect("/user/profile");
   } else {
     res.render('login', { title: 'Gym User Login' });
@@ -36,7 +36,7 @@ router.route('/login').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
 
-  if (helper.checkIfLoggedIn(req)) {
+  if (helpers.checkIfLoggedIn(req)) {
     res.redirect("/user/profile");
   } else {
     const { email, password } = req.body;
@@ -63,7 +63,7 @@ router.route('/login').post(async (req, res) => {
 });
 
 router.route('/signup').get(async (req, res) => {
-  if (helper.checkIfLoggedIn(req)) {
+  if (helpers.checkIfLoggedIn(req)) {
     res.redirect("/user/profile");
   } else {
     res.render('signup', { title: 'Gym User Signup' });
@@ -90,7 +90,7 @@ router.route('/signup').post(async (req, res) => {
     console.log(req.body);
   // validation
   try {
-    validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner);
+    validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, password);
     validation.checkNonEmptyStrings(userName, email, password);
     await validation.checkValidEmail(email);
     await validation.checkValidPassword(password);
@@ -135,7 +135,7 @@ router.route('/profile').get(async (req, res) => {
   let hasErrors = false;
   let errors = [];
   try {
-    if (!helper.checkIfLoggedIn(req)) {
+    if (!helpers.checkIfLoggedIn(req)) {
       hasErrors = true;
       errors.push("Not log in, Please Login");
       res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
@@ -189,7 +189,7 @@ router.route('/profile').get(async (req, res) => {
 router.route('/update').get(async (req, res) => {
   let hasErrors = false;
   let errors = [];
-  if (!helper.checkIfLoggedIn(req)) {
+  if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
@@ -222,7 +222,7 @@ router.route('/update').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
 
-  if (!helper.checkIfLoggedIn(req)) {
+  if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
@@ -290,7 +290,7 @@ router.route('/delete-fav-gym').post(async (req, res) => {
 
   const { gymId } = req.body;
 
-  if (!helper.checkIfLoggedIn(req)) {
+  if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });

@@ -1,9 +1,41 @@
 /*This file should have CSS rulesets */
 
+/* Text Formatting Styles */
+.bold{
+  font-weight: bold;
+}
+.italic{
+  font-style:italic;
+}
+
+/* Other styles */
 .checked {
   color: orange;
 }
 
+/* Card Styles */
 .card-link {
   text-decoration: none;
+}
+.review-card{
+  font-size:14px;
+}
+
+/* Comment box styles */
+.comment-box{
+  margin-top:10px;
+  background-color: aliceblue;
+}
+.comment-box .card-body{
+  padding:5px;
+}
+.comment-box .card-body p {
+  margin-bottom:0px;
+}
+.username{
+  color: dodgerblue;
+  font-size:16px;
+}
+.edit-delete-wrapper{
+  margin-left:5px;
 }

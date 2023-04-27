@@ -9,6 +9,7 @@ import exphbs from 'express-handlebars';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import session from 'express-session';
+import helpers from './handlebars-helpers.js';
 
 const staticDir = express.static(__dirname + '/public');
 
@@ -46,7 +47,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
+app.engine('handlebars', exphbs.engine({ defaultLayout: 'main', helpers: helpers}));
 app.set('view engine', 'handlebars');
 
 configRoutes(app);
