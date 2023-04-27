@@ -8,6 +8,7 @@ import { ObjectId } from 'mongodb';
 import * as validation from '../public/js/validation.js';
 import { userDataFunctions } from './user.js'
 import { gymDataFunctions } from './gym.js'
+import { commentDataFunctions } from './comment.js';
 
 // get review by review's id, return the review object
 async function get(id) {
@@ -61,9 +62,9 @@ async function getGymReviewsListObjects(gymId) {
     validation.checkArgumentsExist(gymId);
     gymId = await validation.checkObjectId(gymId, 'gym id')
     if (!await gymDataFunctions.getByGymId(gymId)) {
-        throw `no gym have such id`
+        throw [400, `no gym have such id`]
     }
-    gym = gymData.getByGymId(newReview.gymId);
+    let gym = await gymDataFunctions.getByGymId(gymId);
     let reviewList = []
     if (gym.reviews) {
         for (const reviewId of gym.reviews) {
@@ -73,7 +74,7 @@ async function getGymReviewsListObjects(gymId) {
             let commentList = [];
             // Retrieve comments
             for (const comm of review.comments) {
-                const comment = await commentData.get(comm._id);
+                const comment = await commentDataFunctions.get(comm._id);
                 let userNameC = await userDataFunctions.getUserName(comment.userId)
                 comment.userName = userNameC;
                 commentList.push(comment);
