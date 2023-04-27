@@ -119,7 +119,7 @@ router.route('/delete/:gymId').delete(async (req, res) => {
     }
     let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
-      // res.status(401).redirect("/users/profile");
+      // res.status(401).redirect("/user/profile");
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
     const gymOwnerId = req.session.userId;
@@ -164,7 +164,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
     }
     let checkIfGymOwner = helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
-      // res.status(401).redirect("/users/profile");
+      // res.status(401).redirect("/user/profile");
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
     const gymOwnerId = req.session.userId;
@@ -197,15 +197,97 @@ router.route('/edit/:gymId').put(async (req, res) => {
 });
 
 // Thumb up in gym detail page
-router.route('/:id/like').post(async (req, res) => {
+router.route('/:gymId/like').post(async (req, res) => {
   try {
+    await validation.checkObjectId(req.params.gymId);
+    const gymId = req.params.gymId.toString();
+
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.redirect("/user/loginPage");
     }
-    await validation.checkObjectId(req.params.id);
-    await gymData.updateLikedGymsCnt(req.params.id);
-    res.status(200).redirect("`/gym/${gymId}`");
+    const userId = req.session.userId;
+    const user = await userData.getByUserId(userId)
+    if (!user) {
+      throw [400, `ERROR: User not found`];
+    }
+    let userLikeList = user.likedGyms;
+    let userDislikeList = user.dislikedGyms
+
+    if (userDislikeList.includes(gymId)){
+      let indexToRemove = userDislikeList.indexOf(gymId);
+      if (indexToRemove !== -1) {
+        userDislikeList.splice(indexToRemove, 1);
+        await gymData.updateDislikedGymsCnt(gymId, -1);
+      }
+    }
+    if (!userLikeList.includes(gymId)){
+      userLikeList.push(gymId);
+      await gymData.updateLikedGymsCnt(gymId, 1);
+    }else {
+      let indexToRemove = userLikeList.indexOf(gymId);
+      if (indexToRemove !== -1) {
+        userLikeList.splice(indexToRemove, 1);
+        await gymData.updateLikedGymsCnt(gymId, -1);
+      }
+    }
+
+    user.likedGyms = userLikeList;
+    user.dislikedGyms = userDislikeList;
+
+    await userData.update(userId, user);
+
+    return res.status(200).json({ message: `Success Liked gym ${gymId}` });
+
+  } catch (e) {
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    return res.status(status).json({ error: message });
+  }
+});
+
+// Thumb down in gym detail page
+router.route('/:gymId/dislike').post(async (req, res) => {
+  try {
+    await validation.checkObjectId(req.params.gymId);
+    const gymId = req.params.gymId.toString();
+
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (!userLoggedIn) {
+      return res.status(401).redirect("/user/loginPage");
+    }
+    const userId = req.session.userId;
+    const user = await userData.getByUserId(userId)
+    if (!user) {
+      throw [400, `ERROR: User not found`];
+    }
+    let userLikeList = user.likedGyms;
+    let userDislikeList = user.dislikedGyms
+
+    if (userLikeList.includes(gymId)){
+      let indexToRemove = userLikeList.indexOf(gymId);
+      if (indexToRemove !== -1) {
+        userLikeList.splice(indexToRemove, 1);
+        await gymData.updateLikedGymsCnt(gymId, -1);
+      }
+    }
+    if (!userDislikeList.includes(gymId)){
+      userDislikeList.push(gymId);
+      await gymData.updateDislikedGymsCnt(gymId, 1);
+    }else {
+      let indexToRemove = userDislikeList.indexOf(gymId);
+      if (indexToRemove !== -1) {
+        userDislikeList.splice(indexToRemove, 1);
+        await gymData.updateDislikedGymsCnt(gymId, -1);
+      }
+    }
+
+    user.likedGyms = userLikeList;
+    user.dislikedGyms = userDislikeList;
+
+    await userData.update(userId, user);
+
+    return res.status(200).json({ message: `Success DisLiked gym ${gymId}` });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -213,20 +295,34 @@ router.route('/:id/like').post(async (req, res) => {
   }
 });
 
-// Thumb down in gym detail page
-router.route('/:id/dislike').post(async (req, res) => {
+
+router.route('/:gymId/addFav').post(async (req, res) => {
   try {
+    const gymId = req.params.gymId.toString();
+
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/loginPage");
     }
-    await validation.checkObjectId(req.params.id);
-    await gymData.updateDislikedGymsCnt(req.params.id);
-    res.status(200).redirect("`/gym/${gymId}`");
+
+    const userId = req.session.userId;
+    const user = await userData.getByUserId(userId)
+    if (!user) {
+      throw [400, `ERROR: User not found`];
+    }
+
+    let favList = user.favGymList;
+    if (!favList.includes(gymId)){
+      favList.push(gymId);
+      user.favGymList = favList;
+      await userData.update(userId, user);
+    }
+    return  res.status(200).json({ message: 'Success add favList' });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    return res.status(status).json({ error: message });
   }
 });
+
 export default router;
