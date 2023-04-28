@@ -1,4 +1,4 @@
-import { userData } from './data/index.js';
+import { userData } from '../../data/index.js';
 
 const helpers = {
     checkIfLoggedIn: (req) => {

@@ -150,7 +150,7 @@ const searchByValue = async (name) => {
 
   const regex = new RegExp(name, 'i'); // Case-insensitive search
   const gymsDBConnection = await gymCollection();
-  const gymsList = await gymsDBConnection.find({ gymName: { $regex: regex } });
+  const gymsList = await gymsDBConnection.find({ gymName: { $regex: regex } }).toArray();
 
   if (gymsList.length === 0) {
     throw [404, `Error: No gyms found with the provided search value ${name}`];
@@ -162,7 +162,9 @@ const getByGymOwnerId = async (gymOwnerId) => {
   await validation.checkObjectId(gymOwnerId, "gymOwnerId");
 
   const gymsDBConnection = await gymCollection();
-  return await gymsDBConnection.find({ gymOwnerId: gymOwnerId });
+  const gymsList = await gymsDBConnection.find({ gymOwnerId: gymOwnerId }).toArray();
+
+  return gymsList;
 };
 
 const updateLikedGymsCnt = async (id, change) => {
