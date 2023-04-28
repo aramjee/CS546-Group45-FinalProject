@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
-import helpers from '../helpers.js';
+import helpers from '../public/js/helpers.js';
 
 const router = Router();
 
@@ -16,7 +16,7 @@ const router = Router();
 
 router.route('/new/:id').get(async (req, res) => {
     //console.log(req.params);
-    if (!helper.checkIfLoggedIn(req)) {
+    if (!helpers.checkIfLoggedIn(req)) {
         res.redirect(`/gym/${req.params.id}`);
     } else {
         res.render('newReview', { title: 'Review Gym', id: req.params.id });

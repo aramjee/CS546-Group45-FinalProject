@@ -3,7 +3,7 @@
 // placeholder: API GoogleDoc link
 import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
-import helpers from '../helpers.js';
+import helpers from '../public/js/helpers.js';
 import * as validation from "../public/js/validation.js";
 
 const router = Router();
@@ -23,7 +23,7 @@ router.route('/').get(async (req, res) => {
 //Wild Card Search bar
 router.route('/search').get(async (req, res) => {
     try {
-        let userLoggedIn = helper.checkIfLoggedIn(req);
+        let userLoggedIn = helpers.checkIfLoggedIn(req);
         const searchName = req.query.name;
         const gymsList = await gymData.searchByValue(searchName);
         res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
@@ -38,14 +38,14 @@ router.route('/search').get(async (req, res) => {
 router.route('/manage').get(async (req, res) => {
     //console.log("In manage route");
     try {
-        let userLoggedIn = helper.checkIfLoggedIn(req);
+        let userLoggedIn = helpers.checkIfLoggedIn(req);
         if (!userLoggedIn) {
-            res.status(401).redirect("/user/login");
+          return  res.status(401).redirect("/user/login");
         }
-        let checkIfGymOwner = helper.checkIfGymOwner(req);
+        let checkIfGymOwner = helpers.checkIfGymOwner(req);
         if (!checkIfGymOwner) {
-            // res.status(401).redirect("/users/profile");
-            return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+          // res.status(401).redirect("/users/profile");
+          return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
         }
 
         const gymOwnerId = req.session.userId;
@@ -53,26 +53,26 @@ router.route('/manage').get(async (req, res) => {
         await validation.checkObjectId(gymOwnerId, "gymOwnerId");
         const gymsList = await gymData.getByGymOwnerId(gymOwnerId);
 
-        console.log(gymsList);
-        // if (!gymsList) {
-        //   return res.status(404).json({error: 'No gym found for the current gym owner'});
-        // }
-        res.status(200).render('manageGyms', { title: "Create Gyms", gymsList: gymsList, userLoggedIn: userLoggedIn });
+        // console.log(gymsList);
+        if (!gymsList) {
+          return res.status(404).json({error: 'No gym found for the current gym owner'});
+        }
+        return  res.status(200).render('manageGyms', { title: "Create Gyms", gymsList: gymsList, userLoggedIn: userLoggedIn });
     } catch (e) {
         let status = e[0] ? e[0] : 500;
         let message = e[1] ? e[1] : 'Internal Server Error';
-        res.status(status).json({ error: message });
+        return  res.status(status).json({ error: message });
     }
 });
 
 //Add gym function in gym manage page
 router.route('/add').post(async (req, res) => {
     try {
-        let userLoggedIn = helper.checkIfLoggedIn(req);
+        let userLoggedIn = helpers.checkIfLoggedIn(req);
         if (!userLoggedIn) {
             res.status(401).redirect("/user/login");
         }
-        let checkIfGymOwner = helper.checkIfGymOwner(req);
+        let checkIfGymOwner = helpers.checkIfGymOwner(req);
         if (!checkIfGymOwner) {
             // res.status(401).redirect("/users/profile");
             return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
@@ -138,11 +138,11 @@ router.route('/delete/:gymId').delete(async (req, res) => {
 router.route('/edit/:gymId').get(async (req, res) => {
     //console.log(req.params);
     try {
-        let userLoggedIn = helper.checkIfLoggedIn(req);
+        let userLoggedIn = helpers.checkIfLoggedIn(req);
         if (!userLoggedIn) {
             res.status(401).redirect("/user/login");
         }
-        let checkIfGymOwner = helper.checkIfGymOwner(req);
+        let checkIfGymOwner = helpers.checkIfGymOwner(req);
         if (!checkIfGymOwner) {
             // res.status(401).redirect("/users/profile");
             return res.status(403).json({ error: 'You must be a gym owner to add a gym' });

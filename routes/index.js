@@ -4,7 +4,7 @@ import gymRoutes from './gym.js';
 import userRoutes from './user.js';
 import commentRoutes from './comment.js';
 import reviewRoutes from './review.js';
-import helpers from '../helpers.js';
+import helpers from '../public/js/helpers.js';
 
 const constructorMethod = (app) => {
   //app.use('/posts', postRoutes);
