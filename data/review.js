@@ -267,7 +267,7 @@ async function updateReviewRating(
     dateOfReview
 ) {
     id = await validation.checkObjectId(id, 'review id');
-    // how to check content and date?
+    rating = await validation.checkValidRating(rating, "review rating");
 
     const reviewsCollection = await reviewCollection();
     const oldReview = await this.get(id);

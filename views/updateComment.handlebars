@@ -1,0 +1,10 @@
+<main>
+    <form action="/comment/update/{{commentId}}" method="PUT">
+        <div class="form-group">
+            <label for="commentContent">New Review:</label>
+            <textarea class="form-control" id="commentContent" name="content"
+                placeholder='{{{comment.content}}}'></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</main>
