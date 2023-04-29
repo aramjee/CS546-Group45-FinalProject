@@ -85,6 +85,33 @@ async function getGymReviewsListObjects(gymId) {
     }
     return reviewList;
 }
+async function getUserReviewsListObjects(userId) {
+    validation.checkArgumentsExist(userId);
+    userId = await validation.checkObjectId(userId, 'user id')
+    if (!await userDataFunctions.getByGymId(userId)) {
+        throw [400, `no user have such id`]
+    }
+    let user = await userDataFunctions.getByGymId(userId);
+    let reviewList = []
+    if (user.reviews) {
+        for (const reviewId of user.reviews) {
+            const review = await this.get(reviewId);
+            let userNameR = await userDataFunctions.getUserName(review.userId)
+            review.userName = userNameR;
+            let commentList = [];
+            // Retrieve comments
+            for (const comm of review.comments) {
+                const comment = await commentDataFunctions.get(comm._id);
+                let userNameC = await userDataFunctions.getUserName(comment.userId)
+                comment.userName = userNameC;
+                commentList.push(comment);
+            }
+            review.commentsList = commentList
+            reviewList.push(review);
+        }
+    }
+    return reviewList;
+}
 
 
 // get a user's all previous review, return a list of reviewIds (string)
@@ -321,4 +348,4 @@ async function updateReviewComment(id, updatedReview) {
 
 }
 
-export const reviewDataFunctions = { get, getAll, getGymReviews, getGymReviewsListObjects, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
+export const reviewDataFunctions = { get, getAll, getGymReviews, getGymReviewsListObjects, getUserReviewsListObjects, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
