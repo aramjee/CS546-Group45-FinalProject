@@ -130,12 +130,13 @@ async function create(
     }
 
     let gym = await gymDataFunctions.getByGymId(gymId);
-    for (let rId of gym.reviews) {
-        let r = await this.get(rId);
-        if (r.userId === userId) {
-            throw [400, `User have posted review for this gym!`]
-        }
-    }
+    // this is a bug, will fix later!
+    // for (let rId of gym.reviews) {
+    //     let r = await this.get(rId);
+    //     if (r.userId === userId) {
+    //         throw [400, `User have posted review for this gym!`]
+    //     }
+    // }
     let user = await userDataFunctions.getByUserId(userId)
     let userName = user.userName;
     let newReview = {
@@ -267,7 +268,7 @@ async function updateReviewRating(
     dateOfReview
 ) {
     id = await validation.checkObjectId(id, 'review id');
-    rating = await validation.checkValidRating(rating, "review rating");
+    rating = await validation.checkValidRating(rating, "rating");
 
     const reviewsCollection = await reviewCollection();
     const oldReview = await this.get(id);

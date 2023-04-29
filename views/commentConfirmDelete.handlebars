@@ -1,5 +1,5 @@
 <main>
-    <form action="/comment/delete/{{commentId}}" method="DELETE">
+    <form action="/comment/delete/{{gymId}}/{{commentId}}" _method="DELETE">
         <div class="form-group">
             <label for="commentContent">For the gym: {{{gym.gymName}}}</label>
             <br>
@@ -9,4 +9,7 @@
         </div>
         <button type="submit" class="btn btn-outline-primary me-2">Delete Comment</button>
     </form>
+    <br>
+    <button type="cancel" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+
 </main>

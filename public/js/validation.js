@@ -7,7 +7,7 @@ function checkArgumentsExist(...args) {
   for (let arg of args) {
     //console.log(arg);
     if (arg == undefined || arg == null) {
-        //console.log(arg);
+      //console.log(arg);
       throw [400, `ERROR: All fields must be present`];
     }
     //arg = arg.trim();
@@ -25,6 +25,14 @@ function checkNonEmptyStrings(...args) {
   }
   return args;
 }
+function checkString(s) {
+  if (typeof s !== "string" || s.trim().length === 0) {
+    throw [400, `ERROR: Field must be a non-empty string`];
+  }
+  s = s.trim();
+  return s
+}
+
 
 function checkValidEmail(email) {
   //The regular expression ^[^\s@]+@[^\s@]+\.[^\s@]+$ matches any string that contains an @ symbol,
@@ -58,8 +66,8 @@ const checkObjectId = async (id, idName) => {
   if (id.trim().length === 0)
     throw [400, `ERROR: ${idName} cannot be an empty string or just spaces`];
   id = id.trim();
-    if (!ObjectId.isValid(id)) {
-        console.log(id);
+  if (!ObjectId.isValid(id)) {
+    console.log(id);
     throw [400, `ERROR: ${idName} is not a valid Object ID`];
   }
   return id;
@@ -122,7 +130,7 @@ const checkValidPassword = async (password) => {
   if (!/[\W]/.test(password)) {
     checkValidPassword = false;
   }
-  if (!checkValidPassword){
+  if (!checkValidPassword) {
     throw [400, "ERROR: Password must be a valid string and should be a minimum of 8 characters long. at least one uppercase character, there has to be at least one number and there has to be at least one special character"]
   }
   return password;
@@ -130,5 +138,5 @@ const checkValidPassword = async (password) => {
 
 export {
   checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
-  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword
+  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword, checkString
 }

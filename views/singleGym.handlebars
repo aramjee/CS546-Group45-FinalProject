@@ -41,12 +41,12 @@
                     {{!-- Removed if condition temporarily, will update for logic later --}}
                     <div class="pull-right edit-delete-wrapper">
                         <input type="button" value="Edit content"
-                            onclick="location.href = '/review/updateContent/{{_id}}'"
+                            onclick="location.href = '/review/updateContent/{{gymId}}/{{_id}}'"
                             class="btn btn-sm btn-outline-dark" />
                         <input type="button" value="Update rating"
-                            onclick="location.href = '/review/updateRating/{{_id}}'"
+                            onclick="location.href = '/review/updateRating/{{gymId}}/{{_id}}'"
                             class="btn btn-sm btn-outline-dark" />
-                        <input type="button" value="Delete" onclick="location.href = '/review/delete/{{_id}}'"
+                        <input type="button" value="Delete" onclick="location.href = '/review/delete/{{gymId}}/{{_id}}'"
                             class="btn btn-sm btn-outline-danger" />
 
                     </div>
@@ -72,9 +72,10 @@
                             {{!-- Removed if currentUser condition temporarily, will update for logic later --}}
                             <span class="pull-right edit-delete-wrapper">
                                 <input type="button" value="Edit content"
-                                    onclick="location.href = '/comment/update/{{_id}}'"
+                                    onclick="location.href = '/comment/update/{{reviewId}}/{{_id}}'"
                                     class="btn btn-sm btn-outline-dark" />
-                                <input type="button" value="Delete" onclick="location.href = '/comment/delete/{{_id}}'"
+                                <input type="button" value="Delete"
+                                    onclick="location.href = '/comment/delete/{{reviewId}}/{{_id}}'"
                                     class="btn btn-sm btn-outline-danger" />
                             </span>
 
