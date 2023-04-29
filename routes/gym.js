@@ -22,74 +22,74 @@ router.route('/').get(async (req, res) => {
 
 //Wild Card Search bar
 router.route('/search').get(async (req, res) => {
-    try {
-        let userLoggedIn = helpers.checkIfLoggedIn(req);
-        const searchName = req.query.name;
-        const gymsList = await gymData.searchByValue(searchName);
-        res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
-    } catch (e) {
-        let status = e[0] ? e[0] : 500;
-        let message = e[1] ? e[1] : 'Internal Server Error';
-        res.status(status).json({ error: message });
-    }
+  try {
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    const searchName = req.query.name;
+    const gymsList = await gymData.searchByValue(searchName);
+    res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
+  } catch (e) {
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    res.status(status).json({ error: message });
+  }
 });
 
 //Gym Manage Page, Ideally should be entered in user profile --> manage gym (if user is gym owner)
 router.route('/manage').get(async (req, res) => {
-    //console.log("In manage route");
-    try {
-        let userLoggedIn = helpers.checkIfLoggedIn(req);
-        if (!userLoggedIn) {
-          return  res.status(401).redirect("/user/login");
-        }
-        let checkIfGymOwner = helpers.checkIfGymOwner(req);
-        if (!checkIfGymOwner) {
-          // res.status(401).redirect("/users/profile");
-          return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
-        }
-
-        const gymOwnerId = req.session.userId;
-        //console.log("Gym owner ID: " + gymOwnerId);
-        await validation.checkObjectId(gymOwnerId, "gymOwnerId");
-        const gymsList = await gymData.getByGymOwnerId(gymOwnerId);
-
-        // console.log(gymsList);
-        if (!gymsList) {
-          return res.status(404).json({error: 'No gym found for the current gym owner'});
-        }
-        return  res.status(200).render('manageGyms', { title: "Create Gyms", gymsList: gymsList, userLoggedIn: userLoggedIn });
-    } catch (e) {
-        let status = e[0] ? e[0] : 500;
-        let message = e[1] ? e[1] : 'Internal Server Error';
-        return  res.status(status).json({ error: message });
+  //console.log("In manage route");
+  try {
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (!userLoggedIn) {
+      return res.status(401).redirect("/user/login");
     }
+    let checkIfGymOwner = helpers.checkIfGymOwner(req);
+    if (!checkIfGymOwner) {
+      // res.status(401).redirect("/users/profile");
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+    }
+
+    const gymOwnerId = req.session.userId;
+    //console.log("Gym owner ID: " + gymOwnerId);
+    await validation.checkObjectId(gymOwnerId, "gymOwnerId");
+    const gymsList = await gymData.getByGymOwnerId(gymOwnerId);
+
+    // console.log(gymsList);
+    if (!gymsList) {
+      return res.status(404).json({ error: 'No gym found for the current gym owner' });
+    }
+    return res.status(200).render('manageGyms', { title: "Create Gyms", gymsList: gymsList, userLoggedIn: userLoggedIn });
+  } catch (e) {
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    return res.status(status).json({ error: message });
+  }
 });
 
 //Add gym function in gym manage page
 router.route('/add').post(async (req, res) => {
-    try {
-        let userLoggedIn = helpers.checkIfLoggedIn(req);
-        if (!userLoggedIn) {
-            res.status(401).redirect("/user/login");
-        }
-        let checkIfGymOwner = helpers.checkIfGymOwner(req);
-        if (!checkIfGymOwner) {
-            // res.status(401).redirect("/users/profile");
-            return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
-        }
-
-        validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
-        validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
-        await validation.checkValidWebsite(req.body.website);
-        await validation.checkObjectId(req.session.userId, "gymOwnerId");
-
-        await gymData.create(req.body.gymName, req.body.website, req.body.category, req.session.userId, req.body.address, req.body.city, req.body.state, req.body.zip);
-        res.status(201).redirect("/gym/manage");
-    } catch (e) {
-        let status = e[0] ? e[0] : 500;
-        let message = e[1] ? e[1] : 'Internal Server Error';
-        res.status(status).json({ error: message });
+  try {
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (!userLoggedIn) {
+      res.status(401).redirect("/user/login");
     }
+    let checkIfGymOwner = helpers.checkIfGymOwner(req);
+    if (!checkIfGymOwner) {
+      // res.status(401).redirect("/users/profile");
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+    }
+
+    validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
+    validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
+    await validation.checkValidWebsite(req.body.website);
+    await validation.checkObjectId(req.session.userId, "gymOwnerId");
+
+    await gymData.create(req.body.gymName, req.body.website, req.body.category, req.session.userId, req.body.address, req.body.city, req.body.state, req.body.zip);
+    res.status(201).redirect("/gym/manage");
+  } catch (e) {
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    res.status(status).json({ error: message });
+  }
 });
 
 //Individual Gym page
@@ -101,7 +101,7 @@ router.route('/:id').get(async (req, res) => {
     // Retrieve review, using the data function from reviewData - Chloe
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
     gym.reviews = reviewList;
-    console.log(gym);
+    //console.log(gym);
     res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
@@ -136,23 +136,23 @@ router.route('/delete/:gymId').delete(async (req, res) => {
 });
 
 router.route('/edit/:gymId').get(async (req, res) => {
-    //console.log(req.params);
-    try {
-        let userLoggedIn = helpers.checkIfLoggedIn(req);
-        if (!userLoggedIn) {
-            res.status(401).redirect("/user/login");
-        }
-        let checkIfGymOwner = helpers.checkIfGymOwner(req);
-        if (!checkIfGymOwner) {
-            // res.status(401).redirect("/users/profile");
-            return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
-        }
-        res.status(200).render("editGym", { title: 'Edit Gym', gymId: req.params.gymId, userLoggedIn: userLoggedIn });
-    } catch (e) {
-        let status = e[0] ? e[0] : 500;
-        let message = e[1] ? e[1] : 'Internal Server Error';
-        res.status(status).json({ error: message });
+  //console.log(req.params);
+  try {
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (!userLoggedIn) {
+      res.status(401).redirect("/user/login");
     }
+    let checkIfGymOwner = helpers.checkIfGymOwner(req);
+    if (!checkIfGymOwner) {
+      // res.status(401).redirect("/users/profile");
+      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+    }
+    res.status(200).render("editGym", { title: 'Edit Gym', gymId: req.params.gymId, userLoggedIn: userLoggedIn });
+  } catch (e) {
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    res.status(status).json({ error: message });
+  }
 });
 
 //Edit gym function in manage page
@@ -214,17 +214,17 @@ router.route('/:gymId/like').post(async (req, res) => {
     let userLikeList = user.likedGyms;
     let userDislikeList = user.dislikedGyms
 
-    if (userDislikeList.includes(gymId)){
+    if (userDislikeList.includes(gymId)) {
       let indexToRemove = userDislikeList.indexOf(gymId);
       if (indexToRemove !== -1) {
         userDislikeList.splice(indexToRemove, 1);
         await gymData.updateDislikedGymsCnt(gymId, -1);
       }
     }
-    if (!userLikeList.includes(gymId)){
+    if (!userLikeList.includes(gymId)) {
       userLikeList.push(gymId);
       await gymData.updateLikedGymsCnt(gymId, 1);
-    }else {
+    } else {
       let indexToRemove = userLikeList.indexOf(gymId);
       if (indexToRemove !== -1) {
         userLikeList.splice(indexToRemove, 1);
@@ -264,17 +264,17 @@ router.route('/:gymId/dislike').post(async (req, res) => {
     let userLikeList = user.likedGyms;
     let userDislikeList = user.dislikedGyms
 
-    if (userLikeList.includes(gymId)){
+    if (userLikeList.includes(gymId)) {
       let indexToRemove = userLikeList.indexOf(gymId);
       if (indexToRemove !== -1) {
         userLikeList.splice(indexToRemove, 1);
         await gymData.updateLikedGymsCnt(gymId, -1);
       }
     }
-    if (!userDislikeList.includes(gymId)){
+    if (!userDislikeList.includes(gymId)) {
       userDislikeList.push(gymId);
       await gymData.updateDislikedGymsCnt(gymId, 1);
-    }else {
+    } else {
       let indexToRemove = userDislikeList.indexOf(gymId);
       if (indexToRemove !== -1) {
         userDislikeList.splice(indexToRemove, 1);
@@ -312,12 +312,12 @@ router.route('/:gymId/addFav').post(async (req, res) => {
     }
 
     let favList = user.favGymList;
-    if (!favList.includes(gymId)){
+    if (!favList.includes(gymId)) {
       favList.push(gymId);
       user.favGymList = favList;
       await userData.update(userId, user);
     }
-    return  res.status(200).json({ message: 'Success add favList' });
+    return res.status(200).json({ message: 'Success add favList' });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';

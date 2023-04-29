@@ -1,0 +1,13 @@
+<main>
+    <form action="/review/updateContent/{{gym._id}}/{{review._id}}" _method="PUT">
+        <div class="form-group">
+            <label for="reviewContent">Update Review for {{{gym.gymName}}}:</label>
+            <textarea class="form-control" id="reviewContent" name="content"
+                placeholder='{{{review.content}}}'>{{{review.content}}}</textarea>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br>
+    <button type="cancel" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+</main>

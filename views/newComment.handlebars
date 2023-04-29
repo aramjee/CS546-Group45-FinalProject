@@ -1,9 +1,18 @@
 <main>
-    <form action="/gym/{{id}}" method="POST">
+
+    <label for="commentContent">For the gym: {{{gym.gymName}}}</label>
+    <br>
+    <label for="commentContent">under the review: {{{review.content}}} from {{review.userName}}</label>
+    <br>
+
+    <form action="/comment/new/{{review._id}}" method="POST">
         <div class="form-group">
-            <label for="commentContent">Review:</label>
+            <label for="commentContent">Comment:</label>
             <textarea class="form-control" id="commentContent" name="content"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <br>
+    <button type="cancel" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+
 </main>
