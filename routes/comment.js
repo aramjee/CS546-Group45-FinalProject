@@ -59,7 +59,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
       let title = 'ERROR'
       return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
     }
-    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
+    return res.status(status).render("newComment", { title: 'Comment on Review', gym: gym, hasErrors: hasErrors, errors: errors, review: review });
   }
 });
 
@@ -77,7 +77,7 @@ router.route('/update/:reviewId/:commentId').get(async (req, res) => {
     res.render('updateComment', { title: 'Update Comment', comment: comment, review: review, gym: gym });
   }
 });
-router.route('/update/:reviewId/:commentId').put(async (req, res) => {
+router.route('/update/:reviewId/:commentId').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
@@ -113,7 +113,7 @@ router.route('/update/:reviewId/:commentId').put(async (req, res) => {
       let title = 'ERROR'
       return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
     }
-    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
+    return res.status(status).render("updateComment", { title: 'Update Comment', gym: gym, hasErrors: hasErrors, errors: errors, review: review });
 
   }
 })
@@ -132,7 +132,7 @@ router.route('/delete/:reviewId/:commentId').get(async (req, res) => {
     res.render('commentConfirmDelete', { title: 'Delete Comment', comment: comment, review: review, gym: gym });
   }
 });
-router.route('/delete/:reviewId/:commentId').delete(async (req, res) => {
+router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
@@ -140,7 +140,7 @@ router.route('/delete/:reviewId/:commentId').delete(async (req, res) => {
     }
     //const userId = req.session.userId;
     let commentId = req.params.commentId;
-    commentId = validation.checkObjectId(commentId);
+    commentId = await validation.checkObjectId(commentId);
     let comment = await commentData.get(commentId);
     let review = await reviewData.get(comment.reviewId);
     await commentData.removeReview(commentId);
@@ -161,7 +161,7 @@ router.route('/delete/:reviewId/:commentId').delete(async (req, res) => {
       let title = 'ERROR'
       return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
     }
-    return res.status(status).render("singleGym", { gym: gym, hasErrors: hasErrors, errors: errors });
+    return res.status(status).render("commentConfirmDelete", { title: 'Delete Comment', gym: gym, hasErrors: hasErrors, errors: errors, review: review });
   }
 })
 export default router;

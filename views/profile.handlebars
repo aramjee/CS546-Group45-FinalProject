@@ -54,58 +54,63 @@
                     </button>
                 </div>
             </div>
-        <div class="row">
-            {{#if isGymOwner}}
+            <div class="row">
+                {{#if isGymOwner}}
                 <button type="button" onclick="location.href='/gym/manage';" class="btn btn-outline-primary me-2">Manage
                     Gyms
                 </button>
-            {{else}}
+                {{else}}
                 {{#each gymsList}}
-                    <p class="mb-0">Favorited Gyms</p>
-                    <div class="col">
-                        <a href="/gym/{{_id}}" class="card-link">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{gymName}}</h5>
+                <p class="mb-0">Favorited Gyms</p>
+                <div class="col">
+                    <a href="/gym/{{_id}}" class="card-link">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">{{gymName}}</h5>
 
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            {{#each category}}
-                                                <span class="badge rounded-pill text-bg-secondary">{{.}}</span>
-                                            {{/each}}
-                                        </div>
-                                        <div>
-                                            <small class="text-body-secondary">{{rating}}</small>
-                                        </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        {{#each category}}
+                                        <span class="badge rounded-pill text-bg-secondary">{{.}}</span>
+                                        {{/each}}
+                                    </div>
+                                    <div>
+                                        <small class="text-body-secondary">{{rating}}</small>
                                     </div>
                                 </div>
                             </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 </div>
-                {{/each}}
+            </div>
+            {{/each}}
             <div class="row">
                 <p class="mb-0">Reviews</p>
                 {{#each reviewsWithGymsInfo}}
-                    <div class="col">
-                        <div>
-                            <span class="italic">{{review.dateOfReview}}</span>
-                            <!--                            TODO: check the render function-->
-                            <input type="button" onclick="location.href = 'review/updateRating/{{gym._id}}/{{review._id}}';" value="Edit Review" class="btn btn-sm btn-primary pull-right"/>
-                        </div>
-                        <div>
-                            <span class="italic">Gym:</span> {{gym.gymName}}
-                        </div>
-                        <div>
-                            <span class="italic">rating:</span> {{review.rating}}
-                        </div>
-                        <div>
-                            <span class="italic">Review:</span> {{review.content}}
-                        </div>
+                <div class="col">
+                    <div>
+                        <span class="italic">{{review.dateOfReview}}</span>
+                        <!--                            TODO: check the render function-->
+                        <input type="button"
+                            onclick="location.href = '/review/updateContent/{{gym._id}}/{{review._id}}';"
+                            value="Edit Review Content" class="btn btn-sm btn-primary pull-right" />
+                        <input type="button"
+                            onclick="location.href = '/review/updateRating/{{gym._id}}/{{review._id}}';"
+                            value="Edit Rating" class="btn btn-sm btn-primary pull-right" />
                     </div>
+                    <div>
+                        <span class="italic">Gym:</span> {{gym.gymName}}
+                    </div>
+                    <div>
+                        <span class="italic">Rating:</span> {{review.rating}}
+                    </div>
+                    <div>
+                        <span class="italic">Review:</span> {{review.content}}
+                    </div>
+                </div>
                 {{/each}}
-            {{/if}}
-        </div>
+                {{/if}}
+            </div>
         </div>
     </div>
 </main>
