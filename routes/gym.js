@@ -14,7 +14,7 @@ router.route('/').get(async (req, res) => {
     //User does not necessarily be logged in to view the gyms, only publish a review so had to comment this out....
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     const gymList = await gymData.getAll();
-    res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn });
+    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn });
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -26,7 +26,7 @@ router.route('/search').get(async (req, res) => {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     const searchName = req.query.name;
     const gymsList = await gymData.searchByValue(searchName);
-    res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
+    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -102,7 +102,7 @@ router.route('/:id').get(async (req, res) => {
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
     gym.reviews = reviewList;
     //console.log(gym);
-    res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn });
+    return res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -147,7 +147,7 @@ router.route('/edit/:gymId').get(async (req, res) => {
       // res.status(401).redirect("/users/profile");
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
     }
-    res.status(200).render("editGym", { title: 'Edit Gym', gymId: req.params.gymId, userLoggedIn: userLoggedIn });
+    return res.status(200).render("editGym", { title: 'Edit Gym', gymId: req.params.gymId, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
