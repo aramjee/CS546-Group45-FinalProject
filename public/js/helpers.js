@@ -6,7 +6,7 @@ const helpers = {
         if (req.session.userId === null || req.session.userId === undefined) {
             console.log('User not logged in');
         } else {
-            console.log('Welcome user', req.session.userId);
+            //console.log('Welcome user', req.session.userId);
             userLoggedIn = true;
         }
         return userLoggedIn;

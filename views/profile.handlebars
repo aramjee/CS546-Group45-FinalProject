@@ -97,6 +97,8 @@
                         <input type="button"
                             onclick="location.href = '/review/updateRating/{{gym._id}}/{{review._id}}';"
                             value="Edit Rating" class="btn btn-sm btn-primary pull-right" />
+                        <input type="button" onclick="location.href = '/review/delete/{{gym._id}}/{{review._id}}';"
+                            value="Delete" class="btn btn-sm btn-primary pull-right" />
                     </div>
                     <div>
                         <span class="italic">Gym:</span> {{gym.gymName}}
