@@ -14,11 +14,12 @@ router.route('/new/:reviewId').get(async (req, res) => {
   } else {
     let review = await reviewData.get(req.params.reviewId)
     if (req.session.userId === review.userId) {
-      throw [400, "Please do not post a comment under your own review!"]
+      let title = 'ERROR'
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
     }
     let gym = await gymData.getByGymId(review.gymId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    res.render('newComment', { UserLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, review: review });
+    res.render('newComment', { UserLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, review: review, hasErrors: false, errors: [] });
   }
 });
 // a logged-in user to create a new comment under a specific gym and specific review
@@ -33,7 +34,8 @@ router.route('/new/:reviewId').post(async (req, res) => {
     reviewId = await validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
     if (req.session.userId === review.userId) {
-      throw [400, "Please do not post a comment under your own review!"]
+      let title = 'ERROR'
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
     }
     // input check
     console.log("you're inside the comment router.route('/new/:reviewId').post")
@@ -80,7 +82,8 @@ router.route('/update/:reviewId/:commentId').get(async (req, res) => {
     let commentId = req.params.commentId;
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
-      throw [400, "This review does not belong to you!"]
+      let title = 'ERROR'
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
     }
     let review = await reviewData.get(req.params.reviewId)
     let gym = await gymData.getByGymId(review.gymId);
@@ -107,7 +110,8 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     await commentData.update(commentId, updatedComment.content, date);
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
-      throw [400, "This review does not belong to you!"]
+      let title = 'ERROR'
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
     }
     let review = await reviewData.get(comment.reviewId);
     // return the correct gym
@@ -147,7 +151,8 @@ router.route('/delete/:reviewId/:commentId').get(async (req, res) => {
     let commentId = req.params.commentId;
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
-      throw [400, "This review does not belong to you!"]
+      let title = 'ERROR'
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
     }
     let review = await reviewData.get(comment.reviewId);
     let gym = await gymData.getByGymId(review.gymId);
@@ -167,7 +172,8 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     commentId = await validation.checkObjectId(commentId);
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
-      throw [400, "This review does not belong to you!"]
+      let title = 'ERROR'
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
     }
     let review = await reviewData.get(comment.reviewId);
     let gymId = review.gymId;
