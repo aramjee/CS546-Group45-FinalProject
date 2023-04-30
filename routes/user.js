@@ -33,6 +33,9 @@ router.route('/loginPage').get(async (req, res) => {
 
 router.route('/logout').get(async (req, res) => {
   req.session.destroy(function (err) {
+    //Delete username from res.locals
+    delete res.locals.loggedInUserName;
+    
     console.log("User logged out");
     if (err) {
       return res.status(500).json({ error: 'Failed to log out' });
@@ -294,30 +297,60 @@ router.route('/update').post(async (req, res) => {
   }
 });
 
-router.route('/delete-fav-gym').post(async (req, res) => {
+// Add to favorites route
+router.route('/add-to-fav/:gymId').post(async (req, res) => {
+  try {
+    const gymId = req.params.gymId.toString();
+
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (!userLoggedIn) {
+      return res.status(401).redirect("/user/loginPage");
+    }
+
+    const userId = req.session.userId;
+    const user = await userData.getByUserId(userId)
+    if (!user) {
+      throw [400, `ERROR: User not found`];
+    }
+
+    let favList = user.favGymList;
+    if (!favList.includes(gymId)) {
+      favList.push(gymId);
+      user.favGymList = favList;
+      await userData.update(userId, user);
+    }
+    return res.status(200).json({ message: 'Success add favList' });
+  } catch (e) {
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    return res.status(status).json({ error: message });
+  }
+});
+
+// Remove from favorites route
+router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
 
-  const { gymId } = req.body;
+  const gymId = req.params.gymId.toString();
 
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
-    const user = userData.getByUserId(req.session.userId);
+    const user = await userData.getByUserId(req.session.userId);
     if (!user) {
       hasErrors = true;
       errors.push("User not found");
       res.status(500).redirect("user/profile")
     }
-
     const gymIndex = user.favGymList.indexOf(gymId);
     if (gymIndex === -1) {
       res.status(500).redirect("user/profile")
     }
 
-    user.favGymList = user.favGymList.splice(gymIndex, 1);
+    user.favGymList.splice(gymIndex, 1);
     try {
       await userData.update(req.session.userId, user);
     } catch (e) {

@@ -49,6 +49,7 @@ router.route('/new/:gymId').post(async (req, res) => {
     let newReview = req.body;
     // input check and then create this post
     const userId = req.session.userId;
+    const currentUser = await userData.getByUserId(req.session.userId);
     const event = new Date();
     let s = event.toISOString();
     const date = s.slice(0, 10);
@@ -66,7 +67,7 @@ router.route('/new/:gymId').post(async (req, res) => {
     let gym = await gymData.getByGymId(gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(gymId)
     gym.reviews = reviewList;
-    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
+    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside review router.route('/new/:id').post");
     console.log(e)
@@ -117,6 +118,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
       res.status(401).redirect("/user/login");
     }
     console.log("You're inside the PUT review /updateContent/:id")
+    const currentUser = await userData.getByUserId(req.session.userId);
     let reviewId = req.params.reviewId;
     // input check
     let updatedReview = req.body;
@@ -140,7 +142,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
-    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
+    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/updateContent/:id').put")
     console.log(e)
@@ -199,6 +201,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
       res.status(401).redirect("/user/login");
     }
     console.log("You're inside the PUT review /updateRating/:id")
+    const currentUser = await userData.getByUserId(req.session.userId);
     // input check
     let updatedReview = req.body;
     let rating = updatedReview.rating;
@@ -223,7 +226,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     let gym = await gymData.getByGymId(req.params.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.gymId)
     gym.reviews = reviewList;
-    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
+    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/updateRating/:id').put");
     console.log(e)
@@ -283,6 +286,7 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
       res.status(401).redirect("/user/login");
     }
     console.log("You're inside the DELETE review /delete/:id")
+    const currentUser = await userData.getByUserId(req.session.userId);
     let reviewId = req.params.reviewId;
     reviewId = await validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
@@ -294,7 +298,7 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
+    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/delete/:id').delete");
     console.log(e)

@@ -96,13 +96,13 @@ router.route('/add').post(async (req, res) => {
 router.route('/:id').get(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    const currentUserId = userLoggedIn ? req.session.userId : null;
+    const currentUser = userLoggedIn ? await userData.getByUserId(req.session.userId) : null;
+
     let gym = await gymData.getByGymId(req.params.id);
     // Retrieve review, using the data function from reviewData - Chloe
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
     gym.reviews = reviewList;
-    //console.log(gym);
-    return res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn });
+    res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -292,36 +292,6 @@ router.route('/:gymId/dislike').post(async (req, res) => {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     res.status(status).json({ error: message });
-  }
-});
-
-
-router.route('/:gymId/addFav').post(async (req, res) => {
-  try {
-    const gymId = req.params.gymId.toString();
-
-    let userLoggedIn = helpers.checkIfLoggedIn(req);
-    if (!userLoggedIn) {
-      return res.status(401).redirect("/user/loginPage");
-    }
-
-    const userId = req.session.userId;
-    const user = await userData.getByUserId(userId)
-    if (!user) {
-      throw [400, `ERROR: User not found`];
-    }
-
-    let favList = user.favGymList;
-    if (!favList.includes(gymId)) {
-      favList.push(gymId);
-      user.favGymList = favList;
-      await userData.update(userId, user);
-    }
-    return res.status(200).json({ message: 'Success add favList' });
-  } catch (e) {
-    let status = e[0] ? e[0] : 500;
-    let message = e[1] ? e[1] : 'Internal Server Error';
-    return res.status(status).json({ error: message });
   }
 });
 
