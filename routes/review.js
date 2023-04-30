@@ -68,7 +68,7 @@ router.route('/new/:gymId').post(async (req, res) => {
     gym.reviews = reviewList;
     return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
   } catch (e) {
-    console.log("you're inside router.route('/new/:id').post");
+    console.log("you're inside review router.route('/new/:id').post");
     console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -93,6 +93,9 @@ router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
     let gym = await gymData.getByGymId(req.params.gymId)
     //console.log(review);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (req.session.userId !== review.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     return res.render('updateReviewContent', { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, review: review });
   } catch (e) {
     console.log("you're inside router.route('/updateContent/:id').get")
@@ -128,6 +131,9 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     content = content.trim();
     reviewId = await validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
+    if (req.session.userId !== review.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     // update review content
     await reviewData.updateReviewContent(reviewId, content, date);
     // make reviewList ids => review objects, get the gym for rendering the singleGymPage (since new review successfully created)
@@ -168,6 +174,9 @@ router.route('/updateRating/:gymId/:reviewId').get(async (req, res) => {
     let review = await reviewData.get(reviewId);
     let gym = await gymData.getByGymId(req.params.gymId)
     let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (req.session.userId !== review.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     return res.render('updateReviewRating', { userLoggedIn: userLoggedIn, title: 'Update Rating', gym: gym, review: review });
   } catch (e) {
     console.log("you're inside router.route('/updateRating/:id').get")
@@ -199,6 +208,10 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     let reviewId = req.params.reviewId;
     if (!rating) {
       throw [400, "You must supply review content"]
+    }
+    let review = await reviewData.get(reviewId)
+    if (req.session.userId !== review.userId) {
+      throw [400, "This review does not belong to you!"]
     }
     validation.checkNonEmptyStrings(reviewId, date);
     reviewId = await validation.checkObjectId(reviewId);
@@ -243,6 +256,9 @@ router.route('/delete/:gymId/:reviewId').get(async (req, res) => {
     } else {
       let reviewId = req.params.reviewId;
       let review = await reviewData.get(reviewId);
+      if (req.session.userId !== review.userId) {
+        throw [400, "This review does not belong to you!"]
+      }
       let gym = await gymData.getByGymId(review.gymId);
       let userLoggedIn = helpers.checkIfLoggedIn(req);
       res.render('reviewConfirmDelete', { userLoggedIn: userLoggedIn, title: 'Delete Review', review: review, gym: gym });
@@ -270,6 +286,9 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     let reviewId = req.params.reviewId;
     reviewId = await validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
+    if (req.session.userId !== review.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     // remove the review
     await reviewData.removeReview(reviewId);
     let gym = await gymData.getByGymId(review.gymId);

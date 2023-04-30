@@ -663,8 +663,8 @@ let review10BB_id = review10BB._id.toString();
 
 // await reviews.updateReviewContent(review10BB_id, "A luxurious and upscale atmosphere!", "2023-01-24");
 // console.log("review10BB_id content is updated!")
-// await reviews.updateReviewRating(review10BB_id, 4.5, "2023-01-30");
-// console.log("review10BB_id grading is updated!")
+await reviews.updateReviewRating(review10BB_id, 4.5, "2023-01-30");
+console.log("review10BB_id grading is updated!")
 
 console.log("----------------------------------------------------------------------")
 console.log("----------------------------------------------------------------------")

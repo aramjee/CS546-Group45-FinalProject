@@ -311,7 +311,7 @@ async function updateReviewRating(
     dateOfReview
 ) {
     id = await validation.checkObjectId(id, 'review id');
-    rating = await validation.checkValidRating(rating, "rating");
+    rating = await validation.checkValidRating(rating);
 
     const reviewsCollection = await reviewCollection();
     const oldReview = await this.get(id);
