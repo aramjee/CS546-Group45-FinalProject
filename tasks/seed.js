@@ -1,7 +1,7 @@
 //seed file
 
 import { dbConnection, closeConnection } from '../config/mongoConnection.js';
-import { userData as users, gymData as gyms, reviewData as reviews, commentData as comments } from '../data/index.js';
+import { userData as users, gymData as gyms, reviewData as reviews, commentData as comments, gymData } from '../data/index.js';
 const db = await dbConnection();
 await db.dropDatabase();
 
@@ -630,6 +630,21 @@ try {
 }
 let review10BB_id = review10BB._id.toString();
 
+// console.log("before adding the deletion, the rating of the gym is")
+// let gym = await gyms.getByGymId(gymBB_id)
+// console.log(gym.rating)
+// let reviewDeletion = undefined;
+// reviewDeletion = await reviews.create(
+//     gymBB_id,
+//     user10_id,
+//     "2023-01-23",
+//     "Ok!",
+//     3)
+// let reviewDeletion_id = reviewDeletion._id.toString();
+// console.log("after adding the deletion, the rating of the gym is")
+// gym = await gyms.getByGymId(gymBB_id)
+// console.log(gym.rating)
+
 //get, getAll, getGymReviews, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating
 //console.log("this is get review A")
 //console.log(await reviews.get(reviewA_id));
@@ -639,12 +654,17 @@ let review10BB_id = review10BB._id.toString();
 //console.log(await reviews.getGymReviews(gymAA_id));
 //console.log("this is get user all reviews")
 //console.log(await reviews.getUserReviews(userA_id));
-// console.log(await reviews.removeReview(reviewB_id));
-//console.log("reviewB is removed!");
-//await reviews.updateReviewContent(review5AB_id, "great!", "2023-01-30");
-//console.log("reviewA content is updated!")
-//await reviews.updateReviewRating(review5AB_id, 4.5, "2023-01-30");
-//console.log("reviewA grading is updated!")
+
+// console.log(await reviews.removeReview(reviewDeletion_id));
+// console.log("reviewDeletion is removed!");
+// console.log("after the deletion, the rating of the gym is")
+// gym = await gyms.getByGymId(gymBB_id)
+// console.log(gym.rating)
+
+// await reviews.updateReviewContent(review10BB_id, "A luxurious and upscale atmosphere!", "2023-01-24");
+// console.log("review10BB_id content is updated!")
+// await reviews.updateReviewRating(review10BB_id, 4.5, "2023-01-30");
+// console.log("review10BB_id grading is updated!")
 
 console.log("----------------------------------------------------------------------")
 console.log("----------------------------------------------------------------------")
@@ -810,10 +830,24 @@ let comment10_id = comment10._id.toString();
 //console.log(await comments.get(comment1_id));
 // console.log(await comments.getAllByReview(review1AA_id));
 // console.log("this is commentB remove!")
-// await comments.remove(commentB_id);
-// console.log("commentB is removed!")
-// await comments.update(comment1_id, "awesome", "2023-04-07");
+// console.log(await reviews.get(review6BB_id))
+// let comment_delete = await comments.create(
+//     user1_id,
+//     "2023-02-11",
+//     "Yes I agree",
+//     review6BB_id
+// )
+// console.log("comment_delete is created!")
+// console.log(await reviews.get(review6BB_id))
+// let comment_delete_id = comment_delete._id.toString();
+// await comments.remove(comment_delete_id);
+// console.log("comment_delete is removed!")
+// console.log(await reviews.get(review6BB_id))
+
+// console.log(await comments.get(comment10_id))
+// await comments.update(comment10_id, "I love this gym! The staff is friendly and helpful, the facilities are clean and well-maintained, and there's always something to do", "2023-04-07");
 // console.log("comment1 is updated!")
+// console.log(await comments.get(comment10_id))
 
 console.log('Done seeding database');
 

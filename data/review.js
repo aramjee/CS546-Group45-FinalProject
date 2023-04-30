@@ -244,10 +244,11 @@ async function removeReview(id) {
 
     // gym collection remove a review
     let updatedGym = await gymDataFunctions.getByGymId(gymId) // the gym object
-    let newReviewGym = await this.getGymReviews(gymId); // updated review
-    updatedGym.reviews = newReviewGym; // update review list
+    let newReviewGymIds = await this.getGymReviews(gymId); // updated reviewList
+    updatedGym.reviews = newReviewGymIds; // update review list
     let allRatings = []
-    for (review of newReviewGym) {
+    for (let reviewIds of newReviewGymIds) {
+        let review = await this.get(reviewIds)
         allRatings.push(review.rating)
     }
     let total = allRatings.reduce((acc, c) => acc + c, 0)
@@ -313,12 +314,13 @@ async function updateReviewRating(
     }
     let review = await this.get(id);
     let gymId = await review.gymId; // get the gym of the review
-    let updatedgymReviews = await this.getGymReviews(gymId) // get the updated review list
+    let updatedgymReviewsIds = await this.getGymReviews(gymId) // get the updated review list
     let updatedGym = await gymDataFunctions.getByGymId(gymId) // get the gym object
-    updatedGym.reviews = updatedgymReviews; // update gym review list
+    updatedGym.reviews = updatedgymReviewsIds; // update gym review list
 
     let ratings = []
-    for (review of updatedgymReviews) {
+    for (let reviewIds of updatedgymReviewsIds) {
+        let review = await this.get(reviewIds)
         ratings.push(review.rating)
     }
     let total = ratings.reduce((acc, c) => acc + c, 0)
