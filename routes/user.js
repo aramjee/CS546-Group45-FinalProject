@@ -17,7 +17,7 @@ router.route('/login').get(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
     res.redirect("/user/profile");
   } else {
-    return res.render('login', { title: 'Gym User Login' });
+    res.render('login', { title: 'Gym User Login' });
   }
 });
 
@@ -27,7 +27,7 @@ router.route('/loginPage').get(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
     res.redirect("/user/profile");
   } else {
-    return res.render('login', { title: 'Gym User Login' });
+    res.render('login', { title: 'Gym User Login' });
   }
 });
 
@@ -38,7 +38,7 @@ router.route('/logout').get(async (req, res) => {
       return res.status(500).json({ error: 'Failed to log out' });
     }
   })
-  return res.status(200).render("login", { title: 'Gym User Login' });
+  res.status(200).render("login", { title: 'Gym User Login' });
 });
 
 router.route('/login').post(async (req, res) => {
@@ -76,7 +76,7 @@ router.route('/signup').get(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
     res.redirect("/user/profile");
   } else {
-    return res.render('signup', { title: 'Gym User Signup' });
+    res.render('signup', { title: 'Gym User Signup' });
   }
 });
 
@@ -131,7 +131,7 @@ router.route('/signup').post(async (req, res) => {
 
   try {
     await userData.create(xss(firstName), xss(lastName), xss(userName), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, xss(password))
-    return res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
+    res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -148,7 +148,7 @@ router.route('/profile').get(async (req, res) => {
     if (!helpers.checkIfLoggedIn(req)) {
       hasErrors = true;
       errors.push("Not log in, Please Login");
-      return res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+      res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
     } else {
       const userId = req.session.userId;
       const user = await userData.getByUserId(userId);
@@ -202,7 +202,7 @@ router.route('/update').get(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+    res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
   } else {
     try {
       const user = await userData.getByUserId(req.session.userId);
@@ -235,7 +235,7 @@ router.route('/update').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
+    res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
     const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm, isGymOwner } = req.body;
     let user = await userData.getByUserId(req.session.userId);
@@ -303,7 +303,7 @@ router.route('/delete-fav-gym').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
+    res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
     const user = userData.getByUserId(req.session.userId);
     if (!user) {
