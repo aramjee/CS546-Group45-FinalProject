@@ -52,7 +52,12 @@ router.route('/new/:gymId').post(async (req, res) => {
     const event = new Date();
     let s = event.toISOString();
     const date = s.slice(0, 10);
-    validation.checkArgumentsExist(newReview.content, newReview.rating);
+    if (!newReview.content) {
+      throw [400, "You must supply review content"]
+    }
+    if (!newReview.rating) {
+      throw [400, "You must supply rating"]
+    }
     validation.checkNonEmptyStrings(newReview.content, newReview.rating);
     newReview.rating = parseFloat(newReview.rating)
     newReview.rating = await validation.checkValidRating(newReview.rating);
@@ -116,7 +121,9 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     const event = new Date();
     let s = event.toISOString();
     const date = s.slice(0, 10);
-    validation.checkArgumentsExist(reviewId, content);
+    if (!content) {
+      throw [400, "You must supply review content"]
+    }
     validation.checkNonEmptyStrings(reviewId, content);
     content = content.trim();
     reviewId = await validation.checkObjectId(reviewId);
@@ -185,14 +192,16 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     console.log("You're inside the PUT review /updateRating/:id")
     // input check
     let updatedReview = req.body;
+    let rating = updatedReview.rating;
     const event = new Date();
     let s = event.toISOString();
     const date = s.slice(0, 10);
     let reviewId = req.params.reviewId;
-    validation.checkArgumentsExist(reviewId, updatedReview.rating, date);
+    if (!rating) {
+      throw [400, "You must supply review content"]
+    }
     validation.checkNonEmptyStrings(reviewId, date);
     reviewId = await validation.checkObjectId(reviewId);
-    let rating = updatedReview.rating;
     rating = parseFloat(rating)
     rating = await validation.checkValidRating(rating);
     // update review rating

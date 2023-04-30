@@ -89,8 +89,11 @@ async function create(
     let review = await reviewDataFunctions.get(reviewId)
     for (let c of review.comments) {
         if (userId === c.userId) {
-            throw [400, `User have posted comment for this review! You can still post comments under other reviews for this gym`]
+            throw [400, `You have posted comment for this review! You can still post comments under other reviews for this gym`]
         }
+    }
+    if (review.userId === userId) {
+        throw [400, "You cannot post a comment under your own review"]
     }
 
     let newComment = {

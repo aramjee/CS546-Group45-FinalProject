@@ -88,10 +88,10 @@ async function getGymReviewsListObjects(gymId) {
 async function getUserReviewsListObjects(userId) {
     validation.checkArgumentsExist(userId);
     userId = await validation.checkObjectId(userId, 'user id')
-    if (!await userDataFunctions.getByGymId(userId)) {
+    if (!await userDataFunctions.getByUserId(userId)) {
         throw [400, `no user have such id`]
     }
-    let user = await userDataFunctions.getByGymId(userId);
+    let user = await userDataFunctions.getByUserId(userId);
     let reviewList = []
     if (user.reviews) {
         for (const reviewId of user.reviews) {
@@ -156,7 +156,7 @@ async function create(
         throw [400, `no gym have such id`];
     }
 
-    let gym = await gymDataFunctions.getByGymId(gymId);
+    //let gym = await gymDataFunctions.getByGymId(gymId);
     // this is a bug, will fix later!
     // for (let rId of gym.reviews) {
     //     let r = await this.get(rId);
@@ -164,6 +164,21 @@ async function create(
     //         throw [400, `User have posted review for this gym!`]
     //     }
     // }
+    // const userReviews = await this.getUserReviewsListObjects(userId);
+    // for (let review of userReviews) {
+    //     if (review.userId === userId) {
+    //         throw [400, "This user already reviewed this gym"];
+    //     }
+    // }
+    const reviewsCollection = await reviewCollection();
+    const alreadyReviewed = await reviewsCollection.findOne({
+        $and: [{
+            gymId: gymId
+        }, {
+            userId: userId
+        }]
+    });
+    if (alreadyReviewed) throw [400, "This user already reviewed this gym"];
     let user = await userDataFunctions.getByUserId(userId)
     let userName = user.userName;
     let newReview = {
@@ -175,7 +190,7 @@ async function create(
         comments: [],
         rating: rating
     }
-    const reviewsCollection = await reviewCollection();
+    //const reviewsCollection = await reviewCollection();
     const insertInfo = await reviewsCollection.insertOne(newReview);
     if (!insertInfo || !insertInfo.insertedId) {
         throw [400, 'Could not add review'];
