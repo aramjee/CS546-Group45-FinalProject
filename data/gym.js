@@ -55,7 +55,7 @@ const create = async (
 };
 
 const getByGymId = async (id) => {
-  id = id.trim(); // since on line 59 and 60 id is not trimmed yet; but also inside the remove function, id should is not trimmed and pass in.
+  //id = id.trim(); // since on line 59 and 60 id is not trimmed yet; but also inside the remove function, id should is not trimmed and pass in.
   await validation.checkObjectId(id, "GymId");
   const gymsDBConnection = await gymCollection();
   const gymGet = await gymsDBConnection.findOne({ _id: ObjectId(id.trim()) });
