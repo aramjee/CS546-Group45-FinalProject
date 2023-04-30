@@ -13,6 +13,9 @@ router.route('/new/:reviewId').get(async (req, res) => {
     res.status(401).redirect("/user/login");
   } else {
     let review = await reviewData.get(req.params.reviewId)
+    if (req.session.userId === review.userId) {
+      throw [400, "Please do not post a comment under your own review!"]
+    }
     let gym = await gymData.getByGymId(review.gymId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     res.render('newComment', { UserLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, review: review });
@@ -29,14 +32,15 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let reviewId = req.params.reviewId;
     reviewId = await validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
+    if (req.session.userId === review.userId) {
+      throw [400, "Please do not post a comment under your own review!"]
+    }
     // input check
     console.log("you're inside the comment router.route('/new/:reviewId').post")
     const event = new Date();
     let s = event.toISOString();
     const date = s.slice(0, 10);
     let userId = req.session.userId;
-    console.log(newComment.content);
-    console.log("I am here!")
     validation.checkArgumentsExist(newComment.content);
     let content = validation.checkString(newComment.content);
     userId = await validation.checkObjectId(userId);
@@ -75,6 +79,9 @@ router.route('/update/:reviewId/:commentId').get(async (req, res) => {
   } else {
     let commentId = req.params.commentId;
     let comment = await commentData.get(commentId);
+    if (req.session.userId !== comment.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     let review = await reviewData.get(req.params.reviewId)
     let gym = await gymData.getByGymId(review.gymId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
@@ -87,7 +94,7 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     if (!userLoggedIn) {
       res.status(401).redirect("/user/login");
     }
-    console.log("You're inside the update Comment POST!")
+    console.log("You're inside the DELETE Comment POST!")
     let commentId = req.params.commentId;
     let updatedComment = req.body;
     const event = new Date();
@@ -99,6 +106,9 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     // update comment
     await commentData.update(commentId, updatedComment.content, date);
     let comment = await commentData.get(commentId);
+    if (req.session.userId !== comment.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     let review = await reviewData.get(comment.reviewId);
     // return the correct gym
     let gym = await gymData.getByGymId(review.gymId);
@@ -136,6 +146,9 @@ router.route('/delete/:reviewId/:commentId').get(async (req, res) => {
     console.log("You're inside the GET comment '/delete/:id'")
     let commentId = req.params.commentId;
     let comment = await commentData.get(commentId);
+    if (req.session.userId !== comment.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     let review = await reviewData.get(comment.reviewId);
     let gym = await gymData.getByGymId(review.gymId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
@@ -153,6 +166,9 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     let commentId = req.params.commentId;
     commentId = await validation.checkObjectId(commentId);
     let comment = await commentData.get(commentId);
+    if (req.session.userId !== comment.userId) {
+      throw [400, "This review does not belong to you!"]
+    }
     let review = await reviewData.get(comment.reviewId);
     let gymId = review.gymId;
     await commentData.remove(commentId);
