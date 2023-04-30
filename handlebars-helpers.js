@@ -2,6 +2,9 @@ const helpers = {
     ifEquals: function(string1, string2, options){
         return string1 === string2 ? options.fn(this) : options.inverse(this);
     },
+    ifExistsInArray: function(el, arr, options){
+        return arr.includes(el) ? options.fn(this) : options.inverse(this);
+    },
     showRating: function(rating){
         let html='';
         for(let i=1; i<=5; i++){
