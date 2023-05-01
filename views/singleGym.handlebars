@@ -4,7 +4,15 @@
         <h2>{{gym.gymName}}</h2>
         {{#if userLoggedIn}}
         <div class="pull-right">
-            <input type="button" value="Add to Favorites" class="btn btn-sm btn-primary" />
+
+            {{!-- WORK IN PROGRESS: WILL NEED TO SHOW ADD/REMOVE FROM FAV BUTTON DYNAMICALLY AFTER AJAX REQUEST --}}
+            {{#ifExistsInArray gym._id currentUser.favGymList}}
+                <input id="btnRemoveFromFav" type="button" value="Remove from Favorites" class="btn btn-sm btn-danger" data-gymid={{gym._id}} />
+            {{else}}
+                <input id="btnAddToFav" type="button" value="Add to Favorites" class="btn btn-sm btn-primary" data-gymid={{gym._id}} />
+            {{/ifExistsInArray}}
+            
+
             <input type="button" onclick="location.href = '/review/new/{{gym._id}}'" ; value="Post a New Review"
                 class="btn btn-sm btn-dark" />
         </div>
@@ -22,11 +30,16 @@
             <div><span class="bold">Website:</span> {{gym.website}}</div>
         </div>
         <div>
-            <input class="btnLikeGym btn btn-sm btn-success" type="button" data-gymid={{gym._id}}
-                value="Like ({{gym.likedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} />
 
-            <input class="btnDislikeGym btn btn-sm btn-danger" type="button" data-gymid={{gym._id}}
-                value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} />
+ {{!-- Chloe: 1.I think "input" tag does not work for a posst request, while form does, feel free to update it with AJAX 2. remeber to fire to respective route  --}}
+            <input class="btnLikeGym btn btn-sm btn-success" type="button" data-likecount={{gym.likedGymsCnt}}
+                data-gymid={{gym._id}} value="Like ({{gym.likedGymsCnt}})" {{#unless
+                userLoggedIn}}disabled{{/unless}} />
+
+            <input class="btnDislikeGym btn btn-sm btn-danger" type="button" data-dislikecount={{gym.dislikedGymsCnt}}
+                data-gymid={{gym._id}} value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless
+                userLoggedIn}}disabled{{/unless}} />
+
         </div>
     </div>
 </div>
@@ -37,8 +50,9 @@
         <div class="card review-card">
             <div class="card-body">
                 <div>
-                    <span class="username bold">{{userName}}</span> <span class="italic">{{dateOfReview}}</span>
-                    {{!-- Removed if condition temporarily, will update for logic later --}}
+                    <span class="username bold">{{user.userName}}</span> <span class="italic">{{dateOfReview}}</span>
+
+                    {{#ifEquals user.userName ../loggedInUserName}}
                     <div class="pull-right edit-delete-wrapper">
                         <input type="button" value="Edit content"
                             onclick="location.href = '/review/updateContent/{{gymId}}/{{_id}}'"
@@ -50,6 +64,7 @@
                             class="btn btn-sm btn-outline-danger" />
 
                     </div>
+                    {{/ifEquals}}
 
 
                     {{#if ../userLoggedIn}}
@@ -68,8 +83,9 @@
                 <div class="card comment-box">
                     <div class="card-body">
                         <p>
-                            <span class="username bold">{{userName}}</span>
-                            {{!-- Removed if currentUser condition temporarily, will update for logic later --}}
+                            <span class="username bold">{{user.userName}}</span>
+
+                            {{#ifEquals user.userName ../../loggedInUserName}}
                             <span class="pull-right edit-delete-wrapper">
                                 <input type="button" value="Edit content"
                                     onclick="location.href = '/comment/update/{{reviewId}}/{{_id}}'"
@@ -78,6 +94,7 @@
                                     onclick="location.href = '/comment/delete/{{reviewId}}/{{_id}}'"
                                     class="btn btn-sm btn-outline-danger" />
                             </span>
+                            {{/ifEquals}}
 
                         </p>
                         <p>{{content}}</p>

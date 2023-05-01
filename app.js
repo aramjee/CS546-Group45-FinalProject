@@ -10,6 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import session from 'express-session';
 import helpers from './handlebars-helpers.js';
+import { userDataFunctions } from './data/user.js';
 
 const staticDir = express.static(__dirname + '/public');
 
@@ -42,8 +43,12 @@ app.use(
 );
 
 //TODO: Pass login info in main handler bar, or request log
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.userId = req.session.userId;
+  //Setting username in res.locals to show it in the header
+  if(req.session.userId){
+    res.locals.loggedInUserName = await userDataFunctions.getUserName(req.session.userId);
+  }
   next();
 });
 
