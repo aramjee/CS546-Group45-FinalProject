@@ -1,18 +1,18 @@
 <main>
-    <form action="/review/new/{{gym._id}}" method="POST">
+    <form action="/review/new/{{gym._id}}" id="newReview-form" method="POST">
         <p>New Review for gym {{gym.gymName}}</p>
         <div class="form-group">
             <label for="rating">Rating:</label>
-            <input type="number" id="rating" name="rating" min="1" max="5">
+            <input type="number" id="rating" name="rating" min="1" max="5" required>
         </div>
         <div class="form-group">
-            <label for="reviewContent">Review:</label>
-            <textarea class="form-control" id="reviewContent" name="content"></textarea>
+            <label for="content">Review:</label>
+            <textarea class="form-control" id="content" name="content"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <br>
-    <button type="cancel" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+    <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
     <div>
         {{#if hasError}}
         <div class="error">

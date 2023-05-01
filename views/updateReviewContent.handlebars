@@ -1,5 +1,5 @@
 <main>
-    <form action="/review/updateContent/{{gym._id}}/{{review._id}}" method="POST">
+    <form action="/review/updateContent/{{gym._id}}/{{review._id}}" id="updateReview-form" method="POST">
         <div class="form-group">
             <label for="reviewContent">Update Review for {{{gym.gymName}}}:</label>
             <textarea class="form-control" id="reviewContent" name="content"
@@ -9,7 +9,7 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <br>
-    <button type="cancel" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+    <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
     <div>
         {{#if hasError}}
         <div class="error">
