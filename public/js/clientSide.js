@@ -95,36 +95,43 @@
             let firstName = document.getElementById('firstName').value;
             let lastName = document.getElementById('lastName').value;
             let userName = document.getElementById('userName').value;
-            let emailAddress = document.getElementById('emailAddress').value;
+            let emailAddress = document.getElementById('email').value;
             let city = document.getElementById('city').value;
             let state = document.getElementById('state').value;
             let dateOfBirth = document.getElementById('dateOfBirth').value;
             let password = document.getElementById('password').value;
-            let role = document.getElementById('role').value;
+            let isGymOwner = document.getElementById('isGymOwner').value;
 
 
             event.preventDefault();
             try {
-                if (firstName.length > 0)
+                if (firstName.length > 0) {
                     firstName = checkName(firstName);
-                if (lastName.length > 0)
+                }
+                if (lastName.length > 0) { 
                     lastName = checkName(lastName);
+                }
                 userName = checkString(userName);
                 emailAddress = checkEmail(emailAddress);
-                if (city.length > 0)
-                    city = checkCity(lastName);
-                if (state.length > 0)
-                    state = checkState(lastName);
-                if (dateOfBirth.length > 0)
-                    dateOfBirth = checkDate(lastName);
+                if (city.length > 0) {
+                    city = checkCity(city);
+                }
+                if (state.length > 0) {
+                    state = checkState(state);
+                }
+                if (dateOfBirth.length > 0) {
+                    dateOfBirth = checkDate(dateOfBirth);
+                }
                 password = checkPassword(password);
 
-                role = checkString(role);
-                if (role !== "True" && role !== "") {
+                if (!(typeof isGymOwner === 'string' || isGymOwner instanceof String)) {
+                    throw new Error("Please specify account type");
+                }
+                if (isGymOwner !== "True" && isGymOwner !== "") {
                     throw new Error("Account must be 'owner' or 'user' type");
                 }
 
-                signup.submit();
+                //signup.submit();
             } catch (e) {
                 //console.log("failed to register");
                 document.getElementById('error').innerText = "(400) " + e;
@@ -158,29 +165,34 @@
             let firstName = document.getElementById('firstName').value;
             let lastName = document.getElementById('lastName').value;
             let userName = document.getElementById('userName').value;
-            let emailAddress = document.getElementById('emailAddress').value;
+            let emailAddress = document.getElementById('email').value;
             let city = document.getElementById('city').value;
             let state = document.getElementById('state').value;
             let dateOfBirth = document.getElementById('dateOfBirth').value;
             let password = document.getElementById('password').value;
             let confirm = document.getElementById('confirm').value;
-            let role = document.getElementById('role').value;
+            let isGymOwner = document.getElementById('isGymOwner').value;
 
 
             event.preventDefault();
             try {
-                if (firstName.length > 0)
+                if (firstName.length > 0) {
                     firstName = checkName(firstName);
-                if (lastName.length > 0)
+                }
+                if (lastName.length > 0) {
                     lastName = checkName(lastName);
+                }
                 userName = checkString(userName);
                 emailAddress = checkEmail(emailAddress);
-                if (city.length > 0)
-                    city = checkCity(lastName);
-                if (state.length > 0)
-                    state = checkState(lastName);
-                if (dateOfBirth.length > 0)
-                    dateOfBirth = checkDate(lastName);
+                if (city.length > 0) {
+                    city = checkCity(city);
+                }
+                if (state.length > 0) {
+                    state = checkState(state);
+                }
+                if (dateOfBirth.length > 0) {
+                    dateOfBirth = checkDate(dateOfBirth);
+                }
                 password = checkPassword(password);
                 confirm = checkString(confirm);
 
@@ -188,10 +200,13 @@
                     throw new Error("Passwords must match");
                 }
 
-                role = checkString(role);
-                if (role !== "True" && role !== "") {
+                if (!(typeof isGymOwner === 'string' || isGymOwner instanceof String)) {
+                    throw new Error("Please specify account type");
+                }
+                if (isGymOwner !== "True" && isGymOwner !== "") {
                     throw new Error("Account must be 'owner' or 'user' type");
                 }
+
 
                 updateProfile.submit();
             } catch (e) {

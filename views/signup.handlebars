@@ -85,11 +85,11 @@
             <div class="form-group">
                 <label for="password">Password*</label>
                 <input type="password" class="form-control" id="password" aria-describedby="passValidations" placeholder="Password" name="password" required>
-                <small id="passValidations" class="form-text text-muted">Password must have at least 6 characters and contain both a letter and a number.</small>
+                <small id="passValidations" class="form-text text-muted">Password must be a minimum of 8 characters long, have at least one at least one uppercase and lowercase character, have at least one number, and has to contain at least one special character.</small>
             </div>
 
 
-            <fieldset class="form-group">
+            <fieldset class="form-group" id="isGymOwner">
                 <legend class="col-form-label col-sm-2 pt-0">Account Type</legend>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="isGymOwner" id="isGymOwnerFalse" value="" checked>
