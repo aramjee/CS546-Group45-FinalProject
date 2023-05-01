@@ -2,6 +2,8 @@
 import moment from "moment";
 import { ObjectId } from "mongodb";
 
+const gymTypes = ["Membership Gym", "24 hour access gym", "CrossFit", "Boot Camps", "Training gyms"];
+
 function checkArgumentsExist(...args) {
   //console.log(args.length);
   for (let arg of args) {
@@ -57,7 +59,7 @@ function checkValidDate(date) {
   return date;
 }
 
-const checkObjectId = async (id, idName) => {
+const checkObjectId = (id, idName) => {
   // idName is included for debugging where the id went wrong.
   if (!id)
     throw [400, `ERROR: ${idName} parameter must be supplied`];
@@ -74,7 +76,7 @@ const checkObjectId = async (id, idName) => {
 }
 
 
-const checkValidWebsite = async (website) => {
+const checkValidWebsite = (website) => {
   const emailRegex = /^https:\/\/www\..{5,}\.com$/;
   if (!emailRegex.test(website)) {
     throw [400, `ERROR: ${website} must be a valid website`];
@@ -83,7 +85,7 @@ const checkValidWebsite = async (website) => {
   return website;
 }
 
-const checkObjectIdArray = async (arr) => {
+const checkObjectIdArray = (arr) => {
   if (!Array.isArray(arr)) {
     throw [400, "ERROR: Must be array"]
   }
@@ -96,21 +98,21 @@ const checkObjectIdArray = async (arr) => {
   return arr;
 }
 
-const checkValidRating = async (rating) => {
+const checkValidRating = (rating) => {
   if (typeof rating !== 'number' || rating < 0 || rating > 5 || !Number.isInteger(rating * 10)) {
     throw [400, "ERROR: Rating must be a number between 1 and 5 with one decimal place"]
   }
   return rating;
 }
 
-const checkValidNonNegativeInteger = async (number) => {
+const checkValidNonNegativeInteger = (number) => {
   if (typeof number !== 'number' || !Number.isInteger(number) || number < 0) {
     throw [400, "ERROR: Number must be non negative integer"]
   }
   return number;
 }
 
-const checkValidPassword = async (password) => {
+const checkValidPassword = (password) => {
   let checkValidPassword = true;
   if (typeof password !== 'string') {
     checkValidPassword = false;
@@ -136,7 +138,14 @@ const checkValidPassword = async (password) => {
   return password;
 }
 
+const checkValidGymCategory = (category) => {
+  if (!gymTypes.includes(category)){
+    throw [400, "ERROR: Gym types must be in following options: Membership Gym, 24 hour access gym, CrossFit, Boot Camps, Training gyms"];
+  }
+  return category;
+}
+
 export {
   checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
-  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword, checkString
+  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword, checkString, checkValidGymCategory
 }

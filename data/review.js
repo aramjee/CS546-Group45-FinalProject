@@ -13,7 +13,7 @@ import { commentDataFunctions } from './comment.js';
 // get review by review's id, return the review object
 async function get(id) {
     validation.checkArgumentsExist(id);
-    id = await validation.checkObjectId(id, 'review id')
+    id = validation.checkObjectId(id, 'review id')
     const reviewsCollection = await reviewCollection();
     const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
     if (review === null)
@@ -44,7 +44,7 @@ async function getAll() {
 // get a gym's all  review, return a list of reviewIds (string)
 async function getGymReviews(gymId) {
     validation.checkArgumentsExist(gymId);
-    gymId = await validation.checkObjectId(gymId, 'gym id')
+    gymId = validation.checkObjectId(gymId, 'gym id')
     const reviewsCollection = await reviewCollection();
     if (!await gymDataFunctions.getByGymId(gymId)) {
         throw [400, `no gym have such id`]
@@ -60,7 +60,7 @@ async function getGymReviews(gymId) {
 
 async function getGymReviewsListObjects(gymId) {
     validation.checkArgumentsExist(gymId);
-    gymId = await validation.checkObjectId(gymId, 'gym id')
+    gymId = validation.checkObjectId(gymId, 'gym id')
     if (!await gymDataFunctions.getByGymId(gymId)) {
         throw [400, `no gym have such id`]
     }
@@ -87,7 +87,7 @@ async function getGymReviewsListObjects(gymId) {
 }
 async function getUserReviewsListObjects(userId) {
     validation.checkArgumentsExist(userId);
-    userId = await validation.checkObjectId(userId, 'user id')
+    userId = validation.checkObjectId(userId, 'user id')
     if (!await userDataFunctions.getByUserId(userId)) {
         throw [400, `no user have such id`]
     }
@@ -117,7 +117,7 @@ async function getUserReviewsListObjects(userId) {
 // get a user's all previous review, return a list of reviewIds (string)
 async function getUserReviews(userId) {
     validation.checkArgumentsExist(userId);
-    userId = await validation.checkObjectId(userId, 'userId')
+    userId = validation.checkObjectId(userId, 'userId')
     const reviewsCollection = await reviewCollection();
     // check is user id exist in database, TBD.
     if (!userDataFunctions.getByUserId(userId)) {
@@ -143,11 +143,11 @@ async function create(
     rating) {
     validation.checkArgumentsExist(gymId, userId, dateOfReview, content, rating)
     validation.checkNonEmptyStrings(gymId, userId, dateOfReview);
-    gymId = await validation.checkObjectId(gymId);
-    userId = await validation.checkObjectId(userId);
-    dateOfReview = await validation.checkValidDate(dateOfReview);
+    gymId = validation.checkObjectId(gymId);
+    userId = validation.checkObjectId(userId);
+    dateOfReview = validation.checkValidDate(dateOfReview);
 
-    rating = await validation.checkValidRating(rating);
+    rating = validation.checkValidRating(rating);
 
     if (!userDataFunctions.getByUserId(userId)) {
         throw [400, `no user have such id`];
@@ -233,7 +233,7 @@ async function create(
 // remove a review
 async function removeReview(id) {
     validation.checkArgumentsExist(id);
-    id = await validation.checkObjectId(id, 'review id');
+    id = validation.checkObjectId(id, 'review id');
     if (!await this.get(id)) {
         throw [400, `no review have this id`];
     }
@@ -284,8 +284,8 @@ async function updateReviewContent(
     dateOfReview
 ) {
     validation.checkArgumentsExist(id, content, dateOfReview);
-    dateOfReview = await validation.checkValidDate(dateOfReview);
-    id = await validation.checkObjectId(id, 'review id');
+    dateOfReview = validation.checkValidDate(dateOfReview);
+    id = validation.checkObjectId(id, 'review id');
     // how to check content and date?
     const oldReview = await get(id);
     const reviewsCollection = await reviewCollection();
@@ -310,8 +310,8 @@ async function updateReviewRating(
     rating,
     dateOfReview
 ) {
-    id = await validation.checkObjectId(id, 'review id');
-    rating = await validation.checkValidRating(rating);
+    id = validation.checkObjectId(id, 'review id');
+    rating = validation.checkValidRating(rating);
 
     const reviewsCollection = await reviewCollection();
     const oldReview = await this.get(id);
@@ -350,7 +350,7 @@ async function updateReviewRating(
 
 async function updateReviewComment(id, updatedReview) {
     validation.checkArgumentsExist(id, updatedReview);
-    id = await validation.checkObjectId(id, 'review id');
+    id = validation.checkObjectId(id, 'review id');
 
     const reviewsCollection = await reviewCollection();
     const updatedInfo = await reviewsCollection.findOneAndUpdate(

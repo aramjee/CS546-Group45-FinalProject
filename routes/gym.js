@@ -50,7 +50,7 @@ router.route('/manage').get(async (req, res) => {
 
     const gymOwnerId = req.session.userId;
     //console.log("Gym owner ID: " + gymOwnerId);
-    await validation.checkObjectId(gymOwnerId, "gymOwnerId");
+    validation.checkObjectId(gymOwnerId, "gymOwnerId");
     const gymsList = await gymData.getByGymOwnerId(gymOwnerId);
 
     // console.log(gymsList);
@@ -80,8 +80,9 @@ router.route('/add').post(async (req, res) => {
 
     validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
     validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
-    await validation.checkValidWebsite(req.body.website);
-    await validation.checkObjectId(req.session.userId, "gymOwnerId");
+    validation.checkValidWebsite(req.body.website);
+    validation.checkObjectId(req.session.userId, "gymOwnerId");
+    validation.checkValidGymCategory(req.body.category);
 
     await gymData.create(req.body.gymName, req.body.website, req.body.category, req.session.userId, req.body.address, req.body.city, req.body.state, req.body.zip);
     res.status(201).redirect("/gym/manage");
@@ -124,7 +125,7 @@ router.route('/delete/:gymId').delete(async (req, res) => {
     }
     const gymOwnerId = req.session.userId;
     const gymId = req.params.gymId;
-    await validation.checkObjectId(gymId, "gymId");
+    validation.checkObjectId(gymId, "gymId");
     //TODO: throw 403 for mismatch ownerId, need to catch
     await gymData.remove(gymId, gymOwnerId);
     res.status(200).redirect("/gym/manage");
@@ -169,7 +170,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
     }
     const gymOwnerId = req.session.userId;
     const gymId = req.params.gymId;
-    await validation.checkObjectId(gymId, "gymId");
+    validation.checkObjectId(gymId, "gymId");
     const gym = gymData.getByGymId(gymId);
     if (gym.gymOwnerId !== gymOwnerId) {
       return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
@@ -177,7 +178,8 @@ router.route('/edit/:gymId').put(async (req, res) => {
 
     validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip);
     validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip);
-    await validation.checkValidWebsite(req.body.website);
+    validation.checkValidWebsite(req.body.website);
+    validation.checkValidGymCategory(req.body.category);
     gym.gymName = req.body.gymName;
     gym.website = req.body.website;
     gym.category = req.body.category;
@@ -199,7 +201,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
 // Thumb up in gym detail page
 router.route('/:gymId/like').post(async (req, res) => {
   try {
-    await validation.checkObjectId(req.params.gymId);
+    validation.checkObjectId(req.params.gymId);
     const gymId = req.params.gymId.toString();
 
     let userLoggedIn = helpers.checkIfLoggedIn(req);
@@ -249,7 +251,7 @@ router.route('/:gymId/like').post(async (req, res) => {
 // Thumb down in gym detail page
 router.route('/:gymId/dislike').post(async (req, res) => {
   try {
-    await validation.checkObjectId(req.params.gymId);
+    validation.checkObjectId(req.params.gymId);
     const gymId = req.params.gymId.toString();
 
     let userLoggedIn = helpers.checkIfLoggedIn(req);

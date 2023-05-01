@@ -237,7 +237,7 @@ try {
     gymAA = await gyms.create(
         "Planet Fitness",
         "https://www.planetfitness.com",
-        "gym",
+        "Training gyms",
         gymOwnerA_id,
         "101 Washington St",
         "Hoboken",
@@ -254,7 +254,7 @@ try {
     gymAB = await gyms.create(
         "Blink Fitness",
         "https://www.blinkfitness.com",
-        "gym",
+        "Boot Camps",
         gymOwnerA_id,
         "140 Washington St",
         "Hoboken",
@@ -291,7 +291,7 @@ try {
     gymBA = await gyms.create(
         "Crunch Fitness",
         "https://www.crunch.com",
-        "gym",
+        "24 hour access gym",
         gymOwnerB_id,
         "101 Hudson St",
         "Hoboken",
@@ -308,7 +308,7 @@ try {
     gymBB = await gyms.create(
         "Retro Fitness",
         "https://www.retrofitness.com",
-        "gym",
+        "Membership Gym",
         gymOwnerB_id,
         "110 Sinatra Dr",
         "Hoboken",

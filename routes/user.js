@@ -55,7 +55,7 @@ router.route('/login').post(async (req, res) => {
     const { email, password } = req.body;
     try {
       validation.checkValidEmail(email);
-      await validation.checkValidPassword(password);
+      validation.checkValidPassword(password);
       const userId = await userData.checkUser(email, password);
       if (userId) {
         req.session.userId = userId.userId;
@@ -105,11 +105,11 @@ router.route('/signup').post(async (req, res) => {
   try {
     validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, password);
     validation.checkNonEmptyStrings(userName, email, password);
-    await validation.checkValidEmail(email);
-    await validation.checkValidPassword(password);
+    validation.checkValidEmail(email);
+    validation.checkValidPassword(password);
 
     if (dateOfBirth.length > 0) {
-      await validation.checkValidDate(dateOfBirth);
+      validation.checkValidDate(dateOfBirth);
     }
 
   } catch (e) {
@@ -247,7 +247,7 @@ router.route('/update').post(async (req, res) => {
       validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth);
       validation.checkNonEmptyStrings(firstName, lastName, userName, city, state);
       if (dateOfBirth.length > 0) {
-        await validation.checkValidDate(dateOfBirth);
+        validation.checkValidDate(dateOfBirth);
       }
       if (password !== confirm) {
         throw [400, `ERROR: Passwords must match`];

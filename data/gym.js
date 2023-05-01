@@ -22,9 +22,9 @@ const create = async (
   // Validation
   validation.checkArgumentsExist(gymName, website, category, gymOwnerId, address, city, state, zip);
   validation.checkNonEmptyStrings(gymName, website, category, gymOwnerId, address, city, state, zip);
-  await validation.checkValidWebsite(website);
-  await validation.checkObjectId(gymOwnerId, "gymOwnerId");
-
+  validation.checkValidWebsite(website);
+  validation.checkObjectId(gymOwnerId, "gymOwnerId");
+  validation.checkValidGymCategory(category);
 
   const newGym = {
     gymName: gymName.trim(),
@@ -56,7 +56,7 @@ const create = async (
 
 const getByGymId = async (id) => {
   //id = id.trim(); // since on line 59 and 60 id is not trimmed yet; but also inside the remove function, id should is not trimmed and pass in.
-  await validation.checkObjectId(id, "GymId");
+  validation.checkObjectId(id, "GymId");
   const gymsDBConnection = await gymCollection();
   const gymGet = await gymsDBConnection.findOne({ _id: ObjectId(id.trim()) });
   if (gymGet === null)
@@ -77,8 +77,8 @@ const getAll = async () => {
 
 
 const remove = async (id, ownerId) => {
-  await validation.checkObjectId(id, "GymId");
-  await validation.checkObjectId(ownerId, "GymOwnerId");
+  validation.checkObjectId(id, "GymId");
+  validation.checkObjectId(ownerId, "GymOwnerId");
   const gym = await getByGymId(id);
   if (gym.gymOwnerId !== ownerId) {
     throw [403, `Error: Could not delete gym with If you are not owner`];
@@ -105,17 +105,18 @@ const remove = async (id, ownerId) => {
 
 const update = async (id, gym) => {
   // Validation
-  await validation.checkObjectId(id, "GymId");
+  validation.checkObjectId(id, "GymId");
   // since we have so far only have the option to let user update gym's review through editing the review of the gym, 
   // the gym I would pass in will have a rating. Should we check for it's existence as well?
   validation.checkArgumentsExist(gym.gymName, gym.website, gym.category, gym.address, gym.city, gym.state, gym.zip);
   validation.checkNonEmptyStrings(gym.gymName, gym.website, gym.category, gym.address, gym.city, gym.state, gym.zip);
-  await validation.checkValidWebsite(gym.website);
-  await validation.checkValidNonNegativeInteger(gym.likedGymsCnt);
-  await validation.checkValidNonNegativeInteger(gym.dislikedGymsCnt);
+  validation.checkValidWebsite(gym.website);
+  validation.checkValidNonNegativeInteger(gym.likedGymsCnt);
+  validation.checkValidNonNegativeInteger(gym.dislikedGymsCnt);
+  validation.checkValidGymCategory(gym.category);
   // in order to update the gym, the review will call this function
   // but need to check if this is the first review, or otherwise the gym rating is 0.
-  if (gym.rating) { await validation.checkValidRating(gym.rating) };
+  if (gym.rating) { validation.checkValidRating(gym.rating) };
 
   // Update the gym data in the database
   const gymsDBConnection = await gymCollection();
@@ -159,7 +160,7 @@ const searchByValue = async (name) => {
 };
 
 const getByGymOwnerId = async (gymOwnerId) => {
-  await validation.checkObjectId(gymOwnerId, "gymOwnerId");
+  validation.checkObjectId(gymOwnerId, "gymOwnerId");
 
   const gymsDBConnection = await gymCollection();
   const gymsList = await gymsDBConnection.find({ gymOwnerId: gymOwnerId }).toArray();
@@ -168,7 +169,7 @@ const getByGymOwnerId = async (gymOwnerId) => {
 };
 
 const updateLikedGymsCnt = async (id, change) => {
-  await validation.checkObjectId(id);
+  validation.checkObjectId(id);
   const gymsDBConnection = await gymCollection();
   let updateOne = await gymsDBConnection.updateOne(
     { _id: new ObjectId(id) },
@@ -179,7 +180,7 @@ const updateLikedGymsCnt = async (id, change) => {
 };
 
 const updateDislikedGymsCnt = async (id, change) => {
-  await validation.checkObjectId(id);
+  validation.checkObjectId(id);
   const gymsDBConnection = await gymCollection();
   let updateOne = await gymsDBConnection.updateOne(
     { _id: new ObjectId(id) },
