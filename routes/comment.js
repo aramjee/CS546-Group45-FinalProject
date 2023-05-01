@@ -31,7 +31,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
     }
     let newComment = req.body;
     let reviewId = req.params.reviewId;
-    reviewId = await validation.checkObjectId(reviewId);
+    reviewId = validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
     if (req.session.userId === review.userId) {
       let title = 'ERROR'
@@ -45,7 +45,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let userId = req.session.userId;
     validation.checkArgumentsExist(newComment.content);
     let content = validation.checkString(newComment.content);
-    userId = await validation.checkObjectId(userId);
+    userId = validation.checkObjectId(userId);
     // create the comment
     await commentData.create(userId, date, content, reviewId);
     // render the singleGym
@@ -105,7 +105,7 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     const date = s.slice(0, 10);
     validation.checkArgumentsExist(commentId, updatedComment.content);
     updatedComment.content = validation.checkString(updatedComment.content);
-    updatedComment.commentId = await validation.checkObjectId(commentId, 'comment id');
+    updatedComment.commentId = validation.checkObjectId(commentId, 'comment id');
     // update comment
     await commentData.update(commentId, updatedComment.content, date);
     let comment = await commentData.get(commentId);
@@ -169,7 +169,7 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     //const userId = req.session.userId;
     console.log("You're inside the DELETE Comment POST!")
     let commentId = req.params.commentId;
-    commentId = await validation.checkObjectId(commentId);
+    commentId = validation.checkObjectId(commentId);
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'

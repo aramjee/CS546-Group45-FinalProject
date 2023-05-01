@@ -61,7 +61,7 @@ router.route('/new/:gymId').post(async (req, res) => {
     }
     validation.checkNonEmptyStrings(newReview.content, newReview.rating);
     newReview.rating = parseFloat(newReview.rating)
-    newReview.rating = await validation.checkValidRating(newReview.rating);
+    newReview.rating = validation.checkValidRating(newReview.rating);
     await reviewData.create(gymId, userId, date, newReview.content, newReview.rating);
     // make reviewList ids => review objects, get the gym for rendering the singleGymPage (since new review successfully created)
     let gym = await gymData.getByGymId(gymId);
@@ -131,7 +131,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     }
     validation.checkNonEmptyStrings(reviewId, content);
     content = content.trim();
-    reviewId = await validation.checkObjectId(reviewId);
+    reviewId = validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
     if (req.session.userId !== review.userId) {
       throw [400, "This review does not belong to you!"]
@@ -217,9 +217,9 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
       throw [400, "This review does not belong to you!"]
     }
     validation.checkNonEmptyStrings(reviewId, date);
-    reviewId = await validation.checkObjectId(reviewId);
+    reviewId = validation.checkObjectId(reviewId);
     rating = parseFloat(rating)
-    rating = await validation.checkValidRating(rating);
+    rating = validation.checkValidRating(rating);
     // update review rating
     await reviewData.updateReviewRating(reviewId, rating, date);
     // make reviewList ids => review objects, get the gym for rendering the singleGymPage (since new review successfully created)
@@ -288,7 +288,7 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     console.log("You're inside the DELETE review /delete/:id")
     const currentUser = await userData.getByUserId(req.session.userId);
     let reviewId = req.params.reviewId;
-    reviewId = await validation.checkObjectId(reviewId);
+    reviewId = validation.checkObjectId(reviewId);
     let review = await reviewData.get(reviewId);
     if (req.session.userId !== review.userId) {
       throw [400, "This review does not belong to you!"]

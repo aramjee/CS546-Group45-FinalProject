@@ -21,10 +21,10 @@ const create = async (
   // Validation
   validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, password, isGymOwner);
   validation.checkNonEmptyStrings(userName, email, password);
-  await validation.checkValidEmail(email);
+  validation.checkValidEmail(email);
 
   if (dateOfBirth.length > 0) {
-    await validation.checkValidDate(dateOfBirth);
+    validation.checkValidDate(dateOfBirth);
   }
 
   const lowerCaseEmail = email.toLowerCase();
@@ -77,7 +77,7 @@ const create = async (
 };
 
 const getByUserId = async (id) => {
-  await validation.checkObjectId(id, "UserId");
+  validation.checkObjectId(id, "UserId");
   const usersDBConnection = await userCollection();
   const userGet = await usersDBConnection.findOne({ _id: ObjectId(id.trim()) });
   if (userGet === null)
@@ -87,7 +87,7 @@ const getByUserId = async (id) => {
 };
 
 const getByUserEmail = async (email) => {
-  await validation.checkValidEmail(email);
+  validation.checkValidEmail(email);
   const usersDBConnection = await userCollection();
   const userGet = await usersDBConnection.findOne({ email: email });
   if (userGet === null) {
@@ -121,7 +121,7 @@ const getAll = async () => {
 
 
 const remove = async (id) => {
-  await validation.checkObjectId(id, "UserId");
+  validation.checkObjectId(id, "UserId");
   const usersDBConnection = await userCollection();
   const deletionInfo = await usersDBConnection.findOneAndDelete({
     _id: ObjectId(id.trim())
@@ -138,19 +138,19 @@ const remove = async (id) => {
 
 const update = async (id, user) => {
   // Validation
-  await validation.checkObjectId(id, "UserId");
+  validation.checkObjectId(id, "UserId");
   validation.checkArgumentsExist(user.firstName, user.lastName, user.userName, user.email, user.city, user.state,
     user.dateOfBirth, user.hashedPassword, user.reviews, user.comments, user.likedGyms, user.dislikedGyms,
     user.favGymList, user.gymsListForOwner);
   validation.checkNonEmptyStrings(user.firstName, user.lastName, user.userName, user.email, user.city, user.state, user.hashedPassword);
-  await validation.checkValidEmail(user.email);
-  await validation.checkValidDate(user.dateOfBirth);
-  await validation.checkObjectIdArray(user.reviews);
-  await validation.checkObjectIdArray(user.comments);
-  await validation.checkObjectIdArray(user.likedGyms);
-  await validation.checkObjectIdArray(user.dislikedGyms);
-  await validation.checkObjectIdArray(user.favGymList);
-  await validation.checkObjectIdArray(user.gymsListForOwner);
+  validation.checkValidEmail(user.email);
+  validation.checkValidDate(user.dateOfBirth);
+  validation.checkObjectIdArray(user.reviews);
+  validation.checkObjectIdArray(user.comments);
+  validation.checkObjectIdArray(user.likedGyms);
+  validation.checkObjectIdArray(user.dislikedGyms);
+  validation.checkObjectIdArray(user.favGymList);
+  validation.checkObjectIdArray(user.gymsListForOwner);
 
   // Update the user data in the database
   const usersDBConnection = await userCollection();
@@ -185,7 +185,7 @@ const update = async (id, user) => {
 };
 
 const removeGymFromUsers = async (gymId) => {
-  await validation.checkObjectId(gymId, "gymId");
+  validation.checkObjectId(gymId, "gymId");
 
 
   const usersDBConnection = await userCollection();
@@ -204,7 +204,7 @@ const removeGymFromUsers = async (gymId) => {
 
 const checkUser = async (emailAddress, password) => {
   validation.checkValidEmail(emailAddress)
-  await validation.checkValidPassword(password)
+  validation.checkValidPassword(password)
   const user = await getByUserEmail(emailAddress.toLowerCase());
   if (!user) {
     throw [404, "ERROR: Either the email address or password is invalid"];
@@ -220,7 +220,7 @@ const checkUser = async (emailAddress, password) => {
   return { userId: user._id.toString() };
 };
 const getUserName = async (id) => {
-  await validation.checkObjectId(id, "UserId");
+  validation.checkObjectId(id, "UserId");
   let user = await getByUserId(id)
   let userName = user.userName;
   return userName;

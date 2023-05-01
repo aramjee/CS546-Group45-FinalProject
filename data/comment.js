@@ -13,7 +13,7 @@ import { reviewCollection } from '../config/mongoCollections.js';
 // return one comment object
 async function get(commentId) {
     validation.checkArgumentsExist(commentId);
-    commentId = await validation.checkObjectId(commentId, 'commentId')
+    commentId = validation.checkObjectId(commentId, 'commentId')
     const allReviewIds = await reviewDataFunctions.getAll();
     const allReview = []
     for (let id of allReviewIds) {
@@ -34,7 +34,7 @@ async function get(commentId) {
 // return a list of comment ids under a review
 async function getAllByReview(reviewId) {
     validation.checkArgumentsExist(reviewId);
-    reviewId = await validation.checkObjectId(reviewId, 'reviewId')
+    reviewId = validation.checkObjectId(reviewId, 'reviewId')
     const review = await reviewDataFunctions.get(reviewId);
     if (review.length === 0) {
         throw [400, `invalid reviewId`];
@@ -53,7 +53,7 @@ async function getAllByReview(reviewId) {
 // return a list of comment ids posted by the user
 async function getAllByUser(userId) {
     validation.checkArgumentsExist(userId);
-    userId = await validation.checkObjectId(userId, 'userId');
+    userId = validation.checkObjectId(userId, 'userId');
     if (!userDataFunctions.getByUserId(userId)) {
         throw [400, `no user have such id`]
     }
@@ -83,8 +83,8 @@ async function create(
     validation.checkArgumentsExist(userId, dateOfComment, content, reviewId);
     dateOfComment = validation.checkValidDate(dateOfComment);
     content = validation.checkNonEmptyStrings(content)[0];
-    userId = await validation.checkObjectId(userId);
-    reviewId = await validation.checkObjectId(reviewId);
+    userId = validation.checkObjectId(userId);
+    reviewId = validation.checkObjectId(reviewId);
     let userName = await userDataFunctions.getUserName(userId)
     let review = await reviewDataFunctions.get(reviewId)
     for (let c of review.comments) {
@@ -128,7 +128,7 @@ async function create(
 
 async function remove(commentId) {
     validation.checkArgumentsExist(commentId);
-    commentId = await validation.checkObjectId(commentId, 'commentId');
+    commentId = validation.checkObjectId(commentId, 'commentId');
 
     const comment = await this.get(commentId);
     const userId = comment.userId;
@@ -162,7 +162,7 @@ async function update(
     validation.checkArgumentsExist(id, content, dateOfComment);
     dateOfComment = validation.checkValidDate(dateOfComment);
     content = validation.checkNonEmptyStrings(content)[0];
-    id = await validation.checkObjectId(id, 'id');
+    id = validation.checkObjectId(id, 'id');
 
     // todo: how to check content?
     // pull the old review first, and then create a new review (only update the review collection since in the user collection it's a list of ids not list of object)
