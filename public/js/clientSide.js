@@ -146,7 +146,7 @@
 
                 login.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e; return false;
+                document.getElementById('error').innerText = "(400) " + e;
             }
         });
     }
@@ -295,17 +295,16 @@
 
                 newReview.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e; return false;
+                document.getElementById('error').innerText = "(400) " + e;
             }
         });
     }
 
-    const updateReview = document.getElementById('updateReview-form');
+    const updateReviewRating = document.getElementById('updateReviewRating-form');
 
-    if (updateReview) {
-        updateReview.addEventListener("submit", (event) => {
+    if (updateReviewRating) {
+        updateReviewRating.addEventListener("submit", (event) => {
             let rating = document.getElementById('rating').value;
-            let content = document.getElementById('content').value;
 
             event.preventDefault();
             try {
@@ -315,16 +314,32 @@
                 if (rating < 1 || rating > 5) {
                     throw new Error("Rating must be between 1 and 5");
                 }
-                if (content.length > 0) {
-                    content = checkString(content);
-                }
 
-                updateReview.submit();
+                updateReviewRating.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e; return false;
+                document.getElementById('error').innerText = "(400) " + e;
             }
         });
     }
+
+    const updateReviewContent = document.getElementById('updateReviewContent-form');
+
+    if (updateReviewContent) {
+        updateReviewContent.addEventListener("submit", (event) => {
+            let content = document.getElementById('content').value;
+
+            event.preventDefault();
+            try {
+                content = checkString(content);
+
+                updateReviewContent.submit();
+            } catch (e) {
+                document.getElementById('error').innerText = "(400) " + e; 
+            }
+        });
+    }
+
+
 
     const newComment = document.getElementById('newComment-form');
 
@@ -338,7 +353,7 @@
 
                 newComment.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e; return false;
+                document.getElementById('error').innerText = "(400) " + e;
             }
         });
     }
@@ -355,7 +370,7 @@
 
                 updateComment.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e; return false;
+                document.getElementById('error').innerText = "(400) " + e;
             }
         });
     }
