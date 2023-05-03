@@ -102,7 +102,6 @@
     const signup = document.getElementById('signup-form');
 
     if (signup) {
-        //console.log("in signup");
         signup.addEventListener("submit", (event) => {
             let firstName = document.getElementById('firstName').value;
             let lastName = document.getElementById('lastName').value;
@@ -173,7 +172,6 @@
     const updateProfile = document.getElementById('update-form');
 
     if (updateProfile) {
-        console.log("in update");
         updateProfile.addEventListener("submit", (event) => {
             let firstName = document.getElementById('firstName').value;
             let lastName = document.getElementById('lastName').value;
@@ -183,8 +181,6 @@
             let dateOfBirth = document.getElementById('dateOfBirth').value;
             let password = document.getElementById('password').value;
             let confirm = document.getElementById('confirm').value;
-            let isGymOwner = document.getElementById('isGymOwner').value;
-
 
             event.preventDefault();
             try {
@@ -210,14 +206,6 @@
                 if (password != confirm) {
                     throw new Error("Passwords must match");
                 }
-
-                if (!(typeof isGymOwner === 'string' || isGymOwner instanceof String)) {
-                    throw new Error("Please specify account type");
-                }
-                if (!(isGymOwner === "True" || isGymOwner === "")) {
-                    throw new Error("Account must be 'owner' or 'user' type");
-                }
-
 
                 updateProfile.submit();
             } catch (e) {
