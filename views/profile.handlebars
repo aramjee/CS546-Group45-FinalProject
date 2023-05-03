@@ -60,30 +60,37 @@
                     Gyms
                 </button>
                 {{else}}
-                {{#each gymsList}}
                 <p class="mb-0">Favorited Gyms</p>
                 <div class="col">
-                    <a href="/gym/{{_id}}" class="card-link">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">{{gymName}}</h5>
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        {{#each category}}
-                                        <span class="badge rounded-pill text-bg-secondary">{{.}}</span>
-                                        {{/each}}
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            {{#ifEquals favGymList.length 0}}
+                                No gyms added to favorites!
+                            {{else}}
+                                {{#each favGymList}}
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <p class="mb-0">{{gymName}}</p>
                                     </div>
-                                    <div>
-                                        <small class="text-body-secondary">{{rating}}</small>
+                                    <div class="col-sm-7">
+                                        <p class="text-muted mb-0">{{rating}}</p>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <form action="/user/delete-fav-gym/{{_id}}" method="POST">
+                                            <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
+                                        </form>
                                     </div>
                                 </div>
-                            </div>
+                                {{#unless @last}} <hr/>{{/unless}}
+                                
+                            {{/each}}
+                            {{/ifEquals}}
+                            
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
-            {{/each}}
+            <br/>
             <div class="row">
                 <p class="mb-0">Reviews</p>
                 {{#each reviewsWithGymsInfo}}

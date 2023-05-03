@@ -239,7 +239,10 @@ router.route('/:gymId/like').post(async (req, res) => {
 
     await userData.update(userId, user);
 
-    return res.status(200).json({ message: `Success Liked gym ${gymId}` });
+    //Returning gym to dynamically render like/dislike button with actual count
+    let gym = await gymData.getByGymId(gymId);
+
+    return res.status(200).json({ gym:gym, message: `Success Liked gym ${gymId}` });
 
   } catch (e) {
     let status = e[0] ? e[0] : 500;
@@ -289,7 +292,10 @@ router.route('/:gymId/dislike').post(async (req, res) => {
 
     await userData.update(userId, user);
 
-    return res.status(200).json({ message: `Success DisLiked gym ${gymId}` });
+    //Returning gym to dynamically render like/dislike button with actual count
+    let gym = await gymData.getByGymId(gymId);
+
+    return res.status(200).json({ gym:gym, message: `Success DisLiked gym ${gymId}` });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';

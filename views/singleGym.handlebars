@@ -4,14 +4,25 @@
         <h2>{{gym.gymName}}</h2>
         {{#if userLoggedIn}}
         <div class="pull-right">
+            {{!-- Rendering add/remove favorite button on first page load --}}
+            <span id="fav-button-wrapper">
+                {{#ifExistsInArray gym._id currentUser.favGymList}}
+                <input id="btnRemoveFromFav" type="button" value="Remove from Favorites" class="btn btn-sm btn-danger"
+                    data-gymid={{gym._id}} />
+                {{else}}
+                <input id="btnAddToFav" type="button" value="Add to Favorites" class="btn btn-sm btn-primary"
+                    data-gymid={{gym._id}} />
+                {{/ifExistsInArray}}
+            </span>
+            {{!-- Template which will be used to render add/remove favorite button when user clicks on it --}}
+            <script id="add-remove-fav-template" type="text/x-handlebars-template">
+                \{{#if gymIsFavorited}}
+                    <input id="btnRemoveFromFav" type="button" value="Remove from Favorites" class="btn btn-sm btn-danger" data-gymid=\{{gym._id}} />
+                \{{else}}
+                    <input id="btnAddToFav" type="button" value="Add to Favorites" class="btn btn-sm btn-primary" data-gymid=\{{gym._id}} />
+                \{{/if}}
+            </script>
 
-            {{!-- WORK IN PROGRESS: WILL NEED TO SHOW ADD/REMOVE FROM FAV BUTTON DYNAMICALLY AFTER AJAX REQUEST --}}
-            {{#ifExistsInArray gym._id currentUser.favGymList}}
-                <input id="btnRemoveFromFav" type="button" value="Remove from Favorites" class="btn btn-sm btn-danger" data-gymid={{gym._id}} />
-            {{else}}
-                <input id="btnAddToFav" type="button" value="Add to Favorites" class="btn btn-sm btn-primary" data-gymid={{gym._id}} />
-            {{/ifExistsInArray}}
-            
 
             <input type="button" onclick="location.href = '/review/new/{{gym._id}}'" ; value="Post a New Review"
                 class="btn btn-sm btn-dark" />
@@ -30,16 +41,25 @@
             <div><span class="bold">Website:</span> {{gym.website}}</div>
         </div>
         <div>
+            {{!-- First time render of like/dislike button --}}
+            <div id="like-dislike-wrapper">
+                <input class="btnLikeGym btn btn-sm btn-success" type="button" data-gymid={{gym._id}}
+                    value="Like ({{gym.likedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} />
 
- {{!-- Chloe: 1.I think "input" tag does not work for a posst request, while form does, feel free to update it with AJAX 2. remeber to fire to respective route  --}}
-            <input class="btnLikeGym btn btn-sm btn-success" type="button" data-likecount={{gym.likedGymsCnt}}
-                data-gymid={{gym._id}} value="Like ({{gym.likedGymsCnt}})" {{#unless
+                <input class="btnDislikeGym btn btn-sm btn-danger" type="button" data-gymid={{gym._id}}
+                    value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} />
+            </div>
+            {{!-- Template which will be used to dynamically render like/dislike button with actual count when user
+            clicks on it --}}
+            <script id="like-dislike-template" type="text/x-handlebars-template">
+                <input class="btnLikeGym btn btn-sm btn-success" type="button"
+                data-gymid=\{{gym._id}} value="Like (\{{gym.likedGymsCnt}})" {{#unless
                 userLoggedIn}}disabled{{/unless}} />
 
-            <input class="btnDislikeGym btn btn-sm btn-danger" type="button" data-dislikecount={{gym.dislikedGymsCnt}}
-                data-gymid={{gym._id}} value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless
+                <input class="btnDislikeGym btn btn-sm btn-danger" type="button"
+                data-gymid=\{{gym._id}} value="Dislike (\{{gym.dislikedGymsCnt}})" {{#unless
                 userLoggedIn}}disabled{{/unless}} />
-
+            </script>
         </div>
     </div>
 </div>
