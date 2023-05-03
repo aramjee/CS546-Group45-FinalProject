@@ -240,7 +240,7 @@ router.route('/update').post(async (req, res) => {
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
-    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm, isGymOwner } = req.body;
+    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm} = req.body;
     let user = await userData.getByUserId(req.session.userId);
 
     try {
@@ -269,7 +269,6 @@ router.route('/update').post(async (req, res) => {
       user.city = city;
       user.state = state;
       user.dateOfBirth = dateOfBirth;
-      user.isGymOwner = isGymOwner;
 
       await userData.update(req.session.userId, user);
     } catch (e) {
