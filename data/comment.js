@@ -108,6 +108,7 @@ async function create(
 
     // add the comment to the review, note that comment is a subcollection of the review
     const reviewsCollection = await reviewCollection();
+    const oldReview = await reviewsCollection.findOne({ _id: new ObjectId(reviewId) });
     const updatedReview = await reviewsCollection.findOne({ _id: new ObjectId(reviewId) });
     updatedReview.comments.push(newComment);
     await reviewDataFunctions.updateReviewComment(reviewId, updatedReview);
@@ -167,6 +168,9 @@ async function update(
     // todo: how to check content?
     // pull the old review first, and then create a new review (only update the review collection since in the user collection it's a list of ids not list of object)
     let updatedComment = await this.get(id);
+    if (content === updatedComment.content) {
+        throw [400, "no real update!"]
+    }
     let reviewId = updatedComment.reviewId;
     updatedComment.content = content;
     updatedComment.dateOfComment = dateOfComment;

@@ -52,7 +52,8 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
     let status = e[0] ? e[0] : 500;
@@ -118,7 +119,8 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
     let status = e[0] ? e[0] : 500;
@@ -181,7 +183,8 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     let gym = await gymData.getByGymId(gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
     let status = e[0] ? e[0] : 500;
@@ -191,11 +194,14 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     errors.push(message);
     // if not known single gym, redirect to error page (there exist an input error)
     let review = await reviewData.get(req.params.reviewId)
-    let gym = await reviewData.getGymReviewsListObjects(review.gymId);
-    if (!gym) {
+    let gymReviewList = await reviewData.getGymReviewsListObjects(review.gymId);
+    if (!gymReviewList) {
       let title = 'ERROR'
       return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
     }
+    let gym = await gymData.getByGymId(review.gymId);
+    let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
+    gym.reviews = reviewList;
     let commentId = req.params.commentId;
     let comment = await commentData.get(commentId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
