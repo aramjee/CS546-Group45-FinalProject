@@ -15,11 +15,14 @@ router.route('/new/:reviewId').get(async (req, res) => {
     let review = await reviewData.get(req.params.reviewId)
     if (req.session.userId === review.userId) {
       let title = 'ERROR'
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
+      const currentUser = await userData.getByUserId(req.session.userId);
+
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
     }
     let gym = await gymData.getByGymId(review.gymId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    res.render('newComment', { UserLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, review: review, hasErrors: false, errors: [] });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    res.render('newComment', { UserLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, review: review, hasErrors: false, errors: [], currentUser: currentUser });
   }
 });
 // a logged-in user to create a new comment under a specific gym and specific review
@@ -35,7 +38,8 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let review = await reviewData.get(reviewId);
     if (req.session.userId === review.userId) {
       let title = 'ERROR'
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
     }
     // input check
     console.log("you're inside the comment router.route('/new/:reviewId').post")
@@ -66,10 +70,12 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let gym = await reviewData.getGymReviewsListObjects(review.gymId);
     if (!gym) {
       let title = 'ERROR'
-      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
     }
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.status(status).render("newComment", { userLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, hasErrors: hasErrors, errors: errors, review: review });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("newComment", { userLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, hasErrors: hasErrors, errors: errors, review: review, currentUser: currentUser });
   }
 });
 
@@ -84,12 +90,14 @@ router.route('/update/:reviewId/:commentId').get(async (req, res) => {
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
     }
     let review = await reviewData.get(req.params.reviewId)
     let gym = await gymData.getByGymId(review.gymId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    res.render('updateComment', { userLoggedIn: userLoggedIn, title: 'Update Comment', comment: comment, review: review, gym: gym });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    res.render('updateComment', { userLoggedIn: userLoggedIn, title: 'Update Comment', comment: comment, review: review, gym: gym, currentUser: currentUser });
   }
 });
 router.route('/update/:reviewId/:commentId').post(async (req, res) => {
@@ -112,7 +120,8 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(400).render("error", { title: title, hasErrors: true, currentUser: currentUser, errors: ["Please do not post under your own review!"] });
     }
     let review = await reviewData.get(comment.reviewId);
     // return the correct gym
@@ -133,12 +142,14 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     let gym = await reviewData.getGymReviewsListObjects(review.gymId);
     if (!gym) {
       let title = 'ERROR'
-      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
     }
     let commentId = req.params.commentId;
     let comment = await commentData.get(commentId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.status(status).render("updateComment", { userLoggedIn: userLoggedIn, title: 'Update Comment', gym: gym, hasErrors: hasErrors, errors: errors, review: review, comment: comment });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("updateComment", { userLoggedIn: userLoggedIn, title: 'Update Comment', gym: gym, hasErrors: hasErrors, errors: errors, review: review, comment: comment, currentUser: currentUser });
 
   }
 })
@@ -151,15 +162,29 @@ router.route('/delete/:reviewId/:commentId').get(async (req, res) => {
   } else {
     console.log("You're inside the GET comment '/delete/:id'")
     let commentId = req.params.commentId;
+    try {
+      let comment = await commentData.get(commentId);
+    } catch (e) {
+      let title = 'ERROR'
+      let status = e[0] ? e[0] : 500;
+      let message = e[1] ? e[1] : 'Internal Server Error';
+      let errors = []
+      let hasErrors = true
+      errors.push(message)
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
+    }
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
     }
     let review = await reviewData.get(comment.reviewId);
     let gym = await gymData.getByGymId(review.gymId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.render('commentConfirmDelete', { userLoggedIn: userLoggedIn, title: 'Delete Comment', comment: comment, review: review, gym: gym });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.render('commentConfirmDelete', { userLoggedIn: userLoggedIn, title: 'Delete Comment', comment: comment, review: review, gym: gym, currentUser: currentUser });
   }
 });
 router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
@@ -175,7 +200,8 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"] });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
     }
     let review = await reviewData.get(comment.reviewId);
     let gymId = review.gymId;
@@ -197,15 +223,24 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     let gymReviewList = await reviewData.getGymReviewsListObjects(review.gymId);
     if (!gymReviewList) {
       let title = 'ERROR'
-      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
     }
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
     let commentId = req.params.commentId;
-    let comment = await commentData.get(commentId);
+    try {
+      await commentData.get(commentId);
+    } catch (e) {
+      let title = 'ERROR'
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
+    }
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.status(status).render("commentConfirmDelete", { userLoggedIn: userLoggedIn, title: 'Delete Comment', gym: gym, hasErrors: hasErrors, errors: errors, review: review, comment: comment });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    let comment = await commentData.get(commentId);
+    return res.status(status).render("commentConfirmDelete", { userLoggedIn: userLoggedIn, title: 'Delete Comment', gym: gym, hasErrors: hasErrors, errors: errors, review: review, comment: comment, currentUser: currentUser });
   }
 })
 export default router;
