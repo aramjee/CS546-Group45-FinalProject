@@ -1,3 +1,5 @@
+import moment from "moment";
+
 (function () {
     function checkString(string) {
         if (!(typeof string === 'string' || string instanceof String)) {
