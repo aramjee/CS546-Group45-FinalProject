@@ -70,6 +70,8 @@ router.route('/new/:gymId').post(async (req, res) => {
     let gym = await gymData.getByGymId(gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(gymId)
     gym.reviews = reviewList;
+    let path = '/gym/' + gymId
+    return res.redirect(path);
     return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside review router.route('/new/:id').post");
@@ -149,6 +151,8 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
+    let path = '/gym/' + review.gymId
+    return res.redirect(path);
     return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/updateContent/:id').put")
@@ -237,6 +241,8 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     let gym = await gymData.getByGymId(req.params.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.gymId)
     gym.reviews = reviewList;
+    let path = '/gym/' + req.params.gymId
+    return res.redirect(path);
     return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/updateRating/:id').put");
@@ -313,6 +319,8 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
+    let path = '/gym/' + req.params.gymId
+    return res.redirect(path);
     res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/delete/:id').delete");

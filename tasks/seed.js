@@ -40,7 +40,7 @@ try {
         "johndoe",
         "johndoe@example.com",
         "New York",
-        "NY",
+        "New York",
         "1990-01-01",
         0,
         "P@ssw0rd"
@@ -58,7 +58,7 @@ try {
         "jsmith",
         "janesmith@example.com",
         "San Francisco",
-        "CA",
+        "California",
         "1991-02-02",
         0,
         "S!mP13r5"
@@ -76,7 +76,7 @@ try {
         "mjones",
         "maryjones@example.com",
         "Chicago",
-        "IL",
+        "Illinois",
         "1992-03-03",
         0,
         "M@ry!sP@ssw0rd"
@@ -94,7 +94,7 @@ try {
         "pbrown",
         "peterbrown@example.com",
         "Chicago",
-        "IL",
+        "Illinois",
         "1992-03-03",
         0,
         "M@ry!sP@ssw0rd"
@@ -112,7 +112,7 @@ try {
         "dgreen",
         "davidgreen@example.com",
         "Seattle",
-        "WA",
+        "Washington",
         "1994-05-05",
         0,
         "D@v1d5G!r33nP@ssw0rd"
@@ -130,7 +130,7 @@ try {
         "swhite",
         "susanwhite@example.com",
         "Denver",
-        "CO",
+        "Colorado",
         "1995-06-06",
         0,
         "Su54nW!t3P@ssw0rd"
@@ -148,7 +148,7 @@ try {
         "mblack",
         "michaelblack@example.com",
         "Atlanta",
-        "GA",
+        "Georgia",
         "1996-07-07",
         0,
         "M!cha3l5B!ackP@ssw0rd"
@@ -166,7 +166,7 @@ try {
         "sred",
         "sarahred@example.com",
         "Miami",
-        "FL",
+        "Florida",
         "1997-08-08",
         0,
         "S@r4h5R3dP@ssw0rd"
@@ -183,7 +183,7 @@ try {
         "eblue",
         "emilyblue@example.com",
         "Los Angeles",
-        "CA",
+        "California",
         "1998-09-09",
         0,
         "Em1ly5Bl!ueP@ssw0rd"
@@ -201,7 +201,7 @@ try {
         "cke",
         "cke1@stevens.com",
         "New York",
-        "NY",
+        "New York",
         "1997-09-23",
         0,
         "Cke1@stevens.edu"
@@ -221,8 +221,8 @@ try {
         "Foster",
         "janefoster",
         "janefoster@stevens.edu",
-        "NY",
-        "NY",
+        "New York",
+        "New York",
         "2000-01-01",
         1,
         "JaneFoster@123"
@@ -241,7 +241,7 @@ try {
         gymOwnerA_id,
         "101 Washington St",
         "Hoboken",
-        "NJ",
+        "New Jersey",
         "07030"
     )
     console.log('gymAA has been created');
@@ -258,7 +258,7 @@ try {
         gymOwnerA_id,
         "140 Washington St",
         "Hoboken",
-        "NJ",
+        "New Jersey",
         "07030"
     )
     console.log('gymAB has been created');
@@ -276,7 +276,7 @@ try {
         "ck2973",
         "ck2973@columbia.edu",
         "New York",
-        "NY",
+        "New York",
         "1997-09-23",
         1,
         "Cke1@stevens.edu"
@@ -295,7 +295,7 @@ try {
         gymOwnerB_id,
         "101 Hudson St",
         "Hoboken",
-        "NJ",
+        "New Jersey",
         "07030"
     )
     console.log('gymBA has been created');
@@ -312,7 +312,7 @@ try {
         gymOwnerB_id,
         "110 Sinatra Dr",
         "Hoboken",
-        "NJ",
+        "New Jersey",
         "07030"
     )
     console.log('gymBB has been created');

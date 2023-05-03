@@ -58,6 +58,8 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
     const currentUser = await userData.getByUserId(req.session.userId);
+    let path = '/gym/' + review.gymId
+    return res.redirect(path);
     res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
@@ -131,6 +133,8 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
     const currentUser = await userData.getByUserId(req.session.userId);
+    let path = '/gym/' + review.gymId
+    return res.redirect(path);
     res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
@@ -212,6 +216,8 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
     const currentUser = await userData.getByUserId(req.session.userId);
+    let path = '/gym/' + review.gymId
+    return res.redirect(path);
     res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
