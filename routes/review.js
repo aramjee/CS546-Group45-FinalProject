@@ -23,7 +23,8 @@ router.route('/new/:gymId').get(async (req, res) => {
     } else {
       let gym = await gymData.getByGymId(req.params.gymId)
       let userLoggedIn = helpers.checkIfLoggedIn(req);
-      return res.render('newReview', { userLoggedIn: userLoggedIn, title: 'Review Gym', gym: gym });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.render('newReview', { userLoggedIn: userLoggedIn, title: 'Review Gym', gym: gym, currentUser: currentUser });
     }
   } catch (e) {
     console.log("you're inside router.route('/new/:id').get")
@@ -34,7 +35,8 @@ router.route('/new/:gymId').get(async (req, res) => {
     let hasErrors = true
     errors.push(message);
     let title = 'ERROR'
-    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
   }
 });
 
@@ -77,7 +79,8 @@ router.route('/new/:gymId').post(async (req, res) => {
     let hasErrors = true
     errors.push(message);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.status(status).render("newReview", { userLoggedIn: userLoggedIn, title: 'Review Gym', hasErrors: hasErrors, errors: errors });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("newReview", { userLoggedIn: userLoggedIn, title: 'Review Gym', hasErrors: hasErrors, errors: errors, currentUser: currentUser });
   }
 });
 
@@ -97,7 +100,8 @@ router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
     if (req.session.userId !== review.userId) {
       throw [400, "This review does not belong to you!"]
     }
-    return res.render('updateReviewContent', { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, review: review });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.render('updateReviewContent', { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, review: review, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/updateContent/:id').get")
     console.log(e)
@@ -107,7 +111,8 @@ router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
     let hasErrors = true
     errors.push(message);
     let title = 'ERROR'
-    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
   }
 
 });
@@ -155,12 +160,14 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     let gym = await reviewData.getGymReviewsListObjects(req.params.gymId);
     if (!gym) {
       let title = 'ERROR'
-      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
     }
     let reviewId = req.params.reviewId;
     let review = await reviewData.get(reviewId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.status(status).render("updateReviewContent", { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, hasErrors: hasErrors, errors: errors, review: review });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("updateReviewContent", { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, hasErrors: hasErrors, errors: errors, review: review, currentUser: currentUser });
   }
 })
 
@@ -179,7 +186,8 @@ router.route('/updateRating/:gymId/:reviewId').get(async (req, res) => {
     if (req.session.userId !== review.userId) {
       throw [400, "This review does not belong to you!"]
     }
-    return res.render('updateReviewRating', { userLoggedIn: userLoggedIn, title: 'Update Rating', gym: gym, review: review });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.render('updateReviewRating', { userLoggedIn: userLoggedIn, title: 'Update Rating', gym: gym, review: review, currentUser: currentUser });
   } catch (e) {
     console.log("you're inside router.route('/updateRating/:id').get")
     console.log(e)
@@ -189,7 +197,8 @@ router.route('/updateRating/:gymId/:reviewId').get(async (req, res) => {
     let hasErrors = true
     errors.push(message);
     let title = 'ERROR'
-    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
   }
 });
 
@@ -238,13 +247,15 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     // if not known single gym, redirect to error page (there exist an input error)
     let gym = await reviewData.getGymReviewsListObjects(req.params.gymId);
     if (!gym) {
-      let title = 'ERROR'
-      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+      let title = 'ERROR';
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
     }
     let reviewId = req.params.reviewId;
     let review = await reviewData.get(reviewId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.status(status).render("updateReviewRating", { userLoggedIn: userLoggedIn, title: 'Update Rating', gym: gym, hasErrors: hasErrors, errors: errors, review: review });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("updateReviewRating", { userLoggedIn: userLoggedIn, title: 'Update Rating', gym: gym, hasErrors: hasErrors, errors: errors, review: review, currentUser: currentUser });
   }
 })
 
@@ -264,7 +275,8 @@ router.route('/delete/:gymId/:reviewId').get(async (req, res) => {
       }
       let gym = await gymData.getByGymId(review.gymId);
       let userLoggedIn = helpers.checkIfLoggedIn(req);
-      res.render('reviewConfirmDelete', { userLoggedIn: userLoggedIn, title: 'Delete Review', review: review, gym: gym });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      res.render('reviewConfirmDelete', { userLoggedIn: userLoggedIn, title: 'Delete Review', review: review, gym: gym, currentUser: currentUser });
     }
   } catch (e) {
     console.log("you're inside router.route('/delete/:id').get")
@@ -275,7 +287,8 @@ router.route('/delete/:gymId/:reviewId').get(async (req, res) => {
     let hasErrors = true
     errors.push(message);
     let title = 'ERROR'
-    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
   }
 });
 router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
@@ -307,16 +320,26 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     let errors = []
     let hasErrors = true
     errors.push(message);
+    console.log(message)
     // if not known single gym, redirect to error page (there exist an input error)
     let gym = await reviewData.getGymReviewsListObjects(req.params.gymId);
     if (!gym) {
       let title = 'ERROR'
-      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors });
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
     }
     let reviewId = req.params.reviewId;
+    try {
+      await reviewData.get(reviewId);
+    } catch (e) {
+      let title = 'ERROR'
+      const currentUser = await userData.getByUserId(req.session.userId);
+      return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser });
+    }
     let review = await reviewData.get(reviewId);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
-    return res.status(status).render("reviewConfirmDelete", { userLoggedIn: userLoggedIn, title: 'Delete Review', hasErrors: hasErrors, errors: errors, review: review });
+    const currentUser = await userData.getByUserId(req.session.userId);
+    return res.status(status).render("reviewConfirmDelete", { userLoggedIn: userLoggedIn, title: 'Delete Review', hasErrors: hasErrors, errors: errors, review: review, currentUser: currentUser });
   }
 })
 export default router;
