@@ -1,19 +1,19 @@
 <main>
 
-    <label for="commentContent">For the gym: {{{gym.gymName}}}</label>
+    <label for="content">For the gym: {{{gym.gymName}}}</label>
     <br>
-    <label for="commentContent">under the review: {{{review.content}}} from {{review.userName}}</label>
+    <label for="content">under the review: {{{review.content}}} from {{review.userName}}</label>
     <br>
 
-    <form action="/comment/new/{{review._id}}" method="POST">
+    <form action="/comment/new/{{review._id}}" id="newComment-form" method="POST">
         <div class="form-group">
-            <label for="commentContent">Comment:</label>
-            <textarea class="form-control" id="commentContent" name="content"></textarea>
+            <label for="content">Comment:</label>
+            <textarea class="form-control" id="content" name="content" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <br>
-    <button type="cancel" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+    <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
     <div>
         {{#if hasError}}
         <div class="error">

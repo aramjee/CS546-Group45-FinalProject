@@ -1,5 +1,5 @@
 <main>
-    <form action="/user/update" method="POST">
+    <form action="/user/update" id="update" method="POST">
         <div class="form-group">
             <label for="firstName">First Name</label>
             <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName" value="{{firstName}}">
@@ -87,7 +87,7 @@
             <label for="confirm">Retype Password*</label>
             <input type="password" class="form-control" id="confirm" placeholder="Password" name="confirm" required>
         </div>
-        <fieldset class="form-group">
+        <fieldset class="form-group" id="isGymOwner">
             <legend class="col-form-label col-sm-2 pt-0">Account Type</legend>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="isGymOwner" id="isGymOwnerFalse" value="" checked>

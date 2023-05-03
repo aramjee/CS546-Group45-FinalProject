@@ -1,14 +1,14 @@
 <main>
     <form action="/review/delete/{{gym._id}}/{{review._id}}" method="POST">
         <div class="form-group">
-            <label for="commentContent">For the gym: {{{gym.gymName}}}</label>
+            <label for="content">For the gym: {{{gym.gymName}}}</label>
             <br>
-            <label for="commentContent">Your Review:</label> {{{review.content}}}
+            <label for="content">Your Review:</label> {{{review.content}}}
             <br>
-            <label for="commentContent">Your Rating:</label> {{{review.rating}}}
+            <label for="content">Your Rating:</label> {{{review.rating}}}
         </div>
-        <button type="submit" class="btn btn-outline-primary me-2">Delete Review</button>
+        <button type="submit" id="content" class="btn btn-outline-primary me-2">Delete Review</button>
     </form>
     <br>
-    <button type="cancel" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+    <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
 </main>

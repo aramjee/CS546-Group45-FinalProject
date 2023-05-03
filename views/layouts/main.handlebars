@@ -28,8 +28,7 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
 <body>
 
     <div class="container">
-        <header
-            class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
             <div class="col-md-3 mb-2 mb-md-0">
                 <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
                     Gym Application
@@ -45,7 +44,7 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
             {{!-- User Profile Button --}}
             <div class="dropdown text-end">
                 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                   aria-expanded="false">
                     {{loggedInUserName}}
                 </a>
                 <ul class="dropdown-menu text-small" style="">
@@ -70,9 +69,11 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
 
         <h1>{{title}}</h1>
 
-        {{#if hasErrors}}
-        <p>{{errors}}</p>
-        {{/if}}
+        <p id="error">
+            {{#if hasErrors}}
+            {{errors}}
+            {{/if}}
+        </p>
 
         {{{body}}}
     </div>
@@ -83,6 +84,9 @@ https://github.com/stevens-cs546-cs554/CS-546/tree/master/lecture_08/code/HTML_T
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
+    
+    <script src="/public/js/clientSide.js"></script>
+    
 </body>
 
 </html>
