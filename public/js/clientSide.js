@@ -237,7 +237,7 @@
                     throw new Error("Website must be in the form 'https://www.xxxxx.com'");
                 }
 
-                website = checkName(website);
+                // website = checkName(website);
                 category = checkString(category);
                 address = checkString(address);
                 city = checkCity(city);
@@ -274,7 +274,7 @@
                     throw new Error("Website must be in the form 'https://www.xxxxx.com'");
                 }
 
-                website = checkName(website);
+                // website = checkName(website);
                 category = checkString(category);
                 address = checkString(address);
                 city = checkCity(city);
