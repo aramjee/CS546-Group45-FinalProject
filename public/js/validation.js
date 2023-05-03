@@ -139,13 +139,22 @@ const checkValidPassword = (password) => {
 }
 
 const checkValidGymCategory = (category) => {
-  if (!gymTypes.includes(category)){
+  if (!gymTypes.includes(category)) {
     throw [400, "ERROR: Gym types must be in following options: Membership Gym, 24 hour access gym, CrossFit, Boot Camps, Training gyms"];
   }
   return category;
 }
-
+const checkContent = (strVal) => {
+  if (!strVal) throw `Error: You must supply a content!`;
+  if (typeof strVal !== 'string') throw `Error: contentmust be a string!`;
+  strVal = strVal.trim();
+  if (strVal.length === 0)
+    throw [400, `Error: content cannot be an empty string or string with just spaces`];
+  if (!isNaN(strVal))
+    throw [400, `Error: content is not a valid value for content as it only contains digits`];
+  return strVal;
+}
 export {
-  checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite,
+  checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite, checkContent,
   checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword, checkString, checkValidGymCategory
 }

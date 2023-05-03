@@ -49,6 +49,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let userId = req.session.userId;
     validation.checkArgumentsExist(newComment.content);
     let content = validation.checkString(newComment.content);
+    content = validation.checkContent(content);
     userId = validation.checkObjectId(userId);
     // create the comment
     await commentData.create(userId, date, content, reviewId);
@@ -57,6 +58,8 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
     const currentUser = await userData.getByUserId(req.session.userId);
+    let path = '/gym/' + review.gymId
+    return res.redirect(path);
     res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
@@ -114,6 +117,7 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     const date = s.slice(0, 10);
     validation.checkArgumentsExist(commentId, updatedComment.content);
     updatedComment.content = validation.checkString(updatedComment.content);
+    updatedComment.content = validation.checkContent(updatedComment.content);
     updatedComment.commentId = validation.checkObjectId(commentId, 'comment id');
     // update comment
     await commentData.update(commentId, updatedComment.content, date);
@@ -129,6 +133,8 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
     const currentUser = await userData.getByUserId(req.session.userId);
+    let path = '/gym/' + review.gymId
+    return res.redirect(path);
     res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)
@@ -210,6 +216,8 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
     const currentUser = await userData.getByUserId(req.session.userId);
+    let path = '/gym/' + review.gymId
+    return res.redirect(path);
     res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     console.log(e)

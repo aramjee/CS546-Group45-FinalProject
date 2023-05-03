@@ -146,7 +146,7 @@ async function create(
     gymId = validation.checkObjectId(gymId);
     userId = validation.checkObjectId(userId);
     dateOfReview = validation.checkValidDate(dateOfReview);
-
+    content = validation.checkContent(content);
     rating = validation.checkValidRating(rating);
 
     if (!userDataFunctions.getByUserId(userId)) {
@@ -286,6 +286,7 @@ async function updateReviewContent(
     validation.checkArgumentsExist(id, content, dateOfReview);
     dateOfReview = validation.checkValidDate(dateOfReview);
     id = validation.checkObjectId(id, 'review id');
+    content = validation.checkContent(content);
     // how to check content and date?
     const oldReview = await get(id);
     const reviewsCollection = await reviewCollection();
