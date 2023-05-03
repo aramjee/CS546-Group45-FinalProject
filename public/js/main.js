@@ -1,18 +1,25 @@
+//Function to re-render Handlebars partial snippet post AJAX request
+const renderHBSnippet = (sourceId, data, destId) => {
+    let source = document.getElementById(sourceId).innerHTML;
+    let template = Handlebars.compile(source);
+    let context = data;
+    let html = template(context);
+    document.getElementById(destId).innerHTML = html;
+}
+
 (($) => {
-    // Like Gym AJAX request
-    $(".btnLikeGym").on('click', () => {
-        let gymId = $(".btnLikeGym").data("gymid");
-        let likecount = parseInt($(".btnLikeGym").attr("data-likecount"));
+    // Like/Dislike Gym AJAX request
+    $(document).on('click','.btnLikeGym, .btnDislikeGym', (e) => {
+        let gymId = $(e.target).data('gymid');
+        let dynamicRoute = $(e.target).hasClass('btnLikeGym') ? 'like' : 'dislike';
+        let url = `/gym/${gymId}/${dynamicRoute}`;
 
-        let url = `/gym/${gymId}/like`;
         $.ajax({
             type: "POST",
             url: url,
-            complete: function(res, xhr){
+            complete: function(res){
                 if(res.status === 200){
-                    likecount++;
-                    $(".btnLikeGym").val(`Like (${likecount})`);
-                    $(".btnLikeGym").attr('data-likecount',likecount)
+                    renderHBSnippet("like-dislike-template",res.responseJSON,"like-dislike-wrapper");
                 }else{
                     console.log(res.status, res.responseText);
                 }
@@ -20,56 +27,22 @@
         });
     });
 
-    // Dislike Gym AJAX Request
-    $(".btnDislikeGym").on('click', () => {
-        let gymId = $(".btnDislikeGym").data("gymid");
-        let dislikecount = parseInt($(".btnDislikeGym").attr("data-dislikecount"));
+    // Add/Remove Gym to/from Favorites AJAX request
+    $(document).on('click', "#btnAddToFav, #btnRemoveFromFav", (e) => {
+        let gymId = $(e.target).data("gymid");
+        let dynamicRoute = $(e.target).is('#btnAddToFav') ? 'add-to-fav' : 'delete-fav-gym';
+        let url = `/user/${dynamicRoute}/${gymId}`;
 
-        let url = `/gym/${gymId}/dislike`;
         $.ajax({
             type: "POST",
             url: url,
-            complete: function(res, xhr){
+            complete: function(res){
                 if(res.status === 200){
-                    dislikecount++;
-                    $(".btnDislikeGym").val(`Dislike (${dislikecount})`);
-                    $(".btnDislikeGym").attr('data-dislikecount',dislikecount)
-                }else{
-                    console.log(res.status, res.responseText);
-                }
-            }
-        });
-    });
-
-    // Add to Favorites AJAX request - Pending to complete
-    $("#btnAddToFav").on('click', () => {
-        let gymId = $("#btnAddToFav").data("gymid");
-
-        let url = `/user/add-to-fav/${gymId}`;
-        $.ajax({
-            type: "POST",
-            url: url,
-            complete: function(res, xhr){
-                if(res.status === 200){
-                    console.log(res);
-                }else{
-                    console.log(res.status, res.responseText);
-                }
-            }
-        });
-    });
-
-     // Remove from Favorites AJAX request - Pending to complete
-     $("#btnRemoveFromFav").on('click', () => {
-        let gymId = $("#btnRemoveFromFav").data("gymid");
-
-        let url = `/user/delete-fav-gym/${gymId}`;
-        $.ajax({
-            type: "POST",
-            url: url,
-            complete: function(res, xhr){
-                if(res.status === 200){
-                    console.log(res);
+                    let data = {
+                        gym: res.responseJSON.gym,
+                        gymIsFavorited: res.responseJSON.user && res.responseJSON.user && res.responseJSON.user.favGymList.includes(gymId)
+                    };
+                    renderHBSnippet("add-remove-fav-template", data, "fav-button-wrapper");
                 }else{
                     console.log(res.status, res.responseText);
                 }

@@ -35,7 +35,7 @@ router.route('/logout').get(async (req, res) => {
   req.session.destroy(function (err) {
     //Delete username from res.locals
     delete res.locals.loggedInUserName;
-    
+
     console.log("User logged out");
     if (err) {
       return res.status(500).json({ error: 'Failed to log out' });
@@ -319,7 +319,10 @@ router.route('/add-to-fav/:gymId').post(async (req, res) => {
       user.favGymList = favList;
       await userData.update(userId, user);
     }
-    return res.status(200).json({ message: 'Success add favList' });
+    //Returning gym to dynamically render add/remove from favorites button
+    let gym = await gymData.getByGymId(gymId);
+
+    return res.status(200).json({ gym:gym, user:user, message: 'Success add favList' });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -331,7 +334,8 @@ router.route('/add-to-fav/:gymId').post(async (req, res) => {
 router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
-
+// invoke from userProfilePage shows that the request came from userProfilePage
+  const invokedFromUserProfilePage = req.headers.referer.indexOf('/user/profile') !== -1;
   const gymId = req.params.gymId.toString();
 
   if (!helpers.checkIfLoggedIn(req)) {
@@ -356,7 +360,15 @@ router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
     } catch (e) {
       res.status(500).json({ message: e.toString() });
     }
-    res.status(200).redirect("user/profile")
+
+    if(invokedFromUserProfilePage){
+      //Request to remove from favorites came from user profile page so redirecting user back to same page
+      return res.status(200).redirect("/user/profile")
+    }else{
+      //Returning gym to dynamically render add/remove from favorites button on single gym page
+      let gym = await gymData.getByGymId(gymId);
+      return res.status(200).json({ gym:gym, user:user, message: 'Success remove from favList' });
+    }
   }
 });
 
