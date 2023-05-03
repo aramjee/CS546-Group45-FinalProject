@@ -134,7 +134,7 @@ router.route('/signup').post(async (req, res) => {
 
   try {
     await userData.create(xss(firstName), xss(lastName), xss(userName), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, xss(password))
-    res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
+    return  res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
