@@ -13,6 +13,9 @@ import helpers from './handlebars-helpers.js';
 import { userDataFunctions } from './data/user.js';
 
 const staticDir = express.static(__dirname + '/public');
+app.use('/public', staticDir);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   // If the user posts to the server with a property called _method, rewrite the request's method
@@ -27,9 +30,6 @@ const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   next();
 };
 
-app.use('/public', staticDir);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(rewriteUnsupportedBrowserMethods);
 
 // Session middleware configuration

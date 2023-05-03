@@ -15,9 +15,9 @@ const router = Router();
 router.route('/login').get(async (req, res) => {
   //console.log(req.body);
   if (helpers.checkIfLoggedIn(req)) {
-    res.redirect("/user/profile");
+    return res.redirect("/user/profile");
   } else {
-    res.render('login', { title: 'Gym User Login' });
+    return res.render('login', { title: 'Gym User Login' });
   }
 });
 
@@ -25,9 +25,9 @@ router.route('/login').get(async (req, res) => {
 router.route('/loginPage').get(async (req, res) => {
   //console.log(req.body);
   if (helpers.checkIfLoggedIn(req)) {
-    res.redirect("/user/profile");
+    return res.redirect("/user/profile");
   } else {
-    res.render('login', { title: 'Gym User Login' });
+    return res.render('login', { title: 'Gym User Login' });
   }
 });
 
@@ -41,7 +41,7 @@ router.route('/logout').get(async (req, res) => {
       return res.status(500).json({ error: 'Failed to log out' });
     }
   })
-  res.status(200).render("login", { title: 'Gym User Login' });
+  return res.status(200).render("login", { title: 'Gym User Login' });
 });
 
 router.route('/login').post(async (req, res) => {
@@ -50,7 +50,7 @@ router.route('/login').post(async (req, res) => {
   let errors = [];
 
   if (helpers.checkIfLoggedIn(req)) {
-    res.redirect("/user/profile");
+    return res.redirect("/user/profile");
   } else {
     const { email, password } = req.body;
     try {
@@ -77,9 +77,9 @@ router.route('/login').post(async (req, res) => {
 
 router.route('/signup').get(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
-    res.redirect("/user/profile");
+    return res.redirect("/user/profile");
   } else {
-    res.render('signup', { title: 'Gym User Signup' });
+    return res.render('signup', { title: 'Gym User Signup' });
   }
 });
 
