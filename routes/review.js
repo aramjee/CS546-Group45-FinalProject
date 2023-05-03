@@ -62,6 +62,7 @@ router.route('/new/:gymId').post(async (req, res) => {
       throw [400, "You must supply rating"]
     }
     validation.checkNonEmptyStrings(newReview.content, newReview.rating);
+    newReview.content = validation.checkContent(newReview.content);
     newReview.rating = parseFloat(newReview.rating)
     newReview.rating = validation.checkValidRating(newReview.rating);
     await reviewData.create(gymId, userId, date, newReview.content, newReview.rating);
@@ -128,6 +129,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     // input check
     let updatedReview = req.body;
     let content = updatedReview.content;
+    content = validation.checkContent(content);
     const event = new Date();
     let s = event.toISOString();
     const date = s.slice(0, 10);

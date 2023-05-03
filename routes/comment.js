@@ -49,6 +49,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
     let userId = req.session.userId;
     validation.checkArgumentsExist(newComment.content);
     let content = validation.checkString(newComment.content);
+    content = validation.checkContent(content);
     userId = validation.checkObjectId(userId);
     // create the comment
     await commentData.create(userId, date, content, reviewId);
@@ -114,6 +115,7 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     const date = s.slice(0, 10);
     validation.checkArgumentsExist(commentId, updatedComment.content);
     updatedComment.content = validation.checkString(updatedComment.content);
+    updatedComment.content = validation.checkContent(updatedComment.content);
     updatedComment.commentId = validation.checkObjectId(commentId, 'comment id');
     // update comment
     await commentData.update(commentId, updatedComment.content, date);
