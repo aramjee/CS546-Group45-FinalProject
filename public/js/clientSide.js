@@ -1,4 +1,4 @@
-import moment from "moment";
+//import moment from "moment";
 
 (function () {
     function checkString(string) {
@@ -20,6 +20,9 @@ import moment from "moment";
         if (/\d/.test(name)) {
             throw new Error("Name cannot contain a number");
         }
+        if (!(/[a-zA-Z]/.test(name))) {
+            throw new Error("Name should contain letters");
+        }
         if (name.length < 2 || name.length > 25) {
             throw new Error("First and last names should be between 2 and 25 characters long");
         }
@@ -33,6 +36,9 @@ import moment from "moment";
         if (/\d/.test(name)) {
             throw new Error("City cannot contain a number");
         }
+        if (!(/[a-zA-Z]/.test(name)))  {
+            throw new Error("City should contain letters");
+        }
         if (name.length < 2 || name.length > 25) {
             throw new Error("City should be between 2 and 25 characters long");
         }
@@ -45,6 +51,9 @@ import moment from "moment";
 
         if (/\d/.test(name)) {
             throw new Error("State cannot contain a number");
+        }
+        if (!(/[a-zA-Z]/.test(name)))  {
+            throw new Error("State should contain letters");
         }
         if (name.length !== 2) {
             throw new Error("State abbreviation should be between 2 characters long");
@@ -93,6 +102,7 @@ import moment from "moment";
     const signup = document.getElementById('signup-form');
 
     if (signup) {
+        //console.log("in signup");
         signup.addEventListener("submit", (event) => {
             let firstName = document.getElementById('firstName').value;
             let lastName = document.getElementById('lastName').value;
@@ -102,8 +112,7 @@ import moment from "moment";
             let state = document.getElementById('state').value;
             let dateOfBirth = document.getElementById('dateOfBirth').value;
             let password = document.getElementById('password').value;
-            let isGymOwner = document.getElementById('isGymOwner').value;
-
+            let isGymOwner = document.getElementById("isGymOwner").value;
 
             event.preventDefault();
             try {
@@ -129,11 +138,12 @@ import moment from "moment";
                 if (!(typeof isGymOwner === 'string' || isGymOwner instanceof String)) {
                     throw new Error("Please specify account type");
                 }
-                if (isGymOwner !== "True" && isGymOwner !== "") {
+                if (!(isGymOwner === "True" || isGymOwner === "")) {
+                    console.log("checking account type: " + isGymOwner);
                     throw new Error("Account must be 'owner' or 'user' type");
                 }
 
-                //signup.submit();
+                signup.submit();
             } catch (e) {
                 //console.log("failed to register");
                 document.getElementById('error').innerText = "(400) " + e;
@@ -163,11 +173,11 @@ import moment from "moment";
     const updateProfile = document.getElementById('update-form');
 
     if (updateProfile) {
+        console.log("in update");
         updateProfile.addEventListener("submit", (event) => {
             let firstName = document.getElementById('firstName').value;
             let lastName = document.getElementById('lastName').value;
             let userName = document.getElementById('userName').value;
-            let emailAddress = document.getElementById('email').value;
             let city = document.getElementById('city').value;
             let state = document.getElementById('state').value;
             let dateOfBirth = document.getElementById('dateOfBirth').value;
@@ -185,7 +195,6 @@ import moment from "moment";
                     lastName = checkName(lastName);
                 }
                 userName = checkString(userName);
-                emailAddress = checkEmail(emailAddress);
                 if (city.length > 0) {
                     city = checkCity(city);
                 }
@@ -205,7 +214,7 @@ import moment from "moment";
                 if (!(typeof isGymOwner === 'string' || isGymOwner instanceof String)) {
                     throw new Error("Please specify account type");
                 }
-                if (isGymOwner !== "True" && isGymOwner !== "") {
+                if (!(isGymOwner === "True" || isGymOwner === "")) {
                     throw new Error("Account must be 'owner' or 'user' type");
                 }
 
@@ -231,12 +240,21 @@ import moment from "moment";
 
             event.preventDefault();
             try {
-                gymName = checkName(gymName);
+                gymName = checkString(gymName);
+
+                console.log()
+                if (!(/\d/.test(gymName) || /[a-zA-Z]/.test(gymName))) {
+                    throw new Error("Gym name must contain alphanumeric characters");
+                }
+                if (gymName.length < 2 || gymName.length > 25) {
+                    throw new Error("Gym name should be between 2 and 25 characters long");
+                }
+
                 website = checkString(website);
 
                 const websiteRegex = /^https:\/\/www\..{5,}\.com$/;
                 if (!websiteRegex.test(website)) {
-                    throw new Error("Website must be in the form 'https://www.xxxxx.com'");
+                    throw new Error("Website must start with 'https://www.' and end in a '.com', and have at least 5 characters in-between the 'https://www.' and '.com' \n Example: https://www.xxxxx.com");
                 }
 
                 // website = checkName(website);
@@ -268,7 +286,15 @@ import moment from "moment";
 
             event.preventDefault();
             try {
-                gymName = checkName(gymName);
+                gymName = checkString(gymName);
+
+                if (!(/\d/.test(gymName) || /[a-zA-Z]/.test(gymName))) {
+                    throw new Error("Gym name must contain alphanumeric characters");
+                }
+                if (gymName.length < 2 || gymName.length > 25) {
+                    throw new Error("Gym name should be between 2 and 25 characters long");
+                }
+
                 website = checkString(website);
 
                 const websiteRegex = /^https:\/\/www\..{5,}\.com$/;
@@ -306,9 +332,7 @@ import moment from "moment";
                 if (rating < 1 || rating > 5) {
                     throw new Error("Rating must be between 1 and 5");
                 }
-                if (content.length > 0) {
-                    content = checkString(content);
-                }
+                content = checkString(content);
 
                 newReview.submit();
             } catch (e) {

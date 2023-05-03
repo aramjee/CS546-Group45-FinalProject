@@ -56,36 +56,37 @@
             </div>
             <div class="row">
                 {{#if isGymOwner}}
-                <button type="button" onclick="location.href='/gym/manage';" class="btn btn-outline-primary me-2">Manage
-                    Gyms
+                <button type="button" onclick="location.href='/gym/manage';" class="btn btn-outline-primary me-2">
+                    Manage Gyms
                 </button>
-                {{else}}
+                {{/if}}
+                
                 <p class="mb-0">Favorited Gyms</p>
                 <div class="col">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             {{#ifEquals favGymList.length 0}}
-                                No gyms added to favorites!
+                            No gyms added to favorites!
                             {{else}}
-                                {{#each favGymList}}
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <p class="mb-0">{{gymName}}</p>
-                                    </div>
-                                    <div class="col-sm-7">
-                                        <p class="text-muted mb-0">{{rating}}</p>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <form action="/user/delete-fav-gym/{{_id}}" method="POST">
-                                            <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
-                                        </form>
-                                    </div>
+                            {{#each favGymList}}
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">{{gymName}}</p>
                                 </div>
-                                {{#unless @last}} <hr/>{{/unless}}
-                                
+                                <div class="col-sm-7">
+                                    <p class="text-muted mb-0">{{rating}}</p>
+                                </div>
+                                <div class="col-sm-2">
+                                    <form action="/user/delete-fav-gym/{{_id}}" method="POST">
+                                        <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm" />
+                                    </form>
+                                </div>
+                            </div>
+                            {{#unless @last}} <hr />{{/unless}}
+
                             {{/each}}
                             {{/ifEquals}}
-                            
+
                         </div>
                     </div>
                 </div>
@@ -118,7 +119,7 @@
                     </div>
                 </div>
                 {{/each}}
-                {{/if}}
+              
             </div>
         </div>
     </div>

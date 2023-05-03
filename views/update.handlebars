@@ -1,5 +1,5 @@
 <main>
-    <form action="/user/update" id="update" method="POST">
+    <form action="/user/update" id="update-form" method="POST">
         <div class="form-group">
             <label for="firstName">First Name</label>
             <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName" value="{{firstName}}">
@@ -87,21 +87,14 @@
             <label for="confirm">Retype Password*</label>
             <input type="password" class="form-control" id="confirm" placeholder="Password" name="confirm" required>
         </div>
-        <fieldset class="form-group" id="isGymOwner">
-            <legend class="col-form-label col-sm-2 pt-0">Account Type</legend>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="isGymOwner" id="isGymOwnerFalse" value="" checked>
-                <label class="form-check-label" for="isGymOwnerFalse">
-                    Gym User
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="isGymOwner" id="isGymOwnerTrue" value="True">
-                <label class="form-check-label" for="isGymOwnerTrue">
-                    Gym Owner
-                </label>
-            </div>
-        </fieldset>
+        <div class="form-group">
+            <label for="isGymOwner">Account Type</label>
+            <select class="form-control" id="isGymOwner" name="isGymOwner">
+                <option value="not selected">Select</option>
+                <option value="">Gym User</option>
+                <option value="True">Gym Owner</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <p>
