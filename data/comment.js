@@ -39,7 +39,6 @@ async function getAllByReview(reviewId) {
     if (review.length === 0) {
         throw [400, `invalid reviewId`];
     }
-    // console.log(reviewList)
     // If there are no comment for the review, this function will return an empty array
     let comments = [];
 

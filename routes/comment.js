@@ -8,7 +8,6 @@ import helpers from '../public/js/helpers.js';
 
 const router = Router();
 router.route('/new/:reviewId').get(async (req, res) => {
-  //console.log(req.params);
   if (!helpers.checkIfLoggedIn(req)) {
     res.status(401).redirect("/user/login");
   } else {
@@ -16,7 +15,6 @@ router.route('/new/:reviewId').get(async (req, res) => {
     if (req.session.userId === review.userId) {
       let title = 'ERROR'
       const currentUser = await userData.getByUserId(req.session.userId);
-
       return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
     }
     let gym = await gymData.getByGymId(review.gymId);
@@ -42,7 +40,6 @@ router.route('/new/:reviewId').post(async (req, res) => {
       return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
     }
     // input check
-    console.log("you're inside the comment router.route('/new/:reviewId').post")
     const event = new Date();
     let s = event.toISOString();
     const date = s.slice(0, 10);
@@ -60,9 +57,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
     const currentUser = await userData.getByUserId(req.session.userId);
     let path = '/gym/' + review.gymId
     return res.redirect(path);
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -84,9 +79,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
 
 // a logged-in user to update a old post under a specific gym and specific review
 router.route('/update/:reviewId/:commentId').get(async (req, res) => {
-  //console.log(req.params);
   if (!helpers.checkIfLoggedIn(req)) {
-    console.log("You're inside the GET comment '/update/:id'")
     res.status(401).redirect("/user/login");
   } else {
     let commentId = req.params.commentId;
@@ -109,7 +102,6 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     if (!userLoggedIn) {
       res.status(401).redirect("/user/login");
     }
-    console.log("You're inside the DELETE Comment POST!")
     let commentId = req.params.commentId;
     let updatedComment = req.body;
     const event = new Date();
@@ -135,9 +127,7 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     const currentUser = await userData.getByUserId(req.session.userId);
     let path = '/gym/' + review.gymId
     return res.redirect(path);
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -162,11 +152,9 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
 
 // here the :id is commentId
 router.route('/delete/:reviewId/:commentId').get(async (req, res) => {
-  //console.log(req.params);
   if (!helpers.checkIfLoggedIn(req)) {
     return res.status(401).redirect("/user/login");
   } else {
-    console.log("You're inside the GET comment '/delete/:id'")
     let commentId = req.params.commentId;
     try {
       let comment = await commentData.get(commentId);
@@ -200,7 +188,6 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
       res.status(401).redirect("/user/login");
     }
     //const userId = req.session.userId;
-    console.log("You're inside the DELETE Comment POST!")
     let commentId = req.params.commentId;
     commentId = validation.checkObjectId(commentId);
     let comment = await commentData.get(commentId);
@@ -218,9 +205,7 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     const currentUser = await userData.getByUserId(req.session.userId);
     let path = '/gym/' + review.gymId
     return res.redirect(path);
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
