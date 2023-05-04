@@ -104,7 +104,7 @@ router.route('/signup').post(async (req, res) => {
   // validation
   try {
     validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, password);
-    validation.checkNonEmptyStrings(userName, email, password);
+    validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, dateOfBirth, password);
     validation.checkValidEmail(email);
     validation.checkValidPassword(password);
 
@@ -244,8 +244,9 @@ router.route('/update').post(async (req, res) => {
     let user = await userData.getByUserId(req.session.userId);
 
     try {
-      validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth);
-      validation.checkNonEmptyStrings(firstName, lastName, userName, city, state);
+      validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth, password, confirm);
+      validation.checkNonEmptyStrings(firstName, lastName, userName, city, state, dateOfBirth, password, confirm);
+
       if (dateOfBirth.length > 0) {
         validation.checkValidDate(dateOfBirth);
       }

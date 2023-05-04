@@ -2,34 +2,34 @@
     <form action="/user/signup" id="signup-form" method="POST">
         <div class="form-group">
             <label for="firstName">First Name</label>
-            <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName">
+            <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName" required>
         </div>
         <div class="form-group">
             <label for="lastName">Last Name</label>
-            <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName">
+            <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName" required>
         </div>
         <div class="form-group">
-            <label for="userName">UserName*</label>
+            <label for="userName">UserName</label>
             <input type="text" class="form-control" id="userName" placeholder="Username" name="userName" required>
         </div>
         <div class="form-group">
-            <label for="email">Email Address*</label>
+            <label for="email">Email Address</label>
             <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
         </div>
         <div class="form-group">
             <label for="city">City</label>
-            <input type="text" class="form-control" id="city" placeholder="City" name="city">
+            <input type="text" class="form-control" id="city" placeholder="City" name="city" required>
         </div>
         <div class="form-group">
             <label for="state">State</label>
-            <select class="form-control" id="state" name="state"></select>
+            <select class="form-control" id="state" name="state" required></select>
         </div>
         <div class="form-group">
             <label for="dateOfBirth">Date of Birth</label>
-            <input id="dateOfBirth" class="form-control" type="date" name="dateOfBirth"/>
+            <input id="dateOfBirth" class="form-control" type="date" name="dateOfBirth" required/>
         </div>
         <div class="form-group">
-            <label for="password">Password*</label>
+            <label for="password">Password</label>
             <input type="password" class="form-control" id="password" aria-describedby="passValidations"
                    placeholder="Password" name="password" required>
             <small id="passValidations" class="form-text text-muted">Password must be a minimum of 8 characters long,
@@ -52,7 +52,7 @@
         to sign in.
     </p>
     <p>
-        Required fields are indicated by a *.
+        All fields are required.
     </p>
     <script src="/public/js/constantList.js"></script>
     <script>

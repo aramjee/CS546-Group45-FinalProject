@@ -55,8 +55,8 @@
         if (!(/[a-zA-Z]/.test(name)))  {
             throw new Error("State should contain letters");
         }
-        if (name.length !== 2) {
-            throw new Error("State abbreviation should be between 2 characters long");
+        if (name.length < 4 || name.length > 13) {
+            throw new Error("Invalid state name");
         }
 
         return name;
@@ -113,25 +113,16 @@
             let password = document.getElementById('password').value;
             let isGymOwner = document.getElementById("isGymOwner").value;
 
+            console.log(state);
             event.preventDefault();
             try {
-                if (firstName.length > 0) {
-                    firstName = checkName(firstName);
-                }
-                if (lastName.length > 0) { 
-                    lastName = checkName(lastName);
-                }
+                firstName = checkName(firstName);
+                lastName = checkName(lastName);
                 userName = checkString(userName);
                 emailAddress = checkEmail(emailAddress);
-                if (city.length > 0) {
-                    city = checkCity(city);
-                }
-                if (state.length > 0) {
-                    state = checkState(state);
-                }
-                if (dateOfBirth.length > 0) {
-                    dateOfBirth = checkDate(dateOfBirth);
-                }
+                city = checkCity(city);
+                state = checkState(state);
+                dateOfBirth = checkDate(dateOfBirth);
                 password = checkPassword(password);
 
                 if (!(typeof isGymOwner === 'string' || isGymOwner instanceof String)) {
@@ -182,24 +173,15 @@
             let password = document.getElementById('password').value;
             let confirm = document.getElementById('confirm').value;
 
+            console.log(state);
             event.preventDefault();
             try {
-                if (firstName.length > 0) {
-                    firstName = checkName(firstName);
-                }
-                if (lastName.length > 0) {
-                    lastName = checkName(lastName);
-                }
+                firstName = checkName(firstName);
+                lastName = checkName(lastName);
                 userName = checkString(userName);
-                if (city.length > 0) {
-                    city = checkCity(city);
-                }
-                if (state.length > 0) {
-                    state = checkState(state);
-                }
-                if (dateOfBirth.length > 0) {
-                    dateOfBirth = checkDate(dateOfBirth);
-                }
+                city = checkCity(city);
+                state = checkState(state);
+                dateOfBirth = checkDate(dateOfBirth);
                 password = checkPassword(password);
                 confirm = checkString(confirm);
 
