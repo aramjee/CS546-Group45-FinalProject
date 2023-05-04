@@ -205,22 +205,14 @@ async function create(
     await userDataFunctions.update(userId, updatedUser)
 
     // gym collection add a review
-    let UpdatedgymReviewsIds = await this.getGymReviews(gymId)
-    let UpdatedgymReviews = []
-    for (let reviewIds of UpdatedgymReviewsIds) {
-        UpdatedgymReviews.push(await this.get(reviewIds))
-    }
-    let updatedGym = await gymDataFunctions.getByGymId(gymId)
-    let ratings = []
-    for (let review of UpdatedgymReviews) {
-        ratings.push(review.rating)
-    }
+    // all the reviews belong to this gym (post create)
+    // since it is post creat, the rating should also be updated from updatedGymRating
+    let updatedGymRating = await this.updateRating(gymId);
+    let UpdatedgymReviewsIds = await this.getGymReviews(gymId);
+    let updatedGym = await gymDataFunctions.getByGymId(gymId);
 
-    ratings.push(rating)
-    let total = ratings.reduce((acc, c) => acc + c, 0)
-    let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
     updatedGym.reviews = UpdatedgymReviewsIds;
-    updatedGym.rating = grade;
+    updatedGym.rating = updatedGymRating;
 
 
     await gymDataFunctions.update(gymId, updatedGym)
@@ -258,17 +250,14 @@ async function removeReview(id) {
     await userDataFunctions.update(userId, updatedUser)
 
     // gym collection remove a review
-    let updatedGym = await gymDataFunctions.getByGymId(gymId) // the gym object
-    let newReviewGymIds = await this.getGymReviews(gymId); // updated reviewList
-    updatedGym.reviews = newReviewGymIds; // update review list
-    let allRatings = []
-    for (let reviewIds of newReviewGymIds) {
-        let review = await this.get(reviewIds)
-        allRatings.push(review.rating)
-    }
-    let total = allRatings.reduce((acc, c) => acc + c, 0)
-    let grade = ((Math.floor((total / allRatings.length) * 10)) / 10)
-    updatedGym.rating = grade;  // update rating
+    // all the reviews belong to this gym (post remove)
+    // since it is post remove, the rating should also be updated from updatedGymRating
+    let updatedGymRating = await this.updateRating(gymId);
+    let UpdatedgymReviewsIds = await this.getGymReviews(gymId);
+    let updatedGym = await gymDataFunctions.getByGymId(gymId);
+
+    updatedGym.reviews = UpdatedgymReviewsIds;
+    updatedGym.rating = updatedGymRating;
     await gymDataFunctions.update(gymId, updatedGym)
 
     // finally
@@ -304,7 +293,17 @@ async function updateReviewContent(
     }
     return await this.get(id);
 }
-
+async function updateRating(gymId) {
+    let reviewList = await this.getGymReviews(gymId);
+    let ratings = []
+    for (let reviewIds of reviewList) {
+        let review = await this.get(reviewIds)
+        ratings.push(review.rating)
+    }
+    let total = ratings.reduce((acc, c) => acc + c, 0)
+    let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
+    return grade;
+}
 // todo: update on rating --> gym rating?
 async function updateReviewRating(
     id,
@@ -330,18 +329,10 @@ async function updateReviewRating(
     }
     let review = await this.get(id);
     let gymId = await review.gymId; // get the gym of the review
-    let updatedgymReviewsIds = await this.getGymReviews(gymId) // get the updated review list
-    let updatedGym = await gymDataFunctions.getByGymId(gymId) // get the gym object
-    updatedGym.reviews = updatedgymReviewsIds; // update gym review list
 
-    let ratings = []
-    for (let reviewIds of updatedgymReviewsIds) {
-        let review = await this.get(reviewIds)
-        ratings.push(review.rating)
-    }
-    let total = ratings.reduce((acc, c) => acc + c, 0)
-    let grade = ((Math.floor((total / ratings.length) * 10)) / 10)
-    updatedGym.rating = grade;
+    let updatedGym = await gymDataFunctions.getByGymId(gymId) // get the gym object
+    let updatedGymRating = await this.updateRating(gymId);
+    updatedGym.rating = updatedGymRating;
 
     await gymDataFunctions.update(gymId, updatedGym)
 
@@ -366,4 +357,4 @@ async function updateReviewComment(id, updatedReview) {
 
 }
 
-export const reviewDataFunctions = { get, getAll, getGymReviews, getGymReviewsListObjects, getUserReviewsListObjects, getUserReviews, create, removeReview, updateReviewContent, updateReviewComment, updateReviewRating }
+export const reviewDataFunctions = { get, getAll, getGymReviews, getGymReviewsListObjects, getUserReviewsListObjects, getUserReviews, create, removeReview, updateReviewContent, updateRating, updateReviewComment, updateReviewRating }
