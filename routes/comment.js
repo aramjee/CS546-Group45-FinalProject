@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { gymData, commentData, userData, reviewData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
 import helpers from '../public/js/helpers.js';
+import xss from 'xss';
 
 const router = Router();
 router.route('/new/:reviewId').get(async (req, res) => {
@@ -49,7 +50,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
     content = validation.checkContent(content);
     userId = validation.checkObjectId(userId);
     // create the comment
-    await commentData.create(userId, date, content, reviewId);
+    await commentData.create(xss(userId), xss(date), xss(content), xss(reviewId));
     // render the singleGym
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
@@ -87,7 +88,7 @@ router.route('/update/:reviewId/:commentId').get(async (req, res) => {
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
       const currentUser = await userData.getByUserId(req.session.userId);
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not edit others' comment!"], currentUser: currentUser });
     }
     let review = await reviewData.get(req.params.reviewId)
     let gym = await gymData.getByGymId(review.gymId);
@@ -112,12 +113,12 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
     updatedComment.content = validation.checkContent(updatedComment.content);
     updatedComment.commentId = validation.checkObjectId(commentId, 'comment id');
     // update comment
-    await commentData.update(commentId, updatedComment.content, date);
+    await commentData.update(xss(commentId), xss(updatedComment.content), xss(date));
     let comment = await commentData.get(commentId);
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
       const currentUser = await userData.getByUserId(req.session.userId);
-      return res.status(400).render("error", { title: title, hasErrors: true, currentUser: currentUser, errors: ["Please do not post under your own review!"] });
+      return res.status(400).render("error", { title: title, hasErrors: true, currentUser: currentUser, errors: ["Please do not edit others' comment!"] });
     }
     let review = await reviewData.get(comment.reviewId);
     // return the correct gym
@@ -172,7 +173,7 @@ router.route('/delete/:reviewId/:commentId').get(async (req, res) => {
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
       const currentUser = await userData.getByUserId(req.session.userId);
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not edit other's comment!"], currentUser: currentUser });
     }
     let review = await reviewData.get(comment.reviewId);
     let gym = await gymData.getByGymId(review.gymId);
@@ -194,11 +195,11 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
     if (req.session.userId !== comment.userId) {
       let title = 'ERROR'
       const currentUser = await userData.getByUserId(req.session.userId);
-      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not post under your own review!"], currentUser: currentUser });
+      return res.status(400).render("error", { title: title, hasErrors: true, errors: ["Please do not delete other's comment!"], currentUser: currentUser });
     }
     let review = await reviewData.get(comment.reviewId);
     let gymId = review.gymId;
-    await commentData.remove(commentId);
+    await commentData.remove(xss(commentId));
     let gym = await gymData.getByGymId(gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;

@@ -5,7 +5,8 @@ import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import helpers from '../public/js/helpers.js';
 import * as validation from "../public/js/validation.js";
-
+import { MongoUnexpectedServerResponseError } from 'mongodb';
+import xss from 'xss';
 const router = Router();
 
 //Gym listing page
@@ -16,7 +17,21 @@ router.route('/').get(async (req, res) => {
     const gymList = await gymData.getAll();
     return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn });
   } catch (e) {
-    return res.status(500).json({ error: e });
+    let status = e[0] ? e[0] : 500;
+    let message = e[1] ? e[1] : 'Internal Server Error';
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
+
   }
 });
 
@@ -28,14 +43,25 @@ router.route('/search').get(async (req, res) => {
     let gymsList = [];
     if (searchName) {
       gymsList = await gymData.searchByValue(searchName);
-    }else {
+    } else {
       gymsList = await gymData.getAll();
     }
     return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -66,7 +92,18 @@ router.route('/manage').get(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    return res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -94,7 +131,18 @@ router.route('/add').post(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -112,7 +160,18 @@ router.route('/:id').get(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -137,7 +196,18 @@ router.route('/delete/:gymId').delete(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -146,7 +216,7 @@ router.route('/edit/:gymId').get(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      return  res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
@@ -158,7 +228,18 @@ router.route('/edit/:gymId').get(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -167,7 +248,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      return  res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
@@ -200,7 +281,18 @@ router.route('/edit/:gymId').put(async (req, res) => {
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -248,12 +340,23 @@ router.route('/:gymId/like').post(async (req, res) => {
     //Returning gym to dynamically render like/dislike button with actual count
     let gym = await gymData.getByGymId(gymId);
 
-    return res.status(200).json({ gym:gym, message: `Success Liked gym ${gymId}` });
+    return res.status(200).json({ gym: gym, message: `Success Liked gym ${gymId}` });
 
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    return res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -301,11 +404,22 @@ router.route('/:gymId/dislike').post(async (req, res) => {
     //Returning gym to dynamically render like/dislike button with actual count
     let gym = await gymData.getByGymId(gymId);
 
-    return res.status(200).json({ gym:gym, message: `Success DisLiked gym ${gymId}` });
+    return res.status(200).json({ gym: gym, message: `Success DisLiked gym ${gymId}` });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    res.status(status).json({ error: message });
+    let errors = []
+    let hasErrors = true
+    errors.push(message);
+    let title = 'ERROR';
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { title: title, hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 

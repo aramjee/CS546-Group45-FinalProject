@@ -134,7 +134,7 @@ router.route('/signup').post(async (req, res) => {
 
   try {
     await userData.create(xss(firstName), xss(lastName), xss(userName), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, xss(password))
-    return  res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
+    return res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -194,8 +194,14 @@ router.route('/profile').get(async (req, res) => {
     let message = e[1] ? e[1] : 'Internal Server Error';
     hasErrors = true;
     errors.push(message);
-    //TODO: Need to discuss for redirect
-    return res.status(status).render("error", { errors: errors });
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -226,7 +232,15 @@ router.route('/update').get(async (req, res) => {
       hasErrors = true;
       errors.push(message);
       //TODO: Need to discuss for redirect
-      return res.status(status).render("error", { errors: errors });
+      let currentUser = undefined;
+      let userLoggedIn = helpers.checkIfLoggedIn(req);
+      if (userLoggedIn) {
+        currentUser = await userData.getByUserId(req.session.userId);
+      } else {
+        currentUser = null;
+      }
+      return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
+
     }
   }
 });
@@ -240,7 +254,7 @@ router.route('/update').post(async (req, res) => {
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
-    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm} = req.body;
+    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm } = req.body;
     let user = await userData.getByUserId(req.session.userId);
 
     try {
@@ -322,11 +336,21 @@ router.route('/add-to-fav/:gymId').post(async (req, res) => {
     //Returning gym to dynamically render add/remove from favorites button
     let gym = await gymData.getByGymId(gymId);
 
-    return res.status(200).json({ gym:gym, user:user, message: 'Success add favList' });
+    return res.status(200).json({ gym: gym, user: user, message: 'Success add favList' });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
-    return res.status(status).json({ error: message });
+    let hasErrors = true;
+    let errors = []
+    errors.push(message);
+    let currentUser = undefined;
+    let userLoggedIn = helpers.checkIfLoggedIn(req);
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
   }
 });
 
@@ -334,7 +358,7 @@ router.route('/add-to-fav/:gymId').post(async (req, res) => {
 router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
-// invoke from userProfilePage shows that the request came from userProfilePage
+  // invoke from userProfilePage shows that the request came from userProfilePage
   const invokedFromUserProfilePage = req.headers.referer.indexOf('/user/profile') !== -1;
   const gymId = req.params.gymId.toString();
 
@@ -358,16 +382,29 @@ router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
     try {
       await userData.update(req.session.userId, user);
     } catch (e) {
-      res.status(500).json({ message: e.toString() });
+      let status = e[0] ? e[0] : 500;
+      let message = e[1] ? e[1] : 'Internal Server Error';
+      let hasErrors = true;
+      let errors = []
+      errors.push(message);
+      let currentUser = undefined;
+      let userLoggedIn = helpers.checkIfLoggedIn(req);
+      if (userLoggedIn) {
+        currentUser = await userData.getByUserId(req.session.userId);
+      } else {
+        currentUser = null;
+      }
+      return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
+
     }
 
-    if(invokedFromUserProfilePage){
+    if (invokedFromUserProfilePage) {
       //Request to remove from favorites came from user profile page so redirecting user back to same page
       return res.status(200).redirect("/user/profile")
-    }else{
+    } else {
       //Returning gym to dynamically render add/remove from favorites button on single gym page
       let gym = await gymData.getByGymId(gymId);
-      return res.status(200).json({ gym:gym, user:user, message: 'Success remove from favList' });
+      return res.status(200).json({ gym: gym, user: user, message: 'Success remove from favList' });
     }
   }
 });
