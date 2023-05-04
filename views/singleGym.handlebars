@@ -48,6 +48,12 @@
 
                 <input class="btnDislikeGym btn btn-sm btn-danger" type="button" data-gymid={{gym._id}}
                     value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} />
+
+                {{#unless userLoggedIn}}
+                    <span class="badge rounded-pill text-bg-secondary italic">
+                        You have to be logged in to like/dislike a Gym
+                    </span>
+                {{/unless}}
             </div>
             {{!-- Template which will be used to dynamically render like/dislike button with actual count when user
             clicks on it --}}

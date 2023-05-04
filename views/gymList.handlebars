@@ -1,8 +1,11 @@
 <main>
     <div class="d-flex justify-content-end">
         <div class="col">
-            <form action="/gym/search" method="get">
-                <input class="form-control" type="text" placeholder="Search Gym" name="name">
+            <form action="/gym/search" method="get" class="form-inline">
+                <div class="form-group mb-2">
+                    <label for="search-gym" class="bold">Search Gym</label>
+                    <input id="search-gym" class="form-control" type="text" name="name" placeholder="Search by gym name">
+                </div>
             </form>
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -36,7 +39,7 @@
                 <a href="/gym/{{_id}}" class="card-link">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">{{gymName}}</h5>
+                            <span class="card-title">{{gymName}}</span>
 
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
