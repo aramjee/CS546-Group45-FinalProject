@@ -6,7 +6,7 @@ import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import helpers from '../public/js/helpers.js';
 import * as validation from "../public/js/validation.js";
 import { MongoUnexpectedServerResponseError } from 'mongodb';
-
+import xss from 'xss';
 const router = Router();
 
 //Gym listing page

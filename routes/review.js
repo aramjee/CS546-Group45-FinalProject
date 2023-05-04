@@ -5,14 +5,11 @@ import { Router } from 'express';
 import { gymData, reviewData, commentData, userData } from '../data/index.js';
 import * as validation from "../public/js/validation.js";
 import helpers from '../public/js/helpers.js';
-
+import xss from 'xss';
 const router = Router();
 
 
 //TODO: date must be after birthday
-// TODO: duplicate userName
-//TODO: a user post a review cannot add a comment under his/her own review!
-// TODO: comment date cannot before reivew date
 
 router.route('/new/:gymId').get(async (req, res) => {
   try {
@@ -66,7 +63,7 @@ router.route('/new/:gymId').post(async (req, res) => {
     newReview.content = validation.checkContent(newReview.content);
     newReview.rating = parseFloat(newReview.rating)
     newReview.rating = validation.checkValidRating(newReview.rating);
-    await reviewData.create(gymId, userId, date, newReview.content, newReview.rating);
+    await reviewData.create(xss(gymId), xss(userId), xss(date), xss(newReview.content), xss(newReview.rating));
     // make reviewList ids => review objects, get the gym for rendering the singleGymPage (since new review successfully created)
     let gym = await gymData.getByGymId(gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(gymId)
@@ -148,7 +145,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
       throw [400, "This review does not belong to you!"]
     }
     // update review content
-    await reviewData.updateReviewContent(reviewId, content, date);
+    await reviewData.updateReviewContent(xss(reviewId), xss(content), xss(date));
     // make reviewList ids => review objects, get the gym for rendering the singleGymPage (since new review successfully created)
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
@@ -241,7 +238,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     rating = parseFloat(rating)
     rating = validation.checkValidRating(rating);
     // update review rating
-    await reviewData.updateReviewRating(reviewId, rating, date);
+    await reviewData.updateReviewRating(xss(reviewId), xss(rating), xss(date));
     // make reviewList ids => review objects, get the gym for rendering the singleGymPage (since new review successfully created)
     let gym = await gymData.getByGymId(req.params.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.gymId)
@@ -323,7 +320,7 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
       throw [400, "This review does not belong to you!"]
     }
     // remove the review
-    await reviewData.removeReview(reviewId);
+    await reviewData.removeReview(xss(reviewId));
     let gym = await gymData.getByGymId(review.gymId);
     let reviewList = await reviewData.getGymReviewsListObjects(review.gymId)
     gym.reviews = reviewList;
