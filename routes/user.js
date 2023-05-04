@@ -104,7 +104,7 @@ router.route('/signup').post(async (req, res) => {
   // validation
   try {
     validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, password);
-    validation.checkNonEmptyStrings(userName, email, password);
+    validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, dateOfBirth, password);
     validation.checkValidEmail(email);
     validation.checkValidPassword(password);
 
@@ -134,7 +134,7 @@ router.route('/signup').post(async (req, res) => {
 
   try {
     await userData.create(xss(firstName), xss(lastName), xss(userName), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, xss(password))
-    res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
+    return  res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -240,12 +240,13 @@ router.route('/update').post(async (req, res) => {
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
-    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm, isGymOwner } = req.body;
+    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm} = req.body;
     let user = await userData.getByUserId(req.session.userId);
 
     try {
-      validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth);
-      validation.checkNonEmptyStrings(firstName, lastName, userName, city, state);
+      validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth, password, confirm);
+      validation.checkNonEmptyStrings(firstName, lastName, userName, city, state, dateOfBirth, password, confirm);
+
       if (dateOfBirth.length > 0) {
         validation.checkValidDate(dateOfBirth);
       }
@@ -269,7 +270,6 @@ router.route('/update').post(async (req, res) => {
       user.city = city;
       user.state = state;
       user.dateOfBirth = dateOfBirth;
-      user.isGymOwner = isGymOwner;
 
       await userData.update(req.session.userId, user);
     } catch (e) {
