@@ -203,7 +203,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     const date = s.slice(0, 10);
     let reviewId = req.params.reviewId;
     if (!rating) {
-      throw [400, "You must supply review content"]
+      throw [400, "You must supply review rating"]
     }
     let review = await reviewData.get(reviewId)
     if (req.session.userId !== review.userId) {
