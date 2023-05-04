@@ -849,6 +849,83 @@ let comment10_id = comment10._id.toString();
 // console.log("comment1 is updated!")
 // console.log(await comments.get(comment10_id))
 
+console.log("Let's add some gyms to fav gyms!")
+let user = undefined;
+let favList = undefined;
+
+user = await users.getByUserId(user1_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user1_id, user);
+
+user = await users.getByUserId(user2_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user2_id, user);
+
+user = await users.getByUserId(user3_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user3_id, user);
+
+user = await users.getByUserId(user4_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user4_id, user);
+
+user = await users.getByUserId(user5_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user5_id, user);
+
+user = await users.getByUserId(user6_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user6_id, user);
+
+user = await users.getByUserId(user7_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user7_id, user);
+
+user = await users.getByUserId(user8_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user8_id, user);
+
+user = await users.getByUserId(user9_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user9_id, user);
+
+user = await users.getByUserId(user10_id)
+favList = user.favGymList;
+favList.push(gymAA_id);
+favList.push(gymAB_id);
+favList.push(gymBA_id);
+await users.update(user10_id, user);
+
+console.log("let's like and dislike some gyms!")
+// each gym has at least one like or dislike
+
 console.log('Done seeding database');
 
 await closeConnection();

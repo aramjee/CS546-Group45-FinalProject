@@ -15,10 +15,8 @@ const router = Router();
 // TODO: comment date cannot before reivew date
 
 router.route('/new/:gymId').get(async (req, res) => {
-  //console.log(req.params);
   try {
     if (!helpers.checkIfLoggedIn(req)) {
-      console.log("You're inside the GET review /new/:gymId")
       res.status(401).redirect("/user/login");
     } else {
       let gym = await gymData.getByGymId(req.params.gymId)
@@ -27,8 +25,6 @@ router.route('/new/:gymId').get(async (req, res) => {
       return res.render('newReview', { userLoggedIn: userLoggedIn, title: 'Review Gym', gym: gym, currentUser: currentUser });
     }
   } catch (e) {
-    console.log("you're inside router.route('/new/:id').get")
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -46,7 +42,6 @@ router.route('/new/:gymId').post(async (req, res) => {
     if (!userLoggedIn) {
       return res.status(401).redirect("/user/login");
     }
-    console.log("You're inside the POST review /new/:id")
     let gymId = req.params.gymId;
     let newReview = req.body;
     // input check and then create this post
@@ -72,10 +67,7 @@ router.route('/new/:gymId').post(async (req, res) => {
     gym.reviews = reviewList;
     let path = '/gym/' + gymId
     return res.redirect(path);
-    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
-    console.log("you're inside review router.route('/new/:id').post");
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -89,8 +81,6 @@ router.route('/new/:gymId').post(async (req, res) => {
 
 // a logged-in user to update a old post under a specific gym
 router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
-  //console.log(req.params);
-  console.log("this is review /updateContent/:id get")
   if (!helpers.checkIfLoggedIn(req)) {
     return res.status(401).redirect("/user/login");
   }
@@ -98,7 +88,6 @@ router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
     let reviewId = req.params.reviewId;
     let review = await reviewData.get(reviewId);
     let gym = await gymData.getByGymId(req.params.gymId)
-    //console.log(review);
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (req.session.userId !== review.userId) {
       throw [400, "This review does not belong to you!"]
@@ -106,8 +95,6 @@ router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
     const currentUser = await userData.getByUserId(req.session.userId);
     return res.render('updateReviewContent', { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, review: review, currentUser: currentUser });
   } catch (e) {
-    console.log("you're inside router.route('/updateContent/:id').get")
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -125,7 +112,6 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     if (!userLoggedIn) {
       res.status(401).redirect("/user/login");
     }
-    console.log("You're inside the PUT review /updateContent/:id")
     const currentUser = await userData.getByUserId(req.session.userId);
     let reviewId = req.params.reviewId;
     // input check
@@ -153,10 +139,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     gym.reviews = reviewList;
     let path = '/gym/' + review.gymId
     return res.redirect(path);
-    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
-    console.log("you're inside router.route('/updateContent/:id').put")
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -179,10 +162,8 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
 
 
 router.route('/updateRating/:gymId/:reviewId').get(async (req, res) => {
-  //console.log(req.params);
   try {
     if (!helpers.checkIfLoggedIn(req)) {
-      console.log("You're inside the GET review '/updateRating/:id'")
       return res.status(401).redirect("/user/login");
     }
     let reviewId = req.params.reviewId;
@@ -195,8 +176,6 @@ router.route('/updateRating/:gymId/:reviewId').get(async (req, res) => {
     const currentUser = await userData.getByUserId(req.session.userId);
     return res.render('updateReviewRating', { userLoggedIn: userLoggedIn, title: 'Update Rating', gym: gym, review: review, currentUser: currentUser });
   } catch (e) {
-    console.log("you're inside router.route('/updateRating/:id').get")
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -215,7 +194,6 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     if (!userLoggedIn) {
       res.status(401).redirect("/user/login");
     }
-    console.log("You're inside the PUT review /updateRating/:id")
     const currentUser = await userData.getByUserId(req.session.userId);
     // input check
     let updatedReview = req.body;
@@ -243,10 +221,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     gym.reviews = reviewList;
     let path = '/gym/' + req.params.gymId
     return res.redirect(path);
-    return res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
-    console.log("you're inside router.route('/updateRating/:id').put");
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -270,10 +245,8 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
 
 
 router.route('/delete/:gymId/:reviewId').get(async (req, res) => {
-  //console.log(req.params);
   try {
     if (!helpers.checkIfLoggedIn(req)) {
-      console.log("You're inside the GET review '/delete/:id'")
       res.status(401).redirect("/user/login");
     } else {
       let reviewId = req.params.reviewId;
@@ -287,8 +260,6 @@ router.route('/delete/:gymId/:reviewId').get(async (req, res) => {
       res.render('reviewConfirmDelete', { userLoggedIn: userLoggedIn, title: 'Delete Review', review: review, gym: gym, currentUser: currentUser });
     }
   } catch (e) {
-    console.log("you're inside router.route('/delete/:id').get")
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
@@ -306,7 +277,6 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     if (!userLoggedIn) {
       res.status(401).redirect("/user/login");
     }
-    console.log("You're inside the DELETE review /delete/:id")
     const currentUser = await userData.getByUserId(req.session.userId);
     let reviewId = req.params.reviewId;
     reviewId = validation.checkObjectId(reviewId);
@@ -321,16 +291,12 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     gym.reviews = reviewList;
     let path = '/gym/' + req.params.gymId
     return res.redirect(path);
-    res.status(200).render('singleGym', { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
-    console.log("you're inside router.route('/delete/:id').delete");
-    console.log(e)
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
     let errors = []
     let hasErrors = true
     errors.push(message);
-    console.log(message)
     // if not known single gym, redirect to error page (there exist an input error)
     let gym = await reviewData.getGymReviewsListObjects(req.params.gymId);
     if (!gym) {

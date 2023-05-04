@@ -356,7 +356,7 @@ async function updateReviewComment(id, updatedReview) {
     const reviewsCollection = await reviewCollection();
     const updatedInfo = await reviewsCollection.findOneAndUpdate(
         { _id: new ObjectId(id) },
-        { $set: updatedReview },
+        { $set: { comments: updatedReview.comments } },
         { returnDocument: 'after' }
     );
     if (updatedInfo.lastErrorObject.n === 0) {
