@@ -858,7 +858,7 @@ favList = user.favGymList;
 favList.push(gymAA_id);
 favList.push(gymAB_id);
 favList.push(gymBA_id);
-await users.update(user2_id, user);
+await users.update(user1_id, user);
 
 user = await users.getByUserId(user2_id)
 favList = user.favGymList;

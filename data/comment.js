@@ -39,6 +39,7 @@ async function getAllByReview(reviewId) {
     if (review.length === 0) {
         throw [400, `invalid reviewId`];
     }
+    // console.log(reviewList)
     // If there are no comment for the review, this function will return an empty array
     let comments = [];
 
@@ -95,7 +96,6 @@ async function create(
     if (review.userId === userId) {
         throw [400, "You cannot post a comment under your own review"]
     }
-
     let newComment = {
         _id: new ObjectId(),
         userId: userId,
@@ -104,22 +104,20 @@ async function create(
         userName: userName,
         reviewId: reviewId
     };
-    const newCommentId = newComment._id.toString()
-
+    let newCommentId = newComment._id.toString()
     // add the comment to the review, note that comment is a subcollection of the review
-    const reviewsCollection = await reviewCollection();
-    const oldReview = await reviewsCollection.findOne({ _id: new ObjectId(reviewId) });
-    const updatedReview = await reviewsCollection.findOne({ _id: new ObjectId(reviewId) });
+    const updatedReview = await reviewDataFunctions.get(reviewId);
     updatedReview.comments.push(newComment);
     await reviewDataFunctions.updateReviewComment(reviewId, updatedReview);
 
     // add the comment to the user
-    let user = await userDataFunctions.getByUserId(userId)
-
-    let userCommentList = await getAllByUser(userId);
-    userCommentList.push(newCommentId);
-    user.comments = userCommentList;
-    await userDataFunctions.update(userId, user)
+    // let user = await userDataFunctions.getByUserId(userId)
+    // console.log(user)
+    // let userCommentList = await getAllByUser(userId);
+    // userCommentList.push(newCommentId);
+    // user.comments = userCommentList;
+    // await userDataFunctions.update(userId, user)
+    // console.log(await userDataFunctions.getByUserId(userId))
     // finally
     return await get(newCommentId);
 }
@@ -145,13 +143,12 @@ async function remove(commentId) {
     }
     updatedReview.comments = updatedComments
     await reviewDataFunctions.updateReviewComment(reviewId, updatedReview);
-
     // user collection remove a review
     // safe to use the getUserReviews bc: it goes in the review collection, and the comment is removed there
     let updateUser = await userDataFunctions.getByUserId(userId)
     let updatedCommentsU = await this.getAllByUser(userId)
     updateUser.comments = updatedCommentsU;
-    await userDataFunctions.update(userId, updateUser)
+    //await userDataFunctions.update(userId, updateUser)
     return await reviewDataFunctions.get(reviewId)
 }
 
