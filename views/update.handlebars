@@ -1,38 +1,43 @@
 <main>
-    <form action="/user/update" id="update" method="POST">
+    <form action="/user/update" id="update-form" method="POST">
         <div class="form-group">
             <label for="firstName">First Name</label>
             <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName"
-                   value="{{firstName}}">
+                   value="{{firstName}}" required>
         </div>
         <div class="form-group">
             <label for="lastName">Last Name</label>
             <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName"
-                   value="{{lastName}}">
+                   value="{{lastName}}" required>
         </div>
         <div class="form-group">
-            <label for="userName">Username*</label>
+            <label for="userName">Username</label>
             <input type="text" class="form-control" id="userName" placeholder="userName" name="userName"
                    value="{{userName}}" required>
         </div>
         <div class="form-group">
             <label for="city">City</label>
-            <input type="text" class="form-control" id="city" placeholder="City" name="city" value="{{city}}">
+            <input type="text" class="form-control" id="city" placeholder="City" name="city" 
+                   value="{{city}}" required>
         </div>
         <div class="form-group">
             <label for="state">State</label>
-            <select class="form-control" id="state" name="state"></select>
+            <select class="form-control" id="state" name="state" required></select>
         </div>
         <div class="form-group">
             <label for="dateOfBirth">Date of Birth</label>
-            <input id="dateOfBirth" class="form-control" type="date" name="dateOfBirth" value="{{dateOfBirth}}"/>
+            <input id="dateOfBirth" class="form-control" type="date" name="dateOfBirth" 
+                   value="{{dateOfBirth}}" required/>
         </div>
         <div class="form-group">
             <label for="password">Password*</label>
             <input type="password" class="form-control" id="password" aria-describedby="passValidations"
                    placeholder="Password" name="password" required>
-            <small id="passValidations" class="form-text text-muted">Password must have at least 6 characters and
-                contain both a letter and a number.</small>
+            <small id="passValidations" class="form-text text-muted">
+                Password must be a minimum of 8 characters long,
+                have at least one at least one uppercase and lowercase character, have at least one number, and has to
+                contain at least one special character.
+            </small>
         </div>
         <div class="form-group">
             <label for="confirm">Retype Password*</label>
@@ -44,7 +49,7 @@
         <a href="/user/profile">Back</a>
     </p>
     <p>
-        Required fields are indicated by a *.
+        All fields are required.
     </p>
     <script src="/public/js/constantList.js"></script>
     <script>
