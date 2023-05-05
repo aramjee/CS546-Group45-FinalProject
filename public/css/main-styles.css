@@ -42,3 +42,17 @@
 .edit-delete-wrapper{
   margin-left:5px;
 }
+
+/* Gym List and Search */
+.search-form{
+  margin-bottom:5px;
+}
+#no-results{
+  margin-top:15px;
+  font-size:20px;
+  color:rgb(173, 11, 11);
+  font-weight: bold;
+}
+.gymList{
+  margin-top:5px;
+}

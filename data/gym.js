@@ -106,7 +106,7 @@ const remove = async (id, ownerId) => {
 const update = async (id, gym) => {
   // Validation
   validation.checkObjectId(id, "GymId");
-  // since we have so far only have the option to let user update gym's review through editing the review of the gym, 
+  // since we have so far only have the option to let user update gym's review through editing the review of the gym,
   // the gym I would pass in will have a rating. Should we check for it's existence as well?
   validation.checkArgumentsExist(gym.gymName, gym.website, gym.category, gym.address, gym.city, gym.state, gym.zip);
   validation.checkNonEmptyStrings(gym.gymName, gym.website, gym.category, gym.address, gym.city, gym.state, gym.zip);
@@ -153,9 +153,7 @@ const searchByValue = async (name) => {
   const gymsDBConnection = await gymCollection();
   const gymsList = await gymsDBConnection.find({ gymName: { $regex: regex } }).toArray();
 
-  if (gymsList.length === 0) {
-    throw [404, `Error: No gyms found with the provided search value ${name}`];
-  }
+  // Returning a blank gym list array if no gym found instead of 404 error
   return gymsList;
 };
 

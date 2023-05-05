@@ -15,7 +15,10 @@ router.route('/').get(async (req, res) => {
     //User does not necessarily be logged in to view the gyms, only publish a review so had to comment this out....
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     const gymList = await gymData.getAll();
-    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn });
+    let searchName = undefined;
+    if (req.query && req.query.name) {
+    searchName = req.query.name} else {seachName = null}
+    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn, searchText:searchName });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -46,7 +49,7 @@ router.route('/search').get(async (req, res) => {
     } else {
       gymsList = await gymData.getAll();
     }
-    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
+    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
