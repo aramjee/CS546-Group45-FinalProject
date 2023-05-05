@@ -117,7 +117,7 @@ const update = async (id, gym) => {
   // in order to update the gym, the review will call this function
   // but need to check if this is the first review, or otherwise the gym rating is 0.
   if (gym.rating) { validation.checkValidRating(gym.rating) };
-
+  let oldGym = await getByGymId(id)
   // Update the gym data in the database
   const gymsDBConnection = await gymCollection();
   const updateInfo = await gymsDBConnection.findOneAndUpdate(
@@ -139,6 +139,10 @@ const update = async (id, gym) => {
     },
     { returnDocument: 'after' }
   );
+  let newGym = await getByGymId(id)
+  if (JSON.stringify(oldGym) === JSON.stringify(newGym)) {
+    throw [400, `there's no real update, everything is the same`];
+  }
 
   if (updateInfo.lastErrorObject.n === 0)
     throw [404, `Error: Update failed, user not found ${id}`];

@@ -284,8 +284,29 @@ router.route('/update').post(async (req, res) => {
       user.city = city;
       user.state = state;
       user.dateOfBirth = dateOfBirth;
-
-      await userData.update(req.session.userId, user);
+      // Chloe: if there's no real update, instead of redirect to profile, re-render the same update page with errors
+      try {
+        await userData.update(req.session.userId, user);
+        res.redirect("/user/profile");
+      } catch (e) {
+        let status = e[0] ? e[0] : 500;
+        let message = e[1] ? e[1] : 'Internal Server Error';
+        hasErrors = true;
+        errors.push(message);
+        return res.status(200).render('update', {
+          id: req.session.userId,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          userName: user.userName,
+          city: user.city,
+          state: user.state,
+          dateOfBirth: user.dateOfBirth,
+          isGymOwner: user.isGymOwner,
+          userLoggedIn: true,
+          hasErrors: hasErrors,
+          errors: errors
+        });
+      }
     } catch (e) {
       let status = e[0] ? e[0] : 500;
       let message = e[1] ? e[1] : 'Internal Server Error';
@@ -306,7 +327,7 @@ router.route('/update').post(async (req, res) => {
       });
     }
     // return res.status(200).redirect("user/profile")
-    res.redirect("/user/profile");
+
 
   }
 });

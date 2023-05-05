@@ -151,7 +151,7 @@ const update = async (id, user) => {
   validation.checkObjectIdArray(user.dislikedGyms);
   validation.checkObjectIdArray(user.favGymList);
   validation.checkObjectIdArray(user.gymsListForOwner);
-
+  let oldUser = await getByUserId(id)
   // Update the user data in the database
   const usersDBConnection = await userCollection();
   const updateInfo = await usersDBConnection.findOneAndUpdate(
@@ -177,7 +177,11 @@ const update = async (id, user) => {
     },
     { returnDocument: 'after' }
   );
-
+  let newUser = await getByUserId(id);
+  if (JSON.stringify(oldUser) === JSON.stringify(newUser)) {
+    console.log("there is no update!")
+    throw [400, `there's no real update, everything is the same`];
+  }
   if (updateInfo.lastErrorObject.n === 0)
     throw [404, `Error: Update failed, user not found ${id}`];
 
