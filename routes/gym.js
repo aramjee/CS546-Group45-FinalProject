@@ -46,7 +46,7 @@ router.route('/search').get(async (req, res) => {
     } else {
       gymsList = await gymData.getAll();
     }
-    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn });
+    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';

@@ -1,14 +1,16 @@
 <main>
     <div class="d-flex justify-content-end">
         <div class="col">
-            <form action="/gym/search" method="get" class="form-inline">
+            <form action="/gym/search" method="get" class="form-inline search-form">
                 <div class="form-group mb-2">
                     <label for="search-gym" class="bold">Search Gym</label>
-                    <button type="submit" class="btn btn-primary">Search</button>
                     <input id="search-gym" class="form-control" type="text" name="name"
-                        placeholder="Search by gym name">
+                        placeholder="Search by gym name" value={{searchText}}>
                 </div>
+                <button type="submit" class="btn btn-sm btn-primary">Search</button>
+                <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/gym/'">Clear Search</button>
             </form>
+            
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
@@ -38,6 +40,12 @@
         </div>
     </div>
 
+    {{!-- Show message if no gyms are found --}}
+    {{#unless gymsList.length}}
+        <div id="no-results">
+            No results found with that criteria! Please try a different search. 
+        </div>
+    {{/unless}}
 
     {{!-- updated to make dynamic title data --}}
     <div class="gymList row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
