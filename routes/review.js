@@ -14,7 +14,7 @@ const router = Router();
 router.route('/new/:gymId').get(async (req, res) => {
   try {
     if (!helpers.checkIfLoggedIn(req)) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     } else {
       let gym = await gymData.getByGymId(req.params.gymId)
       let userLoggedIn = helpers.checkIfLoggedIn(req);
@@ -136,7 +136,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     console.log("you should not be here updateContent!")
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     const currentUser = await userData.getByUserId(req.session.userId);
     let reviewId = req.params.reviewId;
@@ -182,7 +182,7 @@ router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
     }
     try {
       let review = await reviewData.get(req.params.reviewId);
-      let gym = await reviewData.getGymReviewsListObjects(req.params.gymId);
+      let gym = await gymData.getByGymId(req.params.gymId);
       return res.status(status).render("updateReviewContent", { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, review: review, currentUser: currentUser, hasErrors: hasErrors, errors: errors });
     } catch (e) {
       let title = 'ERROR'
@@ -237,7 +237,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     console.log("you should not be here update rating!")
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     const currentUser = await userData.getByUserId(req.session.userId);
     // input check
@@ -282,7 +282,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
     }
     try {
       let review = await reviewData.get(req.params.reviewId);
-      let gym = await reviewData.getGymReviewsListObjects(req.params.gymId);
+      let gym = await gymData.getByGymId(req.params.gymId);
       return res.status(status).render("updateReviewRating", { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, review: review, currentUser: currentUser, hasErrors: hasErrors, errors: errors });
     } catch (e) {
       let title = 'ERROR'
@@ -301,7 +301,7 @@ router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
 router.route('/delete/:gymId/:reviewId').get(async (req, res) => {
   try {
     if (!helpers.checkIfLoggedIn(req)) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     } else {
       let reviewId = req.params.reviewId;
       let review = await reviewData.get(reviewId);
@@ -336,7 +336,7 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     console.log("you should not be here delete review!")
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     const currentUser = await userData.getByUserId(req.session.userId);
     let reviewId = req.params.reviewId;
@@ -368,7 +368,7 @@ router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
     }
     try {
       let review = await reviewData.get(req.params.reviewId);
-      let gym = await reviewData.getGymReviewsListObjects(req.params.gymId);
+      let gym = await gymData.getByGymId(req.params.gymId);
       return res.status(status).render("reviewConfirmDelete", { userLoggedIn: userLoggedIn, title: 'Update Review', gym: gym, review: review, currentUser: currentUser, hasErrors: hasErrors, errors: errors });
     } catch (e) {
       let title = 'ERROR'
