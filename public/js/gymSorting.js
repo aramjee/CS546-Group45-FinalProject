@@ -26,6 +26,9 @@ function getAllGymsFromDom() {
   return gyms;
 }
 
+//Saving all gyms when page loads to maintain all gyms in an array.
+let allGymsList = getAllGymsFromDom();
+
 function sortRatingHighToLow() {
   let gyms = getAllGymsFromDom();
   gyms.sort((a, b) => b.rating - a.rating);
@@ -125,10 +128,16 @@ function filterGyms() {
     }
   }
 
-  let filteredGyms = getAllGymsFromDom().filter(gym => {
+  let filteredGyms = allGymsList.filter(gym => {
     return selectedOptions.includes(gym.category);
   });
 
+  //Showing no results message when there are no filtered gyms
+  if(filteredGyms.length === 0){
+    $("#no-results").removeClass("hidden");
+  }else if(!$("#no-results").hasClass("hidden")){
+    $("#no-results").addClass("hidden");
+  }
+
   updateGymsList(filteredGyms);
 }
-

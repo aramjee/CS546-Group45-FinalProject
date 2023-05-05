@@ -13,6 +13,10 @@
   color: orange;
 }
 
+.hidden{
+  display:none;
+}
+
 /* Card Styles */
 .card-title{
   font-size:20px;
