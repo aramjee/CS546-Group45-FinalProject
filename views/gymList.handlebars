@@ -25,15 +25,15 @@
                     Filter
                 </button>
                 <ul class="dropdown-menu">
-                    <li><label><input type="checkbox" class="filter-option" value="Membership Gym" checked> Membership
+                    <li><label class="dropdown-item"><input type="checkbox" class="filter-option" value="Membership Gym" checked> Membership
                             Gym</label></li>
-                    <li><label><input type="checkbox" class="filter-option" value="24 hour access gym" checked> 24 hour
+                    <li><label class="dropdown-item"><input type="checkbox" class="filter-option" value="24 hour access gym" checked> 24 hour
                             access gym</label></li>
-                    <li><label><input type="checkbox" class="filter-option" value="CrossFit" checked> CrossFit</label>
+                    <li><label class="dropdown-item"><input type="checkbox" class="filter-option" value="CrossFit" checked> CrossFit</label>
                     </li>
-                    <li><label><input type="checkbox" class="filter-option" value="Boot Camps" checked> Boot
+                    <li><label class="dropdown-item"><input type="checkbox" class="filter-option" value="Boot Camps" checked> Boot
                             Camps</label></li>
-                    <li><label><input type="checkbox" class="filter-option" value="Training gyms" checked> Training
+                    <li><label class="dropdown-item"><input type="checkbox" class="filter-option" value="Training gyms" checked> Training
                             gyms</label></li>
                 </ul>
             </div>
@@ -41,11 +41,9 @@
     </div>
 
     {{!-- Show message if no gyms are found --}}
-    {{#unless gymsList.length}}
-        <div id="no-results">
-            No results found with that criteria! Please try a different search. 
-        </div>
-    {{/unless}}
+    <div id="no-results" class="{{#if gymsList.length}}hidden{{/if}}">
+        No results found with that criteria! Please try a different search. 
+    </div>
 
     {{!-- updated to make dynamic title data --}}
     <div class="gymList row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
