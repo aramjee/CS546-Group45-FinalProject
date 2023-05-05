@@ -17,8 +17,9 @@ router.route('/').get(async (req, res) => {
     const gymList = await gymData.getAll();
     let searchName = undefined;
     if (req.query && req.query.name) {
-    searchName = req.query.name} else {seachName = null}
-    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn, searchText:searchName });
+      searchName = req.query.name
+    } else { searchName = null }
+    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn, searchText: searchName });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -44,12 +45,18 @@ router.route('/search').get(async (req, res) => {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     const searchName = req.query.name;
     let gymsList = [];
+    let status = 200
+    let errors = []
+    let hasErrors = false
     if (searchName) {
       gymsList = await gymData.searchByValue(searchName);
     } else {
       gymsList = await gymData.getAll();
+      hasErrors = true;
+      errors.push("You did not sumbit a search term!")
+      status = 400
     }
-    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName });
+    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName, hasErrors: hasErrors, errors: errors });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
