@@ -267,7 +267,23 @@ try {
 }
 
 let gymAB_id = gymAB._id.toString();
-
+let gymAC = undefined
+try {
+    gymAC = await gyms.create(
+        "Planet Fitness on 101",
+        "https://www.planetfitness.com",
+        "CrossFit",
+        gymOwnerA_id,
+        "101 Washington St",
+        "Hoboken",
+        "New Jersey",
+        "07030"
+    )
+    console.log('gymAC has been created');
+} catch (e) {
+    console.log(e);
+}
+let gymAC_id = gymAC._id.toString();
 
 try {
     gymOwnerB = await users.create(

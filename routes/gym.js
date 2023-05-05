@@ -134,6 +134,8 @@ router.route('/add').post(async (req, res) => {
     validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
     validation.checkValidWebsite(req.body.website);
     validation.checkObjectId(req.session.userId, "gymOwnerId");
+    // catergory should be trimmed first to pass into validation.
+    req.body.category = req.body.category.trim()
     validation.checkValidGymCategory(req.body.category);
 
     await gymData.create(req.body.gymName, req.body.website, req.body.category, req.session.userId, req.body.address, req.body.city, req.body.state, req.body.zip);
@@ -284,10 +286,24 @@ router.route('/edit/:gymId').put(async (req, res) => {
     gym.city = req.body.city;
     gym.state = req.body.state;
     gym.zip = req.body.zip;
-
-
-    await gymData.update(gymId, gym);
-    res.status(200).redirect("/gym/manage");
+    // Chloe: if there's no real update, instead of redirect to gym/manage, re-render the same editGym page with errors
+    let currentUser = undefined;
+    if (userLoggedIn) {
+      currentUser = await userData.getByUserId(req.session.userId);
+    } else {
+      currentUser = null;
+    }
+    try {
+      await gymData.update(gymId, gym);
+      res.status(200).redirect("/gym/manage");
+    } catch (e) {
+      let status = e[0] ? e[0] : 500;
+      let message = e[1] ? e[1] : 'Internal Server Error';
+      let errors = []
+      let hasErrors = true
+      errors.push(message);
+      return res.status(status).render("editGym", { title: 'Edit Gym', gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser, hasErrors: hasErrors, errors: errors });
+    }
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';

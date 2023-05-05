@@ -139,6 +139,7 @@ const checkValidPassword = (password) => {
 }
 
 const checkValidGymCategory = (category) => {
+  category = category.trim()
   if (!gymTypes.includes(category)) {
     throw [400, "ERROR: Gym types must be in following options: Membership Gym, 24 hour access gym, CrossFit, Boot Camps, Training gyms"];
   }

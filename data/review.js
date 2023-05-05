@@ -253,6 +253,9 @@ async function removeReview(id) {
     // all the reviews belong to this gym (post remove)
     // since it is post remove, the rating should also be updated from updatedGymRating
     let updatedGymRating = await this.updateRating(gymId);
+    if (isNaN(updatedGymRating)) {
+        updatedGymRating = 0
+    }
     let UpdatedgymReviewsIds = await this.getGymReviews(gymId);
     let updatedGym = await gymDataFunctions.getByGymId(gymId);
 
