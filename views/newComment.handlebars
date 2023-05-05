@@ -14,17 +14,4 @@
     </form>
     <br>
     <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
-    <div>
-        {{#if hasError}}
-        <div class="error">
-            <ul>
-                {{#each error}}
-                <li>
-                    {{this}}
-                </li>
-                {{/each}}
-            </ul>
-        </div>
-        {{/if}}
-    </div>
 </main>

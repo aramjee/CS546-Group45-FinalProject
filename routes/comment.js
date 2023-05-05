@@ -11,7 +11,7 @@ const router = Router();
 router.route('/new/:reviewId').get(async (req, res) => {
   try {
     if (!helpers.checkIfLoggedIn(req)) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     } else {
       let review = await reviewData.get(req.params.reviewId)
       if (req.session.userId === review.userId) {
@@ -47,7 +47,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     let newComment = req.body;
     let reviewId = req.params.reviewId;
@@ -110,7 +110,7 @@ router.route('/new/:reviewId').post(async (req, res) => {
 router.route('/update/:reviewId/:commentId').get(async (req, res) => {
   try {
     if (!helpers.checkIfLoggedIn(req)) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     } else {
       let commentId = req.params.commentId;
       let comment = await commentData.get(commentId);
@@ -147,7 +147,7 @@ router.route('/update/:reviewId/:commentId').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     let commentId = req.params.commentId;
     let updatedComment = req.body;
@@ -259,7 +259,7 @@ router.route('/delete/:reviewId/:commentId').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     //const userId = req.session.userId;
     let commentId = req.params.commentId;
