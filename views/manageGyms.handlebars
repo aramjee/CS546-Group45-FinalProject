@@ -40,10 +40,9 @@
     </form>
 
     {{!-- updated to make dynamic title data --}}
+    <h2 class="mt-2">Gym List</h2>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <p>
-        <h2>Gym List</h2>
-        </p>
+
         {{#each gymsList}}
         <div class="col">
             <a href="/gym/edit/{{_id}}" class="card-link">
