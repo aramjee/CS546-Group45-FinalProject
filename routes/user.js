@@ -55,7 +55,7 @@ router.route('/login').post(async (req, res) => {
   } else {
     try {
       const sanitizedEmail = xss(req.body.email).toLowerCase().trim();
-      const sanitizedPassword = xss(req.body.password);
+      const sanitizedPassword = xss(req.body.password).trim();
       validation.checkValidEmail(sanitizedEmail);
       validation.checkValidPassword(sanitizedPassword);
       const userId = await userData.checkUser(sanitizedEmail, sanitizedPassword);
@@ -90,15 +90,15 @@ router.route('/signup').post(async (req, res) => {
   let errors = [];
   // validation
   try {
-    const sanitizedFirstName = xss(req.body.firstName);
-    const sanitizedLastName = xss(req.body.lastName);
-    const sanitizedUserName = xss(req.body.userName);
+    const sanitizedFirstName = xss(req.body.firstName).trim();
+    const sanitizedLastName = xss(req.body.lastName).trim();
+    const sanitizedUserName = xss(req.body.userName).trim();
     const sanitizedEmail = xss(req.body.email).toLowerCase().trim();
-    const sanitizedCity = xss(req.body.city);
-    const sanitizedState = xss(req.body.state);
-    const sanitizedPassword = xss(req.body.password);
-    const sanitizedIsGymOwner = xss(req.body.isGymOwner);
-    const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
+    const sanitizedCity = xss(req.body.city).trim();
+    const sanitizedState = xss(req.body.state).trim();
+    const sanitizedPassword = xss(req.body.password).trim();
+    const sanitizedIsGymOwner = xss(req.body.isGymOwner).trim();
+    const sanitizedDateOfBirth = xss(req.body.dateOfBirth).trim();
     validation.checkArgumentsExist(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedIsGymOwner, sanitizedPassword);
     validation.checkNonEmptyStrings(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword);
     validation.checkValidEmail(sanitizedEmail);
@@ -127,7 +127,7 @@ router.route('/signup').post(async (req, res) => {
     let message = e[1] ? e[1] : 'Internal Server Error';
     hasErrors = true;
     errors.push(message);
-    return res.status(status).render("signup", {title: 'Gym User Signup', hasErrors: hasErrors, errors: errors});
+    return res.status(status).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
   }
 });
 
@@ -244,14 +244,14 @@ router.route('/update').post(async (req, res) => {
   } else {
     try {
       let user = await userData.getByUserId(req.session.userId);
-      const sanitizedFirstName = xss(req.body.firstName);
-      const sanitizedLastName = xss(req.body.lastName);
-      const sanitizedUserName = xss(req.body.userName);
-      const sanitizedCity = xss(req.body.city);
-      const sanitizedState = xss(req.body.state);
-      const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
-      const sanitizedPassword = xss(req.body.password);
-      const sanitizedConfirm = xss(req.body.confirm);
+      const sanitizedFirstName = xss(req.body.firstName).trim();
+      const sanitizedLastName = xss(req.body.lastName).trim();
+      const sanitizedUserName = xss(req.body.userName).trim();
+      const sanitizedCity = xss(req.body.city).trim();
+      const sanitizedState = xss(req.body.state).trim();
+      const sanitizedDateOfBirth = xss(req.body.dateOfBirth).trim();
+      const sanitizedPassword = xss(req.body.password).trim();
+      const sanitizedConfirm = xss(req.body.confirm).trim();
       validation.checkArgumentsExist(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword, sanitizedConfirm);
       validation.checkNonEmptyStrings(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword, sanitizedConfirm);
 
