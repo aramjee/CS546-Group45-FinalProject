@@ -83,7 +83,7 @@ async function create(
     validation.checkArgumentsExist(userId, dateOfComment, content, reviewId);
     dateOfComment = validation.checkValidDate(dateOfComment);
     content = validation.checkNonEmptyStrings(content)[0];
-    content = validation.checkContent(content);
+    content = validation.checkContent(content.trim());
     userId = validation.checkObjectId(userId);
     reviewId = validation.checkObjectId(reviewId);
     let userName = await userDataFunctions.getUserName(userId)
@@ -160,7 +160,7 @@ async function update(
     validation.checkArgumentsExist(id, content, dateOfComment);
     dateOfComment = validation.checkValidDate(dateOfComment);
     content = validation.checkNonEmptyStrings(content)[0];
-    content = validation.checkContent(content);
+    content = validation.checkContent(content.trim());
     id = validation.checkObjectId(id, 'id');
 
     // todo: how to check content?
