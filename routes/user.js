@@ -207,7 +207,7 @@ router.route('/update').get(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+    return res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
   } else {
     try {
       const user = await userData.getByUserId(req.session.userId);
@@ -249,7 +249,7 @@ router.route('/update').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
+    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
     try {
       let user = await userData.getByUserId(req.session.userId);
@@ -290,7 +290,7 @@ router.route('/update').post(async (req, res) => {
       // Chloe: if there's no real update, instead of redirect to profile, re-render the same update page with errors
       try {
         await userData.update(req.session.userId, user);
-        res.redirect("/user/profile");
+        return res.redirect("/user/profile");
       } catch (e) {
         let status = e[0] ? e[0] : 500;
         let message = e[1] ? e[1] : 'Internal Server Error';
@@ -388,17 +388,17 @@ router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
+    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
     const user = await userData.getByUserId(req.session.userId);
     if (!user) {
       hasErrors = true;
       errors.push("User not found");
-      res.status(500).redirect("user/profile")
+      return res.status(500).redirect("user/profile")
     }
     const gymIndex = user.favGymList.indexOf(gymId);
     if (gymIndex === -1) {
-      res.status(500).redirect("user/profile")
+      return res.status(500).redirect("user/profile")
     }
 
     user.favGymList.splice(gymIndex, 1);

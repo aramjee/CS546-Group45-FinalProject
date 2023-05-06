@@ -29,6 +29,13 @@
 
         return name;
     }
+    function checkValidGymName(gymName) {
+        const gymNameRegex = /[a-zA-Z]+/;
+        if (!gymNameRegex.test(gymName)) {
+            throw [400, `ERROR: ${gymName} must be a valid gym name, must contain at least one letter`];
+        }
+        return gymName;
+    }
 
     function checkCity(name) {
         name = checkString(name);
@@ -36,7 +43,7 @@
         if (/\d/.test(name)) {
             throw new Error("City cannot contain a number");
         }
-        if (!(/[a-zA-Z]/.test(name)))  {
+        if (!(/[a-zA-Z]/.test(name))) {
             throw new Error("City should contain letters");
         }
         if (name.length < 2 || name.length > 25) {
@@ -52,7 +59,7 @@
         if (/\d/.test(name)) {
             throw new Error("State cannot contain a number");
         }
-        if (!(/[a-zA-Z]/.test(name)))  {
+        if (!(/[a-zA-Z]/.test(name))) {
             throw new Error("State should contain letters");
         }
         if (name.length < 4 || name.length > 13) {
@@ -60,6 +67,13 @@
         }
 
         return name;
+    }
+    function checkValidAddress(address) {
+        const addressRegex = /^(\d{1,}) [a-zA-Z0-9\s]+/;
+        if (!addressRegex.test(address)) {
+            throw [400, `ERROR: ${address} must be a valid address (Addr# + StreetName)`];
+        }
+        return address;
     }
 
     function checkDate(date) {
@@ -98,6 +112,25 @@
         }
         return password;
     }
+    function checkContent(strVal) {
+        if (!strVal) throw `Error: You must supply a content!`;
+        if (typeof strVal !== 'string') throw `Error: contentmust be a string!`;
+        strVal = strVal.trim();
+        if (strVal.length === 0)
+            throw [400, `Error: content cannot be an empty string or string with just spaces`];
+        if (!isNaN(strVal))
+            throw [400, `Error: content is not a valid value for content as it only contains digits`];
+        return strVal;
+    }
+    function checkValidZipCode(zipCode) {
+        // 5 digits
+        const addressRegex = /^\d{5}$/;
+        if (!addressRegex.test(zipCode)) {
+            throw [400, `ERROR: ${zipCode} must be a valid zipCode(5 digits)`];
+        }
+        return zipCode;
+    }
+
 
     const signup = document.getElementById('signup-form');
 
@@ -211,7 +244,7 @@
             event.preventDefault();
             try {
                 gymName = checkString(gymName);
-
+                gymName = checkValidGymName(gymName)
                 console.log()
                 if (!(/\d/.test(gymName) || /[a-zA-Z]/.test(gymName))) {
                     throw new Error("Gym name must contain alphanumeric characters");
@@ -230,10 +263,11 @@
                 // website = checkName(website);
                 category = checkString(category);
                 address = checkString(address);
+                address = checkValidAddress(address)
                 city = checkCity(city);
                 state = checkState(state);
                 zip = checkString(zip);
-
+                zip = checkValidZipCode(zip);
                 gym.submit();
             } catch (e) {
                 //console.log("failed to register");
@@ -257,7 +291,7 @@
             event.preventDefault();
             try {
                 gymName = checkString(gymName);
-
+                gymName = checkValidGymName(gymName)
                 if (!(/\d/.test(gymName) || /[a-zA-Z]/.test(gymName))) {
                     throw new Error("Gym name must contain alphanumeric characters");
                 }
@@ -275,10 +309,11 @@
                 // website = checkName(website);
                 category = checkString(category);
                 address = checkString(address);
+                address = checkValidAddress(address)
                 city = checkCity(city);
                 state = checkState(state);
                 zip = checkString(zip);
-
+                zip = checkValidZipCode(zip);
                 updateGym.submit();
             } catch (e) {
                 //console.log("failed to register");
@@ -303,7 +338,7 @@
                     throw new Error("Rating must be between 1 and 5");
                 }
                 content = checkString(content);
-
+                content = checkContent(content)
                 newReview.submit();
             } catch (e) {
                 document.getElementById('error').innerText = "(400) " + e;
@@ -342,10 +377,11 @@
             event.preventDefault();
             try {
                 content = checkString(content);
+                content = checkContent(content)
 
                 updateReviewContent.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e; 
+                document.getElementById('error').innerText = "(400) " + e;
             }
         });
     }
@@ -361,6 +397,7 @@
             event.preventDefault();
             try {
                 content = checkString(content);
+                content = checkContent(content)
 
                 newComment.submit();
             } catch (e) {
@@ -378,6 +415,7 @@
             event.preventDefault();
             try {
                 content = checkString(content);
+                content = checkContent(content)
 
                 updateComment.submit();
             } catch (e) {

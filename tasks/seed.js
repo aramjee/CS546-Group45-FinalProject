@@ -1039,7 +1039,7 @@ try {
     // );
     // console.log("birthday wrong")
 
-    console.log('user test has failed');
+    // console.log('user test has failed');
 } catch (e) {
     console.log(e);
 }
