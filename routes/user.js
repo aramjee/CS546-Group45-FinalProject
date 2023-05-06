@@ -53,11 +53,12 @@ router.route('/login').post(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
     return res.redirect("/user/profile");
   } else {
-    const { email, password } = req.body;
     try {
-      validation.checkValidEmail(email);
-      validation.checkValidPassword(password);
-      const userId = await userData.checkUser(email, password);
+      const sanitizedEmail = xss(req.body.email).toLowerCase().trim();
+      const sanitizedPassword = xss(req.body.password);
+      validation.checkValidEmail(sanitizedEmail);
+      validation.checkValidPassword(sanitizedPassword);
+      const userId = await userData.checkUser(sanitizedEmail, sanitizedPassword);
       if (userId) {
         req.session.userId = userId.userId;
         return res.redirect("/user/profile");
@@ -92,7 +93,7 @@ router.route('/signup').post(async (req, res) => {
     const sanitizedFirstName = xss(req.body.firstName);
     const sanitizedLastName = xss(req.body.lastName);
     const sanitizedUserName = xss(req.body.userName);
-    const sanitizedEmail = xss(req.body.email);
+    const sanitizedEmail = xss(req.body.email).toLowerCase().trim();
     const sanitizedCity = xss(req.body.city);
     const sanitizedState = xss(req.body.state);
     const sanitizedPassword = xss(req.body.password);
@@ -107,27 +108,17 @@ router.route('/signup').post(async (req, res) => {
       validation.checkValidDate(sanitizedDateOfBirth);
     }
 
-  } catch (e) {
-    hasErrors = true
-    errors.push(e[1]);
-    return res.status(e[0]).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
-  }
 
-  const duplicateEmail = await userData.getByUserEmail(sanitizedEmail.toLowerCase());
-  if (duplicateEmail) {
-    hasErrors = true
-    errors.push("Email already used, please login");
-    return res.status(400).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
-  }
+    const duplicateEmail = await userData.getByUserEmail(sanitizedEmail.toLowerCase());
+    if (duplicateEmail) {
+      throw [400, `Email already used, please login`];
+    }
 
-  const duplicateUserName = await userData.getByUserName(sanitizedUserName.toLowerCase());
-  if (duplicateUserName) {
-    hasErrors = true
-    errors.push("UserName already used, please login");
-    return res.status(400).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
-  }
+    const duplicateUserName = await userData.getByUserName(sanitizedUserName.toLowerCase());
+    if (duplicateUserName) {
+      throw [400, `UserName already used, please login`];
+    }
 
-  try {
     await userData.create(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedIsGymOwner, sanitizedPassword)
     // instead of render, it should be redirect.
     return res.status(201).redirect("/user/login");//, email: email, password: password });
@@ -136,7 +127,7 @@ router.route('/signup').post(async (req, res) => {
     let message = e[1] ? e[1] : 'Internal Server Error';
     hasErrors = true;
     errors.push(message);
-    return res.status(status).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
+    return res.status(status).render("signup", {title: 'Gym User Signup', hasErrors: hasErrors, errors: errors});
   }
 });
 

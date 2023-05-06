@@ -945,7 +945,7 @@ console.log("let's like and dislike some gyms!")
 console.log('Done seeding database');
 
 
-console.log("test");
+// console.log("test");
 
 try {
     // user = await users.create(
@@ -960,7 +960,7 @@ try {
     //     "JaneFoster@123"
     // );
     // console.log("email/userName in use")
-
+    //
     // user = await users.create(
     //     "Jane",
     //     "Foster",
@@ -997,6 +997,19 @@ try {
     //     "2000-01-01",
     //     1,
     //     "JaneFoster@123"
+    // );
+    // console.log("no empty space allowed")
+
+    // user = await users.create(
+    //   "lkj'",
+    //   "lkj  ",
+    //   "lkjl    ",
+    //   "janefoster1@stevens.edu",
+    //   "New York  ",
+    //   "New York",
+    //   "2023-01-01",
+    //   1,
+    //   "JaneFoster@123  "
     // );
     // console.log("no empty space allowed")
 
