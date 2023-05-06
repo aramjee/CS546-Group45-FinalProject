@@ -32,7 +32,7 @@ const create = async (
   }
 
   const lowerCaseEmail = email.toLowerCase();
-  const lowerCaseUserName = userName.toLowerCase();
+  const lowerCaseUserName = userName.toLowerCase().trim();
 
   // Hash the password
   const salt = await bcrypt.genSalt(10);

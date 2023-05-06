@@ -27,7 +27,7 @@ router.route('/new/:reviewId').get(async (req, res) => {
       } else {
         currentUser = null;
       }
-      res.render('newComment', { UserLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, review: review, hasErrors: false, errors: [], currentUser: currentUser });
+      res.render('newComment', { userLoggedIn: userLoggedIn, title: 'Comment on Review', gym: gym, review: review, hasErrors: false, errors: [], currentUser: currentUser });
     }
   } catch (e) {
     let status = e[0] ? e[0] : 500;
