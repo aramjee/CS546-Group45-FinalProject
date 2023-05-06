@@ -145,8 +145,8 @@ async function create(
     validation.checkNonEmptyStrings(gymId, userId, dateOfReview);
     gymId = validation.checkObjectId(gymId);
     userId = validation.checkObjectId(userId);
-    dateOfReview = validation.checkValidDate(dateOfReview);
-    content = validation.checkContent(content);
+    dateOfReview = validation.checkValidDate(dateOfReview.trim());
+    content = validation.checkContent(content.trim());
     rating = validation.checkValidRating(rating);
 
     if (!userDataFunctions.getByUserId(userId)) {
@@ -297,6 +297,7 @@ async function updateReviewContent(
     return await this.get(id);
 }
 async function updateRating(gymId) {
+    gymId = validation.checkObjectId(gymId, 'gymId id');
     let reviewList = await this.getGymReviews(gymId);
     let ratings = []
     for (let reviewIds of reviewList) {
@@ -315,7 +316,7 @@ async function updateReviewRating(
 ) {
     id = validation.checkObjectId(id, 'review id');
     rating = validation.checkValidRating(rating);
-
+    dateOfReview = validation.checkValidDate(dateOfReview)
     const reviewsCollection = await reviewCollection();
     const oldReview = await this.get(id);
     const updatedInfo = await reviewsCollection.findOneAndUpdate(

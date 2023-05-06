@@ -21,11 +21,11 @@ const create = async (
   // Validation
   validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, password, isGymOwner);
   validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, dateOfBirth, password);
-  validation.checkValidEmail(email);
-  validation.checkValidStateName(state);
-  validation.checkValidCityName(city);
-  validation.checkValidName(firstName);
-  validation.checkValidName(lastName);
+  validation.checkValidEmail(email.trim());
+  validation.checkValidStateName(state.trim());
+  validation.checkValidCityName(city.trim());
+  validation.checkValidName(firstName.trim());
+  validation.checkValidName(lastName.trim());
   if (dateOfBirth.length > 0) {
     dateOfBirth = dateOfBirth.trim();
     validation.checkValidDate(dateOfBirth);
@@ -148,18 +148,18 @@ const update = async (id, user) => {
     user.dateOfBirth, user.hashedPassword, user.reviews, user.comments, user.likedGyms, user.dislikedGyms,
     user.favGymList, user.gymsListForOwner);
   validation.checkNonEmptyStrings(user.firstName, user.lastName, user.userName, user.email, user.city, user.state, user.hashedPassword);
-  validation.checkValidEmail(user.email);
-  validation.checkValidDate(user.dateOfBirth);
+  validation.checkValidEmail(user.email.trim());
+  validation.checkValidDate(user.dateOfBirth.trim());
   validation.checkObjectIdArray(user.reviews);
   validation.checkObjectIdArray(user.comments);
   validation.checkObjectIdArray(user.likedGyms);
   validation.checkObjectIdArray(user.dislikedGyms);
   validation.checkObjectIdArray(user.favGymList);
   validation.checkObjectIdArray(user.gymsListForOwner);
-  validation.checkValidStateName(user.state);
-  validation.checkValidCityName(user.city);
-  validation.checkValidName(user.firstName);
-  validation.checkValidName(user.lastName);
+  validation.checkValidStateName(user.state.trim());
+  validation.checkValidCityName(user.city.trim());
+  validation.checkValidName(user.firstName.trim());
+  validation.checkValidName(user.lastName.trim());
 
   let oldUser = await getByUserId(id)
   // Update the user data in the database
@@ -219,7 +219,7 @@ const removeGymFromUsers = async (gymId) => {
 const checkUser = async (emailAddress, password) => {
   const cleanEmail = emailAddress.toLowerCase().trim();
   validation.checkValidEmail(cleanEmail)
-  validation.checkValidPassword(password)
+  validation.checkValidPassword(password.trim())
   const user = await getByUserEmail(cleanEmail);
   if (!user) {
     throw [404, "ERROR: Either the email address or password is invalid"];

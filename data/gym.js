@@ -22,14 +22,14 @@ const create = async (
   // Validation
   validation.checkArgumentsExist(gymName, website, category, gymOwnerId, address, city, state, zip);
   validation.checkNonEmptyStrings(gymName, website, category, gymOwnerId, address, city, state, zip);
-  validation.checkValidWebsite(website);
+  validation.checkValidWebsite(website.trim());
   validation.checkObjectId(gymOwnerId, "gymOwnerId");
-  validation.checkValidGymCategory(category);
-  validation.checkValidGymName(gymName);
-  validation.checkValidStateName(state);
-  validation.checkValidCityName(city);
-  validation.checkValidZipCode(zip);
-  validation.checkValidAddress(address)
+  validation.checkValidGymCategory(category.trim());
+  validation.checkValidGymName(gymName.trim());
+  validation.checkValidStateName(state.trim());
+  validation.checkValidCityName(city.trim());
+  validation.checkValidZipCode(zip.trim());
+  validation.checkValidAddress(address.trim())
 
   const newGym = {
     gymName: gymName.trim(),
@@ -128,15 +128,15 @@ const update = async (id, gym) => {
   // the gym I would pass in will have a rating. Should we check for it's existence as well?
   validation.checkArgumentsExist(gym.gymName, gym.website, gym.category, gym.address, gym.city, gym.state, gym.zip);
   validation.checkNonEmptyStrings(gym.gymName, gym.website, gym.category, gym.address, gym.city, gym.state, gym.zip);
-  validation.checkValidWebsite(gym.website);
+  validation.checkValidWebsite(gym.website.trim());
   validation.checkValidNonNegativeInteger(gym.likedGymsCnt);
   validation.checkValidNonNegativeInteger(gym.dislikedGymsCnt);
-  validation.checkValidGymCategory(gym.category);
-  validation.checkValidGymName(gym.gymName);
-  validation.checkValidStateName(gym.state);
-  validation.checkValidCityName(gym.city);
-  validation.checkValidZipCode(gym.zip);
-  validation.checkValidAddress(gym.address)
+  validation.checkValidGymCategory(gym.category.trim());
+  validation.checkValidGymName(gym.gymName.trim());
+  validation.checkValidStateName(gym.state.trim());
+  validation.checkValidCityName(gym.city.trim());
+  validation.checkValidZipCode(gym.zip.trim());
+  validation.checkValidAddress(gym.address.trim())
   // in order to update the gym, the review will call this function
   // but need to check if this is the first review, or otherwise the gym rating is 0.
   if (gym.rating) { validation.checkValidRating(gym.rating) };
@@ -174,7 +174,7 @@ const update = async (id, gym) => {
 };
 
 const searchByValue = async (name) => {
-  validation.checkNonEmptyStrings(name);
+  validation.checkNonEmptyStrings(name.trim());
 
   const regex = new RegExp(name, 'i'); // Case-insensitive search
   const gymsDBConnection = await gymCollection();
