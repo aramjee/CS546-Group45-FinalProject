@@ -941,7 +941,43 @@ await users.update(user10_id, user);
 
 console.log("let's like and dislike some gyms!")
 // each gym has at least one like or dislike
+user1.likedGyms.push(gymAA_id)
+await users.update(user1_id, user1)
+user2.likedGyms.push(gymAB_id)
+await users.update(user2_id, user2)
+user2.likedGyms.push(gymAA_id)
+await users.update(user2_id, user2)
+user3.likedGyms.push(gymAB_id)
+await users.update(user3_id, user3)
+user3.likedGyms.push(gymAA_id)
+await users.update(user3_id, user3)
+user4.likedGyms.push(gymAB_id)
+await users.update(user4_id, user4)
+user4.likedGyms.push(gymAA_id)
+await users.update(user4_id, user4)
+await gymData.updateLikedGymsCnt(gymAA_id, 4);
+await gymData.updateLikedGymsCnt(gymAB_id, 3);
 
+user5.likedGyms.push(gymBA_id)
+await users.update(user5_id, user5)
+user6.likedGyms.push(gymBB_id)
+await users.update(user6_id, user6)
+user6.likedGyms.push(gymBA_id)
+await users.update(user6_id, user6)
+user7.likedGyms.push(gymBB_id)
+await users.update(user7_id, user7)
+user7.likedGyms.push(gymBA_id)
+await users.update(user7_id, user7)
+user8.likedGyms.push(gymBB_id)
+await users.update(user8_id, user8)
+user8.likedGyms.push(gymBA_id)
+await users.update(user8_id, user8)
+user9.likedGyms.push(gymBB_id)
+await users.update(user9_id, user9)
+user10.likedGyms.push(gymBA_id)
+await users.update(user10_id, user10)
+await gymData.updateLikedGymsCnt(gymBA_id, 5);
+await gymData.updateLikedGymsCnt(gymBB_id, 4);
 console.log('Done seeding database');
 
 
