@@ -57,10 +57,10 @@ function checkValidDate(date) {
     throw [400, `ERROR: ${date} must be a valid date string in the format YYYY-MM-DD`];
   }
   date = date.trim();
-  const yearInDate = new Date(date).getFullYear();
-  const currentYear = new Date().getFullYear();
-  if (yearInDate < 1900 || yearInDate > currentYear) {
-    throw [400, `ERROR: ${date} must be between 1900 and the current year`];
+  const inputDate = moment(date);
+  const currentDate = moment().startOf('day');
+  if (inputDate.year() < 1900 || inputDate.isAfter(currentDate)) {
+    throw [400, `ERROR: ${date} must be between 1900 and the current day`];
   }
   return date;
 }
@@ -138,8 +138,11 @@ const checkValidPassword = (password) => {
   if (!/[\W]/.test(password)) {
     checkValidPassword = false;
   }
+  if (/\s/.test(password)) {
+    checkValidPassword = false;
+  }
   if (!checkValidPassword) {
-    throw [400, "ERROR: Password must be a valid string and should be a minimum of 8 characters long. at least one uppercase character, there has to be at least one number and there has to be at least one special character"]
+    throw [400, "ERROR: Password must be a valid string and should be a minimum of 8 characters long. at least one uppercase character, there has to be at least one number and there has to be at least one special character, no space"]
   }
   return password;
 }
@@ -189,6 +192,15 @@ const checkValidZipCode = (zipCode) => {
   }
   return zipCode;
 }
+
+const checkValidName = (name) => {
+  // Allow only letters, dot, spaces, hyphens, and apostrophes
+  const addressRegex = /^[a-zA-Z\s\.\-\']+$/;
+  if (!addressRegex.test(name)) {
+    throw [400, `ERROR: ${name} must be a valid name, only letters, dot, spaces, hyphens, and apostrophes`];
+  }
+  return name;
+}
 const checkContent = (strVal) => {
   if (!strVal) throw `Error: You must supply a content!`;
   if (typeof strVal !== 'string') throw `Error: contentmust be a string!`;
@@ -202,5 +214,5 @@ const checkContent = (strVal) => {
 export {
   checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite, checkContent,
   checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword, checkString, checkValidGymCategory,
-  checkValidCityName, checkValidAddress, checkValidStateName, checkValidGymName, checkValidZipCode
+  checkValidCityName, checkValidAddress, checkValidStateName, checkValidGymName, checkValidZipCode, checkValidName
 }

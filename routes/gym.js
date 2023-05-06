@@ -19,7 +19,7 @@ router.route('/').get(async (req, res) => {
     if (req.query && req.query.name) {
       searchName = req.query.name
     } else { searchName = null }
-    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn, searchText: searchName });
+    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn, searchText: searchName, title: "Gym List" });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -56,7 +56,7 @@ router.route('/search').get(async (req, res) => {
       errors.push("You did not sumbit a search term!")
       status = 400
     }
-    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName, hasErrors: hasErrors, errors: errors });
+    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName, hasErrors: hasErrors, errors: errors, title: "Gym List" });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -123,13 +123,13 @@ router.route('/add').post(async (req, res) => {
       throw [400, `ERROR: You must be a gym owner to add a gym`];
     }
 
-    const sanitizedGymName = xss(req.body.gymName);
-    const sanitizedWebsite = xss(req.body.website);
+    const sanitizedGymName = xss(req.body.gymName).trim();
+    const sanitizedWebsite = xss(req.body.website).trim();
     const sanitizedCategory = xss(req.body.category.trim());
-    const sanitizedAddress = xss(req.body.address);
-    const sanitizedCity = xss(req.body.city);
-    const sanitizedState = xss(req.body.state);
-    const sanitizedZip = xss(req.body.zip);
+    const sanitizedAddress = xss(req.body.address).trim();
+    const sanitizedCity = xss(req.body.city).trim();
+    const sanitizedState = xss(req.body.state).trim();
+    const sanitizedZip = xss(req.body.zip).trim();
 
     validation.checkArgumentsExist(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip, req.session.userId);
     validation.checkNonEmptyStrings(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip, req.session.userId);
@@ -186,7 +186,7 @@ router.route('/:id').get(async (req, res) => {
     // Retrieve review, using the data function from reviewData - Chloe
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
     gym.reviews = reviewList;
-    return res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
+    return res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser, title: "Single Gym Page" });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -293,13 +293,13 @@ router.route('/edit/:gymId').put(async (req, res) => {
       throw [400, `ERROR: You cannot edit other's gym`];
     }
 
-    const sanitizedGymName = xss(req.body.gymName);
-    const sanitizedWebsite = xss(req.body.website);
-    const sanitizedCategory = xss(req.body.category);
-    const sanitizedAddress = xss(req.body.address);
-    const sanitizedCity = xss(req.body.city);
-    const sanitizedState = xss(req.body.state);
-    const sanitizedZip = xss(req.body.zip);
+    const sanitizedGymName = xss(req.body.gymName).trim();
+    const sanitizedWebsite = xss(req.body.website).trim();
+    const sanitizedCategory = xss(req.body.category).trim();
+    const sanitizedAddress = xss(req.body.address).trim();
+    const sanitizedCity = xss(req.body.city).trim();
+    const sanitizedState = xss(req.body.state).trim();
+    const sanitizedZip = xss(req.body.zip).trim();
 
     validation.checkArgumentsExist(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip);
     validation.checkNonEmptyStrings(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip);

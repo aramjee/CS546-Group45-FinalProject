@@ -81,7 +81,7 @@
         address = checkString(address);
         const addressRegex = /^(\d{1,}) [a-zA-Z0-9\s]+/;
         if (!addressRegex.test(address)) {
-            throw new Error("Address must be a valid address (Addr# + StreetName) \n Example: 123 Main St");
+            throw new Error("Address must be a valid address (Addr# + StreetName), start with a number, then a space, then some character \n Example: 123 Main St");
         }
         return address;
     }
