@@ -116,7 +116,7 @@ router.route('/add').post(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return status(401).redirect("/user/login");
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
@@ -157,7 +157,7 @@ router.route('/add').post(async (req, res) => {
     }
 
     await gymData.create(sanitizedGymName, sanitizedWebsite, sanitizedCategory, req.session.userId, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip);
-    res.status(201).redirect("/gym/manage");
+    return res.status(201).redirect("/gym/manage");
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -186,7 +186,7 @@ router.route('/:id').get(async (req, res) => {
     // Retrieve review, using the data function from reviewData - Chloe
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
     gym.reviews = reviewList;
-    res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
+    return res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -210,7 +210,7 @@ router.route('/delete/:gymId').delete(async (req, res) => {
   try {
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
-      res.status(401).redirect("/user/login");
+      return res.status(401).redirect("/user/login");
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
@@ -224,7 +224,7 @@ router.route('/delete/:gymId').delete(async (req, res) => {
       throw [400, `ERROR: You cannot delete other owner's gym`];
     }
     await gymData.remove(gymId, gymOwnerId);
-    res.status(200).redirect("/gym/manage");
+    return res.status(200).redirect("/gym/manage");
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -340,7 +340,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
     }
     try {
       await gymData.update(gymId, gym);
-      res.status(200).redirect("/gym/manage");
+      return res.status(200).redirect("/gym/manage");
     } catch (e) {
       let status = e[0] ? e[0] : 500;
       let message = e[1] ? e[1] : 'Internal Server Error';
