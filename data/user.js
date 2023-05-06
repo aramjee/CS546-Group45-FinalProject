@@ -22,6 +22,8 @@ const create = async (
   validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, password, isGymOwner);
   validation.checkNonEmptyStrings(userName, email, password);
   validation.checkValidEmail(email);
+  validation.checkValidStateName(state);
+  validation.checkValidCityName(city);
 
   if (dateOfBirth.length > 0) {
     validation.checkValidDate(dateOfBirth);
@@ -151,6 +153,9 @@ const update = async (id, user) => {
   validation.checkObjectIdArray(user.dislikedGyms);
   validation.checkObjectIdArray(user.favGymList);
   validation.checkObjectIdArray(user.gymsListForOwner);
+  validation.checkValidStateName(user.state);
+  validation.checkValidCityName(user.city);
+
   let oldUser = await getByUserId(id)
   // Update the user data in the database
   const usersDBConnection = await userCollection();

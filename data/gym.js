@@ -25,6 +25,11 @@ const create = async (
   validation.checkValidWebsite(website);
   validation.checkObjectId(gymOwnerId, "gymOwnerId");
   validation.checkValidGymCategory(category);
+  validation.checkValidGymName(gymName);
+  validation.checkValidStateName(state);
+  validation.checkValidCityName(city);
+  validation.checkValidZipCode(zip);
+  validation.checkValidAddress(address)
 
   const newGym = {
     gymName: gymName.trim(),
@@ -63,6 +68,19 @@ const getByGymId = async (id) => {
     throw [404, `ERROR: No gym exists with that id ${id.toString()}`];
   gymGet._id = gymGet._id.toString();
   return gymGet;
+};
+
+const getByGymName = async (gymName) => {
+  validation.checkString(gymName);
+  validation.checkValidGymName(gymName);
+  const gymsDBConnection = await gymCollection();
+  const gyms = await gymsDBConnection.find({ gymName: gymName }).toArray();
+
+  gyms.forEach((gym) => {
+    gym._id = gym._id.toString();
+  });
+
+  return gyms;
 };
 
 const getAll = async () => {
@@ -114,6 +132,11 @@ const update = async (id, gym) => {
   validation.checkValidNonNegativeInteger(gym.likedGymsCnt);
   validation.checkValidNonNegativeInteger(gym.dislikedGymsCnt);
   validation.checkValidGymCategory(gym.category);
+  validation.checkValidGymName(gym.gymName);
+  validation.checkValidStateName(gym.state);
+  validation.checkValidCityName(gym.city);
+  validation.checkValidZipCode(gym.zip);
+  validation.checkValidAddress(gym.address)
   // in order to update the gym, the review will call this function
   // but need to check if this is the first review, or otherwise the gym rating is 0.
   if (gym.rating) { validation.checkValidRating(gym.rating) };
@@ -193,4 +216,4 @@ const updateDislikedGymsCnt = async (id, change) => {
 };
 
 
-export const gymDataFunctions = { create, getAll, getByGymId, getByGymOwnerId, update, remove, searchByValue, updateLikedGymsCnt, updateDislikedGymsCnt }
+export const gymDataFunctions = { create, getAll, getByGymId, getByGymOwnerId, update, remove, searchByValue, updateLikedGymsCnt, updateDislikedGymsCnt, getByGymName }

@@ -1,7 +1,13 @@
 // this is a helper file to do some error checking for inputs.
 import moment from "moment";
 import { ObjectId } from "mongodb";
-
+const states = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+  "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
+  "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+  "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
+  "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+];
 const gymTypes = ["Membership Gym", "24 hour access gym", "CrossFit", "Boot Camps", "Training gyms"];
 
 function checkArgumentsExist(...args) {
@@ -145,6 +151,44 @@ const checkValidGymCategory = (category) => {
   }
   return category;
 }
+
+const checkValidGymName = (gymName) => {
+  const gymNameRegex = /[a-zA-Z]+/;
+  if (!gymNameRegex.test(gymName)) {
+    throw [400, `ERROR: ${gymName} must be a valid gym name, must contain at least one letter`];
+  }
+  return gymName;
+}
+const checkValidStateName = (stateName) => {
+  if (!states.includes(stateName)) {
+    throw [400, `ERROR: ${stateName} must be a valid US state name`];
+  }
+  return stateName;
+}
+const checkValidCityName = (cityName) => {
+  //letters, spaces, and hyphens allowed, at least one letter
+  const cityNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z\s\-]+$/;
+  if (!cityNameRegex.test(cityName)) {
+    throw [400, `ERROR: ${cityName} must be a valid city name, must contain at least one letter`];
+  }
+  return cityName;
+}
+const checkValidAddress = (address) => {
+  const addressRegex = /^(\d{1,}) [a-zA-Z0-9\s]+/;
+  if (!addressRegex.test(address)) {
+    throw [400, `ERROR: ${address} must be a valid address (Addr# + StreetName)`];
+  }
+  return address;
+}
+
+const checkValidZipCode = (zipCode) => {
+  // 5 digits
+  const addressRegex = /^\d{5}$/;
+  if (!addressRegex.test(zipCode)) {
+    throw [400, `ERROR: ${zipCode} must be a valid zipCode(5 digits)`];
+  }
+  return zipCode;
+}
 const checkContent = (strVal) => {
   if (!strVal) throw `Error: You must supply a content!`;
   if (typeof strVal !== 'string') throw `Error: contentmust be a string!`;
@@ -157,5 +201,6 @@ const checkContent = (strVal) => {
 }
 export {
   checkArgumentsExist, checkValidDate, checkNonEmptyStrings, checkValidEmail, checkObjectId, checkValidWebsite, checkContent,
-  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword, checkString, checkValidGymCategory
+  checkObjectIdArray, checkValidNonNegativeInteger, checkValidRating, checkValidPassword, checkString, checkValidGymCategory,
+  checkValidCityName, checkValidAddress, checkValidStateName, checkValidGymName, checkValidZipCode
 }

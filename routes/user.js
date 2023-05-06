@@ -38,6 +38,7 @@ router.route('/logout').get(async (req, res) => {
 
     console.log("User logged out");
     if (err) {
+      //todo
       return res.status(500).json({ error: 'Failed to log out' });
     }
   })
@@ -87,29 +88,25 @@ router.route('/signup').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
 
-  //console.log(req.body);
-  const {
-    firstName,
-    lastName,
-    userName,
-    email,
-    city,
-    state,
-    dateOfBirth,
-    isGymOwner,
-    password,
-  } = req.body;
+  const sanitizedFirstName = xss(req.body.firstName);
+  const sanitizedLastName = xss(req.body.lastName);
+  const sanitizedUserName = xss(req.body.userName);
+  const sanitizedEmail = xss(req.body.email);
+  const sanitizedCity = xss(req.body.city);
+  const sanitizedState = xss(req.body.state);
+  const sanitizedPassword = xss(req.body.password);
+  const sanitizedIsGymOwner = xss(req.body.isGymOwner);
+  const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
 
-  console.log(req.body);
   // validation
   try {
-    validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, isGymOwner, password);
-    validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, dateOfBirth, password);
-    validation.checkValidEmail(email);
-    validation.checkValidPassword(password);
+    validation.checkArgumentsExist(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedIsGymOwner, sanitizedPassword);
+    validation.checkNonEmptyStrings(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword);
+    validation.checkValidEmail(sanitizedEmail);
+    validation.checkValidPassword(sanitizedPassword);
 
-    if (dateOfBirth.length > 0) {
-      validation.checkValidDate(dateOfBirth);
+    if (sanitizedDateOfBirth.length > 0) {
+      validation.checkValidDate(sanitizedDateOfBirth);
     }
 
   } catch (e) {
@@ -118,14 +115,14 @@ router.route('/signup').post(async (req, res) => {
     return res.status(e[0]).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
   }
 
-  const duplicateEmail = await userData.getByUserEmail(email.toLowerCase());
+  const duplicateEmail = await userData.getByUserEmail(sanitizedEmail.toLowerCase());
   if (duplicateEmail) {
     hasErrors = true
     errors.push("Email already used, please login");
     return res.status(400).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
   }
 
-  const duplicateUserName = await userData.getByUserName(userName.toLowerCase());
+  const duplicateUserName = await userData.getByUserName(sanitizedUserName.toLowerCase());
   if (duplicateUserName) {
     hasErrors = true
     errors.push("UserName already used, please login");
@@ -133,7 +130,7 @@ router.route('/signup').post(async (req, res) => {
   }
 
   try {
-    await userData.create(xss(firstName), xss(lastName), xss(userName), xss(email), xss(city), xss(state), dateOfBirth, isGymOwner, xss(password))
+    await userData.create(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedIsGymOwner, sanitizedPassword)
     return res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
@@ -245,6 +242,7 @@ router.route('/update').get(async (req, res) => {
   }
 });
 
+
 router.route('/update').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
@@ -254,36 +252,43 @@ router.route('/update').post(async (req, res) => {
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
-    const { firstName, lastName, userName, city, state, dateOfBirth, password, confirm } = req.body;
     let user = await userData.getByUserId(req.session.userId);
+    const sanitizedFirstName = xss(req.body.firstName);
+    const sanitizedLastName = xss(req.body.lastName);
+    const sanitizedUserName = xss(req.body.userName);
+    const sanitizedCity = xss(req.body.city);
+    const sanitizedState = xss(req.body.state);
+    const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
+    const sanitizedPassword = xss(req.body.password);
+    const sanitizedConfirm = xss(req.body.confirm);
 
     try {
-      validation.checkArgumentsExist(firstName, lastName, userName, city, state, dateOfBirth, password, confirm);
-      validation.checkNonEmptyStrings(firstName, lastName, userName, city, state, dateOfBirth, password, confirm);
+      validation.checkArgumentsExist(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword, sanitizedConfirm);
+      validation.checkNonEmptyStrings(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword, sanitizedConfirm);
 
-      if (dateOfBirth.length > 0) {
-        validation.checkValidDate(dateOfBirth);
+      if (sanitizedDateOfBirth.length > 0) {
+        validation.checkValidDate(sanitizedDateOfBirth);
       }
-      if (password !== confirm) {
+      if (sanitizedPassword !== sanitizedConfirm) {
         throw [400, `ERROR: Passwords must match`];
       }
-      if (password) {
+      if (sanitizedPassword) {
         const salt = await bcrypt.genSalt(10);
-        user.hashedPassword = await bcrypt.hash(password, salt);
+        user.hashedPassword = await bcrypt.hash(sanitizedPassword, salt);
       }
 
 
-      const duplicateUserName = await userData.getByUserName(userName.toLowerCase());
+      const duplicateUserName = await userData.getByUserName(sanitizedUserName.toLowerCase());
       if (duplicateUserName && duplicateUserName.userName !== user.userName) {
         throw [400, `ERROR: UserName is used`];
       }
 
-      user.firstName = firstName;
-      user.lastName = lastName;
-      user.userName = userName;
-      user.city = city;
-      user.state = state;
-      user.dateOfBirth = dateOfBirth;
+      user.firstName = sanitizedFirstName;
+      user.lastName = sanitizedLastName;
+      user.userName = sanitizedUserName;
+      user.city = sanitizedCity;
+      user.state = sanitizedState;
+      user.dateOfBirth = sanitizedDateOfBirth;
       // Chloe: if there's no real update, instead of redirect to profile, re-render the same update page with errors
       try {
         await userData.update(req.session.userId, user);
@@ -327,8 +332,6 @@ router.route('/update').post(async (req, res) => {
       });
     }
     // return res.status(200).redirect("user/profile")
-
-
   }
 });
 

@@ -85,19 +85,13 @@ router.route('/manage').get(async (req, res) => {
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
-      // res.status(401).redirect("/users/profile");
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+      throw [400, `ERROR: You must be a gym owner to manage gym`];
     }
 
     const gymOwnerId = req.session.userId;
     //console.log("Gym owner ID: " + gymOwnerId);
     validation.checkObjectId(gymOwnerId, "gymOwnerId");
     const gymsList = await gymData.getByGymOwnerId(gymOwnerId);
-
-    // console.log(gymsList);
-    if (!gymsList) {
-      return res.status(404).json({ error: 'No gym found for the current gym owner' });
-    }
     return res.status(200).render('manageGyms', { title: "Create Gyms", gymsList: gymsList, userLoggedIn: userLoggedIn });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
@@ -126,19 +120,43 @@ router.route('/add').post(async (req, res) => {
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
-      // res.status(401).redirect("/users/profile");
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+      throw [400, `ERROR: You must be a gym owner to add a gym`];
     }
 
-    validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
-    validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip, req.session.userId);
-    validation.checkValidWebsite(req.body.website);
-    validation.checkObjectId(req.session.userId, "gymOwnerId");
-    // catergory should be trimmed first to pass into validation.
-    req.body.category = req.body.category.trim()
-    validation.checkValidGymCategory(req.body.category);
+    const sanitizedGymName = xss(req.body.gymName);
+    const sanitizedWebsite = xss(req.body.website);
+    const sanitizedCategory = xss(req.body.category.trim());
+    const sanitizedAddress = xss(req.body.address);
+    const sanitizedCity = xss(req.body.city);
+    const sanitizedState = xss(req.body.state);
+    const sanitizedZip = xss(req.body.zip);
 
-    await gymData.create(req.body.gymName, req.body.website, req.body.category, req.session.userId, req.body.address, req.body.city, req.body.state, req.body.zip);
+    validation.checkArgumentsExist(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip, req.session.userId);
+    validation.checkNonEmptyStrings(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip, req.session.userId);
+    validation.checkValidWebsite(sanitizedWebsite);
+    validation.checkObjectId(req.session.userId, "gymOwnerId");
+    validation.checkValidGymCategory(sanitizedCategory);
+    validation.checkValidGymName(sanitizedGymName);
+    validation.checkValidStateName(sanitizedState);
+    validation.checkValidCityName(sanitizedCity);
+    validation.checkValidZipCode(sanitizedZip);
+    validation.checkValidAddress(sanitizedAddress)
+
+    const gymsWithTheSameName = await gymData.getByGymName(sanitizedGymName);
+
+
+    for (const gym of gymsWithTheSameName) {
+      if (
+        gym.address === sanitizedAddress &&
+        gym.city === sanitizedCity &&
+        gym.state === sanitizedState &&
+        gym.zip === sanitizedZip
+      ) {
+        throw [400, `ERROR: A gym with the same name and address already exists`];
+      }
+    }
+
+    await gymData.create(sanitizedGymName, sanitizedWebsite, sanitizedCategory, req.session.userId, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip);
     res.status(201).redirect("/gym/manage");
   } catch (e) {
     let status = e[0] ? e[0] : 500;
@@ -196,13 +214,15 @@ router.route('/delete/:gymId').delete(async (req, res) => {
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
-      // res.status(401).redirect("/user/profile");
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+      throw [400, `ERROR: You must be a gym owner to delete a gym`];
     }
     const gymOwnerId = req.session.userId;
     const gymId = req.params.gymId;
     validation.checkObjectId(gymId, "gymId");
-    //TODO: throw 403 for mismatch ownerId, need to catch
+    const gym = await gymData.getByGymId(gymId);
+    if (gym.gymOwnerId !== gymOwnerId) {
+      throw [400, `ERROR: You cannot delete other owner's gym`];
+    }
     await gymData.remove(gymId, gymOwnerId);
     res.status(200).redirect("/gym/manage");
   } catch (e) {
@@ -232,8 +252,7 @@ router.route('/edit/:gymId').get(async (req, res) => {
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
-      // res.status(401).redirect("/users/profile");
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+      throw [400, `ERROR: You must be a gym owner to edit gym`];
     }
     let gym = await gymData.getByGymId(req.params.gymId)
     return res.status(200).render("editGym", { title: 'Edit Gym', gym: gym, userLoggedIn: userLoggedIn });
@@ -264,28 +283,54 @@ router.route('/edit/:gymId').put(async (req, res) => {
     }
     let checkIfGymOwner = await helpers.checkIfGymOwner(req);
     if (!checkIfGymOwner) {
-      // res.status(401).redirect("/user/profile");
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+      throw [400, `ERROR: You must be a gym owner to edit gym`];
     }
     const gymOwnerId = req.session.userId;
     const gymId = req.params.gymId;
     validation.checkObjectId(gymId, "gymId");
     const gym = await gymData.getByGymId(gymId);
     if (gym.gymOwnerId !== gymOwnerId) {
-      return res.status(403).json({ error: 'You must be a gym owner to add a gym' });
+      throw [400, `ERROR: You cannot edit other's gym`];
     }
 
-    validation.checkArgumentsExist(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip);
-    validation.checkNonEmptyStrings(req.body.gymName, req.body.website, req.body.category, req.body.address, req.body.city, req.body.state, req.body.zip);
-    validation.checkValidWebsite(req.body.website);
-    validation.checkValidGymCategory(req.body.category);
-    gym.gymName = req.body.gymName;
-    gym.website = req.body.website;
-    gym.category = req.body.category;
-    gym.address = req.body.address;
-    gym.city = req.body.city;
-    gym.state = req.body.state;
-    gym.zip = req.body.zip;
+    const sanitizedGymName = xss(req.body.gymName);
+    const sanitizedWebsite = xss(req.body.website);
+    const sanitizedCategory = xss(req.body.category);
+    const sanitizedAddress = xss(req.body.address);
+    const sanitizedCity = xss(req.body.city);
+    const sanitizedState = xss(req.body.state);
+    const sanitizedZip = xss(req.body.zip);
+
+    validation.checkArgumentsExist(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip);
+    validation.checkNonEmptyStrings(sanitizedGymName, sanitizedWebsite, sanitizedCategory, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip);
+    validation.checkValidWebsite(sanitizedWebsite);
+    validation.checkValidGymCategory(sanitizedCategory);
+    validation.checkValidGymName(sanitizedGymName);
+    validation.checkValidStateName(sanitizedState);
+    validation.checkValidCityName(sanitizedCity);
+    validation.checkValidZipCode(sanitizedZip);
+    validation.checkValidAddress(sanitizedAddress)
+
+    const gymsWithTheSameName = await gymData.getByGymName(sanitizedGymName);
+
+    for (const gym of gymsWithTheSameName) {
+      if (
+        gym.address === sanitizedAddress &&
+        gym.city === sanitizedCity &&
+        gym.state === sanitizedState &&
+        gym.zip === sanitizedZip
+      ) {
+        throw [400, `ERROR: A gym with the same name and address already exists`];
+      }
+    }
+
+    gym.gymName = sanitizedGymName;
+    gym.website = sanitizedWebsite;
+    gym.category = sanitizedCategory;
+    gym.address = sanitizedAddress;
+    gym.city = sanitizedCity;
+    gym.state = sanitizedState;
+    gym.zip = sanitizedZip;
     // Chloe: if there's no real update, instead of redirect to gym/manage, re-render the same editGym page with errors
     let currentUser = undefined;
     if (userLoggedIn) {
