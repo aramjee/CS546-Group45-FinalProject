@@ -173,7 +173,8 @@ router.route('/profile').get(async (req, res) => {
         reviewsWithGymsInfo: reviewsWithGymsInfo,
         favGymList: favGymList,
         isGymOwner: user.isGymOwner,
-        userLoggedIn: true
+        userLoggedIn: true,
+        title: "Profile Page"
       });
     }
   } catch (e) {
@@ -188,7 +189,8 @@ router.route('/profile').get(async (req, res) => {
     } else {
       currentUser = null;
     }
-    return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
+    let title = 'ERROR'
+    return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn, title: title });
   }
 });
 
@@ -211,7 +213,8 @@ router.route('/update').get(async (req, res) => {
         state: user.state,
         dateOfBirth: user.dateOfBirth,
         isGymOwner: user.isGymOwner,
-        userLoggedIn: true
+        userLoggedIn: true,
+        title: "Update Page"
       });
     } catch (e) {
       let status = e[0] ? e[0] : 500;
@@ -226,7 +229,8 @@ router.route('/update').get(async (req, res) => {
       } else {
         currentUser = null;
       }
-      return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
+      let title = "ERROR";
+      return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn, title: title });
 
     }
   }
@@ -240,7 +244,7 @@ router.route('/update').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
+    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors, title: "Gym User Login" });
   } else {
     try {
       let user = await userData.getByUserId(req.session.userId);
@@ -298,7 +302,8 @@ router.route('/update').post(async (req, res) => {
           isGymOwner: user.isGymOwner,
           userLoggedIn: true,
           hasErrors: hasErrors,
-          errors: errors
+          errors: errors,
+          title: "Update Page"
         });
       }
     } catch (e) {
@@ -319,7 +324,8 @@ router.route('/update').post(async (req, res) => {
         isGymOwner: user.isGymOwner,
         userLoggedIn: true,
         hasErrors: hasErrors,
-        errors: errors
+        errors: errors,
+        title: "Update Page"
       });
     }
   }
@@ -364,7 +370,8 @@ router.route('/add-to-fav/:gymId').post(async (req, res) => {
     } else {
       currentUser = null;
     }
-    return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
+    let title = "ERROR";
+    return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn, title: title });
   }
 });
 
@@ -379,7 +386,7 @@ router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
+    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors, title: "Gym User Login" });
   } else {
     const user = await userData.getByUserId(req.session.userId);
     if (!user) {
@@ -408,8 +415,8 @@ router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
       } else {
         currentUser = null;
       }
-      return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn });
-
+      let title = "ERROR";
+      return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn, title: title });
     }
 
     if (invokedFromUserProfilePage) {

@@ -19,7 +19,7 @@ router.route('/').get(async (req, res) => {
     if (req.query && req.query.name) {
       searchName = req.query.name
     } else { searchName = null }
-    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn, searchText: searchName });
+    return res.status(200).render('gymList', { gymsList: gymList, userLoggedIn: userLoggedIn, searchText: searchName, title: "Gym List" });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -56,7 +56,7 @@ router.route('/search').get(async (req, res) => {
       errors.push("You did not sumbit a search term!")
       status = 400
     }
-    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName, hasErrors: hasErrors, errors: errors });
+    return res.status(200).render('gymList', { gymsList: gymsList, userLoggedIn: userLoggedIn, searchText: searchName, hasErrors: hasErrors, errors: errors, title: "Gym List" });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -186,7 +186,7 @@ router.route('/:id').get(async (req, res) => {
     // Retrieve review, using the data function from reviewData - Chloe
     let reviewList = await reviewData.getGymReviewsListObjects(req.params.id)
     gym.reviews = reviewList;
-    return res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser });
+    return res.status(200).render("singleGym", { gym: gym, userLoggedIn: userLoggedIn, currentUser: currentUser, title: "Single Gym Page" });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
