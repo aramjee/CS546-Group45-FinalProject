@@ -27,12 +27,13 @@ const create = async (
   validation.checkValidName(firstName);
   validation.checkValidName(lastName);
   if (dateOfBirth.length > 0) {
+    dateOfBirth = dateOfBirth.trim();
     validation.checkValidDate(dateOfBirth);
   }
 
   const lowerCaseEmail = email.toLowerCase();
   const lowerCaseUserName = userName.toLowerCase();
-
+  
   // Hash the password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
