@@ -157,7 +157,7 @@ router.route('/add').post(async (req, res) => {
     }
 
     await gymData.create(sanitizedGymName, sanitizedWebsite, sanitizedCategory, req.session.userId, sanitizedAddress, sanitizedCity, sanitizedState, sanitizedZip);
-    return res.status(201).redirect("/gym/manage");
+    return  res.status(201).redirect("/gym/manage");
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';

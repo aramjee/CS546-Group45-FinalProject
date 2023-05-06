@@ -20,29 +20,30 @@ const create = async (
 ) => {
   // Validation
   validation.checkArgumentsExist(firstName, lastName, userName, email, city, state, dateOfBirth, password, isGymOwner);
-  validation.checkNonEmptyStrings(userName, email, password);
+  validation.checkNonEmptyStrings(firstName, lastName, userName, email, city, state, dateOfBirth, password);
   validation.checkValidEmail(email);
   validation.checkValidStateName(state);
   validation.checkValidCityName(city);
-
+  validation.checkValidName(firstName);
+  validation.checkValidName(lastName);
   if (dateOfBirth.length > 0) {
+    dateOfBirth = dateOfBirth.trim();
     validation.checkValidDate(dateOfBirth);
   }
 
   const lowerCaseEmail = email.toLowerCase();
   const lowerCaseUserName = userName.toLowerCase();
-
+  
   // Hash the password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-
   const newUser = {
-    firstName: firstName,
-    lastName: lastName,
-    userName: lowerCaseUserName,
-    email: lowerCaseEmail,
-    city: city,
-    state: state,
+    firstName: firstName.trim(),
+    lastName: lastName.trim(),
+    userName: lowerCaseUserName.trim(),
+    email: lowerCaseEmail.trim(),
+    city: city.trim(),
+    state: state.trim(),
     dateOfBirth: dateOfBirth,
     isGymOwner: Boolean(isGymOwner),
     hashedPassword: hashedPassword,
@@ -89,9 +90,10 @@ const getByUserId = async (id) => {
 };
 
 const getByUserEmail = async (email) => {
-  validation.checkValidEmail(email);
+  const cleanEmail = email.toLowerCase().trim();
+  validation.checkValidEmail(cleanEmail);
   const usersDBConnection = await userCollection();
-  const userGet = await usersDBConnection.findOne({ email: email });
+  const userGet = await usersDBConnection.findOne({ email: cleanEmail });
   if (userGet === null) {
     return null;
   }
@@ -100,9 +102,10 @@ const getByUserEmail = async (email) => {
 };
 
 const getByUserName = async (userName) => {
+  const cleanUserName = userName.toLowerCase().trim()
   validation.checkNonEmptyStrings(userName);
   const usersDBConnection = await userCollection();
-  const userGet = await usersDBConnection.findOne({ userName: userName });
+  const userGet = await usersDBConnection.findOne({ userName: cleanUserName });
   if (userGet === null) {
     return null;
   }
@@ -155,6 +158,8 @@ const update = async (id, user) => {
   validation.checkObjectIdArray(user.gymsListForOwner);
   validation.checkValidStateName(user.state);
   validation.checkValidCityName(user.city);
+  validation.checkValidName(user.firstName);
+  validation.checkValidName(user.lastName);
 
   let oldUser = await getByUserId(id)
   // Update the user data in the database
@@ -163,12 +168,12 @@ const update = async (id, user) => {
     { _id: new ObjectId(id.trim()) },
     {
       $set: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        userName: user.userName,
-        email: user.email,
-        city: user.city,
-        state: user.state,
+        firstName: user.firstName.trim(),
+        lastName: user.lastName.trim(),
+        userName: user.userName.trim(),
+        email: user.email.trim(),
+        city: user.city.trim(),
+        state: user.state.trim(),
         dateOfBirth: user.dateOfBirth,
         isGymOwner: user.isGymOwner,
         hashedPassword: user.hashedPassword,
@@ -212,9 +217,10 @@ const removeGymFromUsers = async (gymId) => {
 };
 
 const checkUser = async (emailAddress, password) => {
-  validation.checkValidEmail(emailAddress)
+  const cleanEmail = emailAddress.toLowerCase().trim();
+  validation.checkValidEmail(cleanEmail)
   validation.checkValidPassword(password)
-  const user = await getByUserEmail(emailAddress.toLowerCase());
+  const user = await getByUserEmail(cleanEmail);
   if (!user) {
     throw [404, "ERROR: Either the email address or password is invalid"];
   }
