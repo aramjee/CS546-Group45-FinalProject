@@ -87,19 +87,17 @@ router.route('/signup').get(async (req, res) => {
 router.route('/signup').post(async (req, res) => {
   let hasErrors = false;
   let errors = [];
-
-  const sanitizedFirstName = xss(req.body.firstName);
-  const sanitizedLastName = xss(req.body.lastName);
-  const sanitizedUserName = xss(req.body.userName);
-  const sanitizedEmail = xss(req.body.email);
-  const sanitizedCity = xss(req.body.city);
-  const sanitizedState = xss(req.body.state);
-  const sanitizedPassword = xss(req.body.password);
-  const sanitizedIsGymOwner = xss(req.body.isGymOwner);
-  const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
-
   // validation
   try {
+    const sanitizedFirstName = xss(req.body.firstName);
+    const sanitizedLastName = xss(req.body.lastName);
+    const sanitizedUserName = xss(req.body.userName);
+    const sanitizedEmail = xss(req.body.email);
+    const sanitizedCity = xss(req.body.city);
+    const sanitizedState = xss(req.body.state);
+    const sanitizedPassword = xss(req.body.password);
+    const sanitizedIsGymOwner = xss(req.body.isGymOwner);
+    const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
     validation.checkArgumentsExist(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedIsGymOwner, sanitizedPassword);
     validation.checkNonEmptyStrings(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword);
     validation.checkValidEmail(sanitizedEmail);
@@ -131,7 +129,8 @@ router.route('/signup').post(async (req, res) => {
 
   try {
     await userData.create(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedEmail, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedIsGymOwner, sanitizedPassword)
-    return res.status(201).render("login", { title: 'Gym User Login' });//, email: email, password: password });
+    // instead of render, it should be redirect.
+    return res.status(201).redirect("/user/login");//, email: email, password: password });
   } catch (e) {
     let status = e[0] ? e[0] : 500;
     let message = e[1] ? e[1] : 'Internal Server Error';
@@ -148,7 +147,7 @@ router.route('/profile').get(async (req, res) => {
     if (!helpers.checkIfLoggedIn(req)) {
       hasErrors = true;
       errors.push("Not log in, Please Login");
-      res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+      return res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
     } else {
       const userId = req.session.userId;
       const user = await userData.getByUserId(userId);
@@ -252,17 +251,16 @@ router.route('/update').post(async (req, res) => {
     errors.push("Not log in, Please Login");
     res.status(403).render("login", { hasErrors: hasErrors, errors: errors });
   } else {
-    let user = await userData.getByUserId(req.session.userId);
-    const sanitizedFirstName = xss(req.body.firstName);
-    const sanitizedLastName = xss(req.body.lastName);
-    const sanitizedUserName = xss(req.body.userName);
-    const sanitizedCity = xss(req.body.city);
-    const sanitizedState = xss(req.body.state);
-    const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
-    const sanitizedPassword = xss(req.body.password);
-    const sanitizedConfirm = xss(req.body.confirm);
-
     try {
+      let user = await userData.getByUserId(req.session.userId);
+      const sanitizedFirstName = xss(req.body.firstName);
+      const sanitizedLastName = xss(req.body.lastName);
+      const sanitizedUserName = xss(req.body.userName);
+      const sanitizedCity = xss(req.body.city);
+      const sanitizedState = xss(req.body.state);
+      const sanitizedDateOfBirth = xss(req.body.dateOfBirth);
+      const sanitizedPassword = xss(req.body.password);
+      const sanitizedConfirm = xss(req.body.confirm);
       validation.checkArgumentsExist(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword, sanitizedConfirm);
       validation.checkNonEmptyStrings(sanitizedFirstName, sanitizedLastName, sanitizedUserName, sanitizedCity, sanitizedState, sanitizedDateOfBirth, sanitizedPassword, sanitizedConfirm);
 
@@ -298,7 +296,7 @@ router.route('/update').post(async (req, res) => {
         let message = e[1] ? e[1] : 'Internal Server Error';
         hasErrors = true;
         errors.push(message);
-        return res.status(200).render('update', {
+        return res.status(status).render('update', {
           id: req.session.userId,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -317,6 +315,8 @@ router.route('/update').post(async (req, res) => {
       let message = e[1] ? e[1] : 'Internal Server Error';
       hasErrors = true;
       errors.push(message);
+      // need to get the user befefore rendering. or otherwise undefined.
+      let user = await userData.getByUserId(req.session.userId);
       return res.status(status).render("update", {
         id: req.session.userId,
         firstName: user.firstName,
@@ -331,7 +331,6 @@ router.route('/update').post(async (req, res) => {
         errors: errors
       });
     }
-    // return res.status(200).redirect("user/profile")
   }
 });
 

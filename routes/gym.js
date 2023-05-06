@@ -320,7 +320,7 @@ router.route('/edit/:gymId').put(async (req, res) => {
         gym.state === sanitizedState &&
         gym.zip === sanitizedZip
       ) {
-        throw [400, `ERROR: A gym with the same name and address already exists`];
+        throw [400, `ERROR: Either there's no real update, or a gym with the same name and address already exists`];
       }
     }
 

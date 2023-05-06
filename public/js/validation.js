@@ -54,7 +54,7 @@ function checkValidEmail(email) {
 
 function checkValidDate(date) {
   if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
-    throw [400, `ERROR: ${date} must be a valid date string in the format MM/DD/YYYY`];
+    throw [400, `ERROR: ${date} must be a valid date string in the format YYYY-MM-DD`];
   }
   date = date.trim();
   const yearInDate = new Date(date).getFullYear();
