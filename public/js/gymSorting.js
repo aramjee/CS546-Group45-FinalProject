@@ -13,12 +13,14 @@ function getAllGymsFromDom() {
     let gymName = gymElement.querySelector(".card-title").textContent;
     let category = gymElement.querySelector(".badge").textContent;
     let rating = parseFloat(gymElement.querySelector("small").textContent);
+    let reviewsCount = gymElement.querySelector(".reviews-count");
 
     gyms.push({
       _id: gymId,
       gymName: gymName,
       category: category,
       rating: rating,
+      reviewsCount: reviewsCount
     });
 
   }
@@ -66,7 +68,7 @@ function createGymElement(gym) {
   let cardBody = document.createElement("div");
   cardBody.className = "card-body";
 
-  let cardTitle = document.createElement("h5");
+  let cardTitle = document.createElement("span");
   cardTitle.className = "card-title";
   cardTitle.textContent = gym.gymName;
 
@@ -84,15 +86,17 @@ function createGymElement(gym) {
 
   let small = document.createElement("small");
   small.className = "text-body-secondary";
-  small.textContent = gym.rating;
+  small.textContent = gym.rating + " ";
 
   ratingDiv.appendChild(small);
   let starRatingHTML = generateStarRating(gym.rating);
 
   let ratingSpan = document.createElement("span");
-  ratingSpan.innerHTML = starRatingHTML;
-  ratingDiv.appendChild(ratingSpan);
+  ratingSpan.innerHTML = starRatingHTML + " ";
   ratingDiv.appendChild(small);
+  ratingDiv.appendChild(ratingSpan);
+  ratingDiv.appendChild(gym.reviewsCount);
+
 
   ratingWrapper.appendChild(categoryDiv);
   ratingWrapper.appendChild(ratingDiv);
