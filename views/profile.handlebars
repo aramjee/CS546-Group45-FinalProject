@@ -1,0 +1,126 @@
+<main>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">First Name</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{firstName}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Last Name</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{lastName}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Email</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{email}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Date of Birth</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{dateOfBirth}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Location</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{city}}, {{state}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mb-2">
+                    <button type="button" onclick="location.href='/user/update'; " class="btn btn-outline-primary ms-1">
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                {{#if isGymOwner}}
+                <button type="button" onclick="location.href='/gym/manage';" class="btn btn-outline-primary me-2">
+                    Manage Gyms
+                </button>
+                {{/if}}
+                
+                <p class="mb-0">Favorited Gyms</p>
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            {{#ifEquals favGymList.length 0}}
+                            No gyms added to favorites!
+                            {{else}}
+                            {{#each favGymList}}
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">{{gymName}}</p>
+                                </div>
+                                <div class="col-sm-7">
+                                    <p class="text-muted mb-0">{{rating}}</p>
+                                </div>
+                                <div class="col-sm-2">
+                                    <form action="/user/delete-fav-gym/{{_id}}" method="POST">
+                                        <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm" />
+                                    </form>
+                                </div>
+                            </div>
+                            {{#unless @last}} <hr />{{/unless}}
+
+                            {{/each}}
+                            {{/ifEquals}}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <p class="mb-0">Reviews</p>
+                {{#each reviewsWithGymsInfo}}
+                <div class="col">
+                    <div>
+                        <span class="italic">{{review.dateOfReview}}</span>
+                        <!--                            TODO: check the render function-->
+                        <input type="button"
+                            onclick="location.href = '/review/updateContent/{{gym._id}}/{{review._id}}';"
+                            value="Edit Review Content" class="btn btn-sm btn-primary pull-right" />
+                        <input type="button"
+                            onclick="location.href = '/review/updateRating/{{gym._id}}/{{review._id}}';"
+                            value="Edit Rating" class="btn btn-sm btn-primary pull-right" />
+                        <input type="button" onclick="location.href = '/review/delete/{{gym._id}}/{{review._id}}';"
+                            value="Delete" class="btn btn-sm btn-primary pull-right" />
+                    </div>
+                    <div>
+                        <span class="italic">Gym:</span> {{gym.gymName}}
+                    </div>
+                    <div>
+                        <span class="italic">Rating:</span> {{review.rating}}
+                    </div>
+                    <div>
+                        <span class="italic">Review:</span> {{review.content}}
+                    </div>
+                </div>
+                {{/each}}
+              
+            </div>
+        </div>
+    </div>
+</main>

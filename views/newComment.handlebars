@@ -1,0 +1,17 @@
+<main>
+
+    <label for="content">For the gym: {{{gym.gymName}}}</label>
+    <br>
+    <label for="content">under the review: {{{review.content}}} from {{review.userName}}</label>
+    <br>
+
+    <form action="/comment/new/{{review._id}}" id="newComment-form" method="POST">
+        <div class="form-group">
+            <label for="content">Comment:</label>
+            <textarea class="form-control" id="content" name="content" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br>
+    <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+</main>

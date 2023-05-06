@@ -1,0 +1,13 @@
+<main>
+    <form action="/comment/update/{{review._id}}/{{comment._id}}" id="updateComment-form" method="POST">
+        <div class="form-group">
+            <label for="content">Update Comment for {{{gym.gymName}}}:</label>
+            <textarea class="form-control" id="content" name="content" placeholder='{{{comment.content}}}'
+                value='{{{comment.content}}}' required>{{{comment.content}}}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br>
+    <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+
+</main>

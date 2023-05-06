@@ -1,0 +1,62 @@
+/*This file should have CSS rulesets */
+
+/* Text Formatting Styles */
+.bold{
+  font-weight: bold;
+}
+.italic{
+  font-style:italic;
+}
+
+/* Other styles */
+.checked {
+  color: orange;
+}
+
+.hidden{
+  display:none;
+}
+
+/* Card Styles */
+.card-title{
+  font-size:20px;
+}
+.card-link {
+  text-decoration: none;
+}
+.review-card{
+  font-size:14px;
+}
+
+/* Comment box styles */
+.comment-box{
+  margin-top:10px;
+  background-color: aliceblue;
+}
+.comment-box .card-body{
+  padding:5px;
+}
+.comment-box .card-body p {
+  margin-bottom:0px;
+}
+.username{
+  color: mediumblue;
+  font-size:16px;
+}
+.edit-delete-wrapper{
+  margin-left:5px;
+}
+
+/* Gym List and Search */
+.search-form{
+  margin-bottom:5px;
+}
+#no-results{
+  margin-top:15px;
+  font-size:20px;
+  color:rgb(173, 11, 11);
+  font-weight: bold;
+}
+.gymList{
+  margin-top:5px;
+}

@@ -1,0 +1,14 @@
+<main>
+    <form action="/review/delete/{{gym._id}}/{{review._id}}" method="POST">
+        <div class="form-group">
+            <label for="content">For the gym: {{{gym.gymName}}}</label>
+            <br>
+            <label for="content">Your Review:</label> {{{review.content}}}
+            <br>
+            <label for="content">Your Rating:</label> {{{review.rating}}}
+        </div>
+        <button type="submit" id="content" class="btn btn-outline-primary me-2">Delete Review</button>
+    </form>
+    <br>
+    <button type="submit" onclick="location.href='/gym/{{gym._id}}';" class="btn btn-primary">Cancel</button>
+</main>
