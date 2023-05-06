@@ -944,6 +944,106 @@ console.log("let's like and dislike some gyms!")
 
 console.log('Done seeding database');
 
+
+console.log("test");
+
+try {
+    // user = await users.create(
+    //     "Jane",
+    //     "Foster",
+    //     "janefoster1",
+    //     "janefoster@stevens.edu",
+    //     "New York",
+    //     "New York",
+    //     "2000-01-01",
+    //     1,
+    //     "JaneFoster@123"
+    // );
+    // console.log("email/userName in use")
+
+    // user = await users.create(
+    //     "Jane",
+    //     "Foster",
+    //     "JANEFOSTER",
+    //     "janefoster@stevens.edu",
+    //     "New York",
+    //     "New York",
+    //     "2000-01-01",
+    //     1,
+    //     "JaneFoster@123"
+    // );
+    // console.log("username in use (CAP)")
+
+    // user = await users.create(
+    //     "Jane",
+    //     "Foster",
+    //     "janefoster",
+    //     "JANEFOSTER@STEVENS.EDU",
+    //     "New York",
+    //     "New York",
+    //     "2000-01-01",
+    //     1,
+    //     "JaneFoster@123"
+    // );
+    // console.log("email in use (CAP)")
+
+    // user = await users.create(
+    //     "lkj",
+    //     "",
+    //     "lkjl",
+    //     "janefoster1@stevens.edu",
+    //     "New York",
+    //     "New York",
+    //     "2000-01-01",
+    //     1,
+    //     "JaneFoster@123"
+    // );
+    // console.log("no empty space allowed")
+
+    // user = await users.create(
+    //     "Jane",
+    //     "Foster",
+    //     "janefoster1",
+    //     "janefoster1@stevens.edu",
+    //     "New Yor!",
+    //     "New York",
+    //     "2000-01-01",
+    //     1,
+    //     "JaneFoster@123"
+    // );
+    // console.log("city wrong")
+
+    // user = await users.create(
+    //     "Jane",
+    //     "Foster",
+    //     "janefoster1",
+    //     "janefoster1@stevens.edu",
+    //     "New York",
+    //     "New Yor",
+    //     "2000-01-01",
+    //     1,
+    //     "JaneFoster@123"
+    // );
+    // console.log("state wrong")
+
+    // user = await users.create(
+    //     "Jane",
+    //     "Foster",
+    //     "janefoster1",
+    //     "janefoster1@stevens.edu",
+    //     "New York",
+    //     "New York",
+    //     "2026-01-01",
+    //     1,
+    //     "JaneFoster@123"
+    // );
+    // console.log("birthday wrong")
+
+    console.log('user test has failed');
+} catch (e) {
+    console.log(e);
+}
+
 await closeConnection();
 
 

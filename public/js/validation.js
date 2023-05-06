@@ -54,7 +54,7 @@ function checkValidEmail(email) {
 
 function checkValidDate(date) {
   if (!moment(date, 'YYYY-MM-DD', true).isValid()) {
-    throw [400, `ERROR: ${date} must be a valid date string in the format MM/DD/YYYY`];
+    throw [400, `ERROR: ${date} must be a valid date string in the format YYYY-MM-DD`];
   }
   date = date.trim();
   const yearInDate = new Date(date).getFullYear();
@@ -169,7 +169,7 @@ const checkValidCityName = (cityName) => {
   //letters, spaces, and hyphens allowed, at least one letter
   const cityNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z\s\-]+$/;
   if (!cityNameRegex.test(cityName)) {
-    throw [400, `ERROR: ${cityName} must be a valid city name, must contain at least one letter`];
+    throw [400, `ERROR: ${cityName} must be a valid city name, must contain at least one letter, no digits, not special characters`];
   }
   return cityName;
 }
