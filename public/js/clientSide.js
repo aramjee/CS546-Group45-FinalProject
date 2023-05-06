@@ -71,7 +71,7 @@
     function checkValidAddress(address) {
         const addressRegex = /^(\d{1,}) [a-zA-Z0-9\s]+/;
         if (!addressRegex.test(address)) {
-            throw [400, `ERROR: ${address} must be a valid address (Addr# + StreetName)`];
+            throw [400, `ERROR: ${address} must be a valid address (Addr# + StreetName), start with a number, then a space, then some character`];
         }
         return address;
     }
