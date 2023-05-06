@@ -6,16 +6,12 @@
         </div>
         <div class="form-group">
             <label for="website">Website</label>
-            <input type="url" class="form-control" id="website" placeholder="Website" name="website" required>
+            <input type="text" class="form-control" id="website" placeholder="Website" name="website" required>
         </div>
         <div class="form-group">
             <label for="category">Category</label>
             <select class="form-control" id="category" name="category" required>
-                <option value="Membership Gym">Membership Gym</option>
-                <option value="24 hour access gym">24 hour access gym</option>
-                <option value="CrossFit">CrossFit</option>
-                <option value="Boot Camps">Boot Camps</option>
-                <option value="Training gyms">Training gyms</option>
+                <option value="">Select</option>
             </select>
         </div>
         <div class="form-group">
@@ -29,12 +25,12 @@
         <div class="form-group">
             <label for="state">State</label>
             <input type="text" class="form-control" id="state" placeholder="State" name="state" value="New Jersey"
-                readonly>
+                   readonly>
         </div>
         <div class="form-group">
             <label for="zip">ZIP Code</label>
-            <input type="text" class="form-control" id="zip" pattern="[0-9]{5}" placeholder="ZIP Code" name="zip"
-                   value="07030" readonly required />
+            <input type="text" class="form-control" id="zip" placeholder="ZIP Code" name="zip"
+                   value="07030" readonly>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -67,4 +63,10 @@
 
         {{/each}}
     </div>
+    <script src="/public/js/constantList.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            populateCategoriesSelect('category', '{{gym.category}}');
+        });
+    </script>
 </main>
