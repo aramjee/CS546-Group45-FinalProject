@@ -22,15 +22,17 @@
         </div>
         <div class="form-group">
             <label for="state">State</label>
-            <select class="form-control" id="state" name="state" required></select>
+            <select class="form-control" id="state" name="state" required>
+                <option value="">Select</option>
+            </select>
         </div>
         <div class="form-group">
             <label for="dateOfBirth">Date of Birth</label>
             <input id="dateOfBirth" class="form-control" type="date" name="dateOfBirth" 
-                   value="{{dateOfBirth}}" required/>
+                   value="{{dateOfBirth}}" required>
         </div>
         <div class="form-group">
-            <label for="password">Password*</label>
+            <label for="password">Password</label>
             <input type="password" class="form-control" id="password" aria-describedby="passValidations"
                    placeholder="Password" name="password" required>
             <small id="passValidations" class="form-text text-muted">
@@ -40,7 +42,7 @@
             </small>
         </div>
         <div class="form-group">
-            <label for="confirm">Retype Password*</label>
+            <label for="confirm">Retype Password</label>
             <input type="password" class="form-control" id="confirm" placeholder="Password" name="confirm" required>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
