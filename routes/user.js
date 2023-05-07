@@ -42,7 +42,7 @@ router.route('/logout').get(async (req, res) => {
       return res.status(500).json({ error: 'Failed to log out' });
     }
   })
-  return res.status(200).render("login", { title: 'Gym User Login' });
+  return res.status(200).render("login", { title: 'User Login' });
 });
 
 router.route('/login').post(async (req, res) => {
@@ -65,14 +65,14 @@ router.route('/login').post(async (req, res) => {
       } else {
         hasErrors = true;
         errors.push("'Invalid username and/or password.'")
-        return res.status(400).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+        return res.status(400).render("login", { title: 'User Login', hasErrors: hasErrors, errors: errors });
       }
     } catch (e) {
       let status = e[0] ? e[0] : 500;
       let message = e[1] ? e[1] : 'Internal Server Error';
       hasErrors = true;
       errors.push(message);
-      return res.status(status).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+      return res.status(status).render("login", { title: 'User Login', hasErrors: hasErrors, errors: errors });
     }
   }
 });
@@ -127,7 +127,7 @@ router.route('/signup').post(async (req, res) => {
     let message = e[1] ? e[1] : 'Internal Server Error';
     hasErrors = true;
     errors.push(message);
-    return res.status(status).render("signup", { title: 'Gym User Signup', hasErrors: hasErrors, errors: errors });
+    return res.status(status).render("signup", { title: 'User Signup', hasErrors: hasErrors, errors: errors });
   }
 });
 
@@ -138,7 +138,7 @@ router.route('/profile').get(async (req, res) => {
     if (!helpers.checkIfLoggedIn(req)) {
       hasErrors = true;
       errors.push("Not log in, Please Login");
-      return res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+      return res.status(403).render("login", { title: 'User Login', hasErrors: hasErrors, errors: errors });
     } else {
       const userId = req.session.userId;
       const user = await userData.getByUserId(userId);
@@ -200,7 +200,7 @@ router.route('/update').get(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { title: 'Gym User Login', hasErrors: hasErrors, errors: errors });
+    return res.status(403).render("login", { title: 'User Login', hasErrors: hasErrors, errors: errors });
   } else {
     try {
       const user = await userData.getByUserId(req.session.userId);
@@ -244,9 +244,27 @@ router.route('/update').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors, title: "Gym User Login" });
+    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors, title: "User Login" });
   } else {
     try {
+      try { await userData.getByUserId(req.session.userId); }
+      catch (e) {
+        let status = e[0] ? e[0] : 500;
+        let message = e[1] ? e[1] : 'Internal Server Error';
+        let hasErrors = true;
+        let errors = []
+        errors.push(message);
+        let currentUser = undefined;
+        let userLoggedIn = helpers.checkIfLoggedIn(req);
+        if (userLoggedIn) {
+          currentUser = await userData.getByUserId(req.session.userId);
+        } else {
+          currentUser = null;
+        }
+        let title = "ERROR";
+        return res.status(status).render("error", { hasErrors: hasErrors, errors: errors, currentUser: currentUser, userLoggedIn: userLoggedIn, title: title });
+      }
+
       let user = await userData.getByUserId(req.session.userId);
       const sanitizedFirstName = xss(req.body.firstName).trim();
       const sanitizedLastName = xss(req.body.lastName).trim();
@@ -268,6 +286,7 @@ router.route('/update').post(async (req, res) => {
       if (sanitizedPassword) {
         const salt = await bcrypt.genSalt(10);
         user.hashedPassword = await bcrypt.hash(sanitizedPassword, salt);
+        user.password = sanitizedPassword
       }
 
 
@@ -386,7 +405,7 @@ router.route('/delete-fav-gym/:gymId').post(async (req, res) => {
   if (!helpers.checkIfLoggedIn(req)) {
     hasErrors = true;
     errors.push("Not log in, Please Login");
-    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors, title: "Gym User Login" });
+    return res.status(403).render("login", { hasErrors: hasErrors, errors: errors, title: "User Login" });
   } else {
     const user = await userData.getByUserId(req.session.userId);
     if (!user) {
