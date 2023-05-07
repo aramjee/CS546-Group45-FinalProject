@@ -17,7 +17,7 @@ router.route('/login').get(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
     return res.redirect("/user/profile");
   } else {
-    return res.render('login', { title: 'Gym User Login' });
+    return res.render('login', { title: 'User Login' });
   }
 });
 
@@ -27,7 +27,7 @@ router.route('/loginPage').get(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
     return res.redirect("/user/profile");
   } else {
-    return res.render('login', { title: 'Gym User Login' });
+    return res.render('login', { title: 'User Login' });
   }
 });
 
@@ -81,7 +81,7 @@ router.route('/signup').get(async (req, res) => {
   if (helpers.checkIfLoggedIn(req)) {
     return res.redirect("/user/profile");
   } else {
-    return res.render('signup', { title: 'Gym User Signup' });
+    return res.render('signup', { title: 'User Signup' });
   }
 });
 
