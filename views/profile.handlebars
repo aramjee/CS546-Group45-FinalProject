@@ -23,6 +23,15 @@
                     <hr>
                     <div class="row">
                         <div class="col-sm-3">
+                            <p class="mb-0">userName</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{userName}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
                             <p class="mb-0">Email</p>
                         </div>
                         <div class="col-sm-9">
@@ -60,7 +69,7 @@
                     Manage Gyms
                 </button>
                 {{/if}}
-                
+
                 <p class="mb-0">Favorited Gyms</p>
                 <div class="col">
                     <div class="card shadow-sm">
@@ -78,11 +87,12 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <form action="/user/delete-fav-gym/{{_id}}" method="POST">
-                                        <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm" >
+                                        <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm">
                                     </form>
                                 </div>
                             </div>
-                            {{#unless @last}} <hr>{{/unless}}
+                            {{#unless @last}}
+                            <hr>{{/unless}}
 
                             {{/each}}
                             {{/ifEquals}}
@@ -101,12 +111,12 @@
                         <!--                            TODO: check the render function-->
                         <input type="button"
                             onclick="location.href = '/review/updateContent/{{gym._id}}/{{review._id}}';"
-                            value="Edit Review Content" class="btn btn-sm btn-primary pull-right" >
+                            value="Edit Review Content" class="btn btn-sm btn-primary pull-right">
                         <input type="button"
                             onclick="location.href = '/review/updateRating/{{gym._id}}/{{review._id}}';"
-                            value="Edit Rating" class="btn btn-sm btn-primary pull-right" >
+                            value="Edit Rating" class="btn btn-sm btn-primary pull-right">
                         <input type="button" onclick="location.href = '/review/delete/{{gym._id}}/{{review._id}}';"
-                            value="Delete" class="btn btn-sm btn-primary pull-right" >
+                            value="Delete" class="btn btn-sm btn-primary pull-right">
                     </div>
                     <div>
                         <span class="italic">Gym:</span> {{gym.gymName}}
@@ -119,7 +129,7 @@
                     </div>
                 </div>
                 {{/each}}
-              
+
             </div>
         </div>
     </div>
