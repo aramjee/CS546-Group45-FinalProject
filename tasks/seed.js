@@ -235,11 +235,11 @@ let gymOwnerA_id = gymOwnerA._id.toString();
 
 try {
     gymAA = await gyms.create(
-        "Planet Fitness",
+        "Planet Fitness on 86",
         "https://www.planetfitness.com",
         "Training gyms",
         gymOwnerA_id,
-        "101 Washington St",
+        "86 Washington St",
         "Hoboken",
         "New Jersey",
         "07030"
@@ -775,9 +775,9 @@ let comment5_id = comment5._id.toString();
 // user10 => review6BA
 try {
     comment6 = await comments.create(
-        user6_id,
+        user9_id,
         "2023-02-06",
-        "I'm not a big fan of this gym. The staff is not very friendly, the facilities are not very clean, and the prices are too high",
+        "I'm not a big fan of this gym. The staff is not very friendly, the facilities are not very clean, and the prices are too high, the membership is 300 dollars per month!",
         review7BB_id
     )
     console.log("comment6 is created!")
