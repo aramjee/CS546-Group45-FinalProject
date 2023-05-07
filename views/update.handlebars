@@ -3,36 +3,37 @@
         <div class="form-group">
             <label for="firstName">First Name</label>
             <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName"
-                   value="{{firstName}}" required>
+                value="{{firstName}}" required>
         </div>
         <div class="form-group">
             <label for="lastName">Last Name</label>
             <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName"
-                   value="{{lastName}}" required>
+                value="{{lastName}}" required>
         </div>
         <div class="form-group">
             <label for="userName">Username</label>
             <input type="text" class="form-control" id="userName" placeholder="userName" name="userName"
-                   value="{{userName}}" required>
+                value="{{userName}}" required>
         </div>
         <div class="form-group">
             <label for="city">City</label>
-            <input type="text" class="form-control" id="city" placeholder="City" name="city" 
-                   value="{{city}}" required>
+            <input type="text" class="form-control" id="city" placeholder="City" name="city" value="{{city}}" required>
         </div>
         <div class="form-group">
             <label for="state">State</label>
-            <select class="form-control" id="state" name="state" required></select>
+            <select class="form-control" id="state" name="state" required>
+                <option value="">Select</option>
+            </select>
         </div>
         <div class="form-group">
             <label for="dateOfBirth">Date of Birth</label>
-            <input id="dateOfBirth" class="form-control" type="date" name="dateOfBirth" 
-                   value="{{dateOfBirth}}" required/>
+            <input id="dateOfBirth" class="form-control" type="date" name="dateOfBirth" value="{{dateOfBirth}}"
+                required>
         </div>
         <div class="form-group">
-            <label for="password">Password*</label>
+            <label for="password">Password</label>
             <input type="password" class="form-control" id="password" aria-describedby="passValidations"
-                   placeholder="Password" name="password" required>
+                placeholder="Password" name="password" required>
             <small id="passValidations" class="form-text text-muted">
                 Password must be a minimum of 8 characters long,
                 have at least one at least one uppercase and lowercase character, have at least one number, and has to
@@ -40,7 +41,7 @@
             </small>
         </div>
         <div class="form-group">
-            <label for="confirm">Retype Password*</label>
+            <label for="confirm">Retype Password</label>
             <input type="password" class="form-control" id="confirm" placeholder="Password" name="confirm" required>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>

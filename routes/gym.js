@@ -313,14 +313,17 @@ router.route('/edit/:gymId').put(async (req, res) => {
 
     const gymsWithTheSameName = await gymData.getByGymName(sanitizedGymName);
 
-    for (const gym of gymsWithTheSameName) {
+    for (let gymSameName of gymsWithTheSameName) {
       if (
-        gym.address === sanitizedAddress &&
-        gym.city === sanitizedCity &&
-        gym.state === sanitizedState &&
-        gym.zip === sanitizedZip
+        gymSameName.address === sanitizedAddress &&
+        gymSameName.city === sanitizedCity &&
+        gymSameName.state === sanitizedState &&
+        gymSameName.zip === sanitizedZip
+
       ) {
-        throw [400, `ERROR: Either there's no real update, or a gym with the same name and address already exists`];
+        if (gym._id !== gymSameName._id) {
+          throw [400, `ERROR: Either there's no real update, or a gym with the same name and address already exists`];
+        }
       }
     }
 

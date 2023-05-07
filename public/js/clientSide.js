@@ -30,9 +30,14 @@
         return name;
     }
     function checkValidGymName(gymName) {
-        const gymNameRegex = /[a-zA-Z]+/;
+        gymName = checkString(gymName);
+        const gymNameRegex = /[a-zA-Z]/;
+        
+        if (gymName.length < 2) {
+            throw new Error("Gym name too short");
+        }
         if (!gymNameRegex.test(gymName)) {
-            throw [400, `ERROR: ${gymName} must be a valid gym name, must contain at least one letter`];
+            throw new Error("Gym name must be a valid gym name, must contain at least one letter");
         }
         return gymName;
     }
@@ -56,22 +61,27 @@
     function checkState(name) {
         name = checkString(name);
 
-        if (/\d/.test(name)) {
-            throw new Error("State cannot contain a number");
+        if (!states.includes(name)) {
+            throw new Error("Invalid state name, choose one of the dropdown options");
         }
-        if (!(/[a-zA-Z]/.test(name))) {
-            throw new Error("State should contain letters");
-        }
-        if (name.length < 4 || name.length > 13) {
-            throw new Error("Invalid state name");
+
+        return name;
+    }
+
+    function checkCategory(name) {
+        name = checkString(name);
+
+        if (!categories.includes(name)) {
+            throw new Error("Invalid category name, choose one of the dropdown options");
         }
 
         return name;
     }
     function checkValidAddress(address) {
+        address = checkString(address);
         const addressRegex = /^(\d{1,}) [a-zA-Z0-9\s]+/;
         if (!addressRegex.test(address)) {
-            throw [400, `ERROR: ${address} must be a valid address (Addr# + StreetName), start with a number, then a space, then some character`];
+            throw new Error("Address must be a valid address (Addr# + StreetName), start with a number, then a space, then some character \n Example: 123 Main St");
         }
         return address;
     }
@@ -113,20 +123,20 @@
         return password;
     }
     function checkContent(strVal) {
-        if (!strVal) throw `Error: You must supply a content!`;
-        if (typeof strVal !== 'string') throw `Error: contentmust be a string!`;
-        strVal = strVal.trim();
-        if (strVal.length === 0)
-            throw [400, `Error: content cannot be an empty string or string with just spaces`];
-        if (!isNaN(strVal))
-            throw [400, `Error: content is not a valid value for content as it only contains digits`];
-        return strVal;
+        strVal = checkString(strVal);
+
+        if (!(/[a-zA-Z]/.test(strVal))) {
+            throw new Error("Content cannot only contain digits or special characters");
+        }
+
+        return strVal
     }
     function checkValidZipCode(zipCode) {
         // 5 digits
+        zipCode = checkString(zipCode);
         const addressRegex = /^\d{5}$/;
         if (!addressRegex.test(zipCode)) {
-            throw [400, `ERROR: ${zipCode} must be a valid zipCode(5 digits)`];
+            throw new Error("ZIP Code must be a valid 5-digit zip code");
         }
         return zipCode;
     }
@@ -146,7 +156,7 @@
             let password = document.getElementById('password').value;
             let isGymOwner = document.getElementById("isGymOwner").value;
 
-            console.log(state);
+            //console.log(state);
             event.preventDefault();
             try {
                 firstName = checkName(firstName);
@@ -161,11 +171,13 @@
                 if (!(typeof isGymOwner === 'string' || isGymOwner instanceof String)) {
                     throw new Error("Please specify account type");
                 }
+
+                console.log("checking account type: " + isGymOwner);
                 if (!(isGymOwner === "True" || isGymOwner === "")) {
-                    console.log("checking account type: " + isGymOwner);
                     throw new Error("Account must be 'owner' or 'user' type");
                 }
 
+                console.log("registering");
                 signup.submit();
             } catch (e) {
                 //console.log("failed to register");
@@ -206,7 +218,8 @@
             let password = document.getElementById('password').value;
             let confirm = document.getElementById('confirm').value;
 
-            console.log(state);
+            //console.log(state);
+            //console.log
             event.preventDefault();
             try {
                 firstName = checkName(firstName);
@@ -243,15 +256,7 @@
 
             event.preventDefault();
             try {
-                gymName = checkString(gymName);
                 gymName = checkValidGymName(gymName)
-                console.log()
-                if (!(/\d/.test(gymName) || /[a-zA-Z]/.test(gymName))) {
-                    throw new Error("Gym name must contain alphanumeric characters");
-                }
-                if (gymName.length < 2 || gymName.length > 25) {
-                    throw new Error("Gym name should be between 2 and 25 characters long");
-                }
 
                 website = checkString(website);
 
@@ -261,12 +266,10 @@
                 }
 
                 // website = checkName(website);
-                category = checkString(category);
-                address = checkString(address);
+                category = checkCategory(category);
                 address = checkValidAddress(address)
                 city = checkCity(city);
                 state = checkState(state);
-                zip = checkString(zip);
                 zip = checkValidZipCode(zip);
                 gym.submit();
             } catch (e) {
@@ -307,8 +310,7 @@
                 }
 
                 // website = checkName(website);
-                category = checkString(category);
-                address = checkString(address);
+                category = checkCategory(category);
                 address = checkValidAddress(address)
                 city = checkCity(city);
                 state = checkState(state);
@@ -331,13 +333,14 @@
 
             event.preventDefault();
             try {
-                if (Number.isInteger(rating)) {
+                rating = parseFloat(rating)
+                //rating = checkString(rating);
+                if (Number.isNaN(rating)) {
                     throw new Error("Please provide a valid rating number");
                 }
-                if (rating < 1 || rating > 5) {
-                    throw new Error("Rating must be between 1 and 5");
+                if (rating < 1 || rating > 5 || !Number.isInteger(rating * 10)) {
+                    throw new Error("Rating must be between 1 and 5 up to one decimal place");
                 }
-                content = checkString(content);
                 content = checkContent(content)
                 newReview.submit();
             } catch (e) {
@@ -354,11 +357,13 @@
 
             event.preventDefault();
             try {
-                if (Number.isInteger(rating)) {
+                rating = parseFloat(rating)
+                //rating = checkString(rating);
+                if (Number.isNaN(rating)) {
                     throw new Error("Please provide a valid rating number");
                 }
-                if (rating < 1 || rating > 5) {
-                    throw new Error("Rating must be between 1 and 5");
+                if (rating < 1 || rating > 5 || !Number.isInteger(rating * 10)) {
+                    throw new Error("Rating must be between 1 and 5 up to one decimal place");
                 }
 
                 updateReviewRating.submit();
@@ -376,7 +381,6 @@
 
             event.preventDefault();
             try {
-                content = checkString(content);
                 content = checkContent(content)
 
                 updateReviewContent.submit();
@@ -396,7 +400,6 @@
 
             event.preventDefault();
             try {
-                content = checkString(content);
                 content = checkContent(content)
 
                 newComment.submit();
@@ -414,7 +417,6 @@
 
             event.preventDefault();
             try {
-                content = checkString(content);
                 content = checkContent(content)
 
                 updateComment.submit();

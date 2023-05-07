@@ -161,7 +161,9 @@ const update = async (id, user) => {
   validation.checkValidName(user.firstName.trim());
   validation.checkValidName(user.lastName.trim());
 
-  let oldUser = await getByUserId(id)
+  // let oldUser = await getByUserId(id)
+  let oldUser = await getByUserEmail(user.email.trim());
+
   // Update the user data in the database
   const usersDBConnection = await userCollection();
   const updateInfo = await usersDBConnection.findOneAndUpdate(
@@ -188,9 +190,14 @@ const update = async (id, user) => {
     { returnDocument: 'after' }
   );
   let newUser = await getByUserId(id);
-  if (JSON.stringify(oldUser) === JSON.stringify(newUser)) {
-    console.log("there is no update!")
-    throw [400, `there's no real update, everything is the same`];
+
+  if (oldUser.firstName === newUser.firstName && oldUser.lastName === newUser.lastName && oldUser.userName === newUser.userName && oldUser.email === newUser.email && oldUser.city === newUser.city && oldUser.state === newUser.state && oldUser.dateOfBirth === newUser.dateOfBirth) {
+    if (user.password) {
+      const passwordMatch = await bcrypt.compare(user.password, oldUser.hashedPassword);
+      if (passwordMatch) {
+        throw [400, `there's no real update, everything is the same`];
+      }
+    }
   }
   if (updateInfo.lastErrorObject.n === 0)
     throw [404, `Error: Update failed, user not found ${id}`];

@@ -41,7 +41,6 @@ router.route('/new/:gymId').get(async (req, res) => {
 
 router.route('/new/:gymId').post(async (req, res) => {
   try {
-    console.log("you should not be here new review!")
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       return res.status(401).redirect("/user/login");
@@ -104,7 +103,6 @@ router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
     return res.status(401).redirect("/user/login");
   }
   try {
-    console.log("you're inside the get for updateContent")
     let reviewId = req.params.reviewId;
     let review = await reviewData.get(reviewId);
     let gym = await gymData.getByGymId(req.params.gymId)
@@ -133,7 +131,6 @@ router.route('/updateContent/:gymId/:reviewId').get(async (req, res) => {
 });
 router.route('/updateContent/:gymId/:reviewId').post(async (req, res) => {
   try {
-    console.log("you should not be here updateContent!")
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       return res.status(401).redirect("/user/login");
@@ -234,7 +231,6 @@ router.route('/updateRating/:gymId/:reviewId').get(async (req, res) => {
 router.route('/updateRating/:gymId/:reviewId').post(async (req, res) => {
   //const currentUserId = userLoggedIn ? req.session.userId : null;
   try {
-    console.log("you should not be here update rating!")
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       return res.status(401).redirect("/user/login");
@@ -333,7 +329,6 @@ router.route('/delete/:gymId/:reviewId').get(async (req, res) => {
 router.route('/delete/:gymId/:reviewId').post(async (req, res) => {
   //const currentUserId = userLoggedIn ? req.session.userId : null;
   try {
-    console.log("you should not be here delete review!")
     let userLoggedIn = helpers.checkIfLoggedIn(req);
     if (!userLoggedIn) {
       return res.status(401).redirect("/user/login");

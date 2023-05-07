@@ -9,7 +9,7 @@
 
 ## Introduction
 
-Welcome to our region-specific (Hoboken) gym review platform! This website serves as a comprehensive hub for gym enthusiasts to explore, evaluate, and provide feedback on various gyms within a targeted geographic area. Our platform offers detailed information on each gym, including address, gym type, website. Additionally, users can rate and write comment about gym.
+Welcome to our region-specific (Hoboken) gym review platform! This website serves as a comprehensive hub for gym enthusiasts to explore, evaluate, and provide feedback on various gyms within a targeted geographic area of Hoboken, New Jersey. Our platform offers detailed information on each gym, including address, gym type, website. Additionally, users can rate and write reviews about gym.
 
 With countless gym options available, our mission is to help users make informed decisions about their gym memberships based on genuine user reviews and ratings. By using our platform, you can easily narrow down your choices and find the perfect gym that caters to your unique needs and preferences.
 
