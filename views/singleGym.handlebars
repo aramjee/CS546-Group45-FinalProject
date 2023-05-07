@@ -8,24 +8,24 @@
             <span id="fav-button-wrapper">
                 {{#ifExistsInArray gym._id currentUser.favGymList}}
                 <input id="btnRemoveFromFav" type="button" value="Remove from Favorites" class="btn btn-sm btn-danger"
-                    data-gymid={{gym._id}} >
+                    data-gymid={{gym._id}}>
                 {{else}}
                 <input id="btnAddToFav" type="button" value="Add to Favorites" class="btn btn-sm btn-primary"
-                    data-gymid={{gym._id}} >
+                    data-gymid={{gym._id}}>
                 {{/ifExistsInArray}}
             </span>
             {{!-- Template which will be used to render add/remove favorite button when user clicks on it --}}
             <script id="add-remove-fav-template" type="text/x-handlebars-template">
-                {{#if gymIsFavorited}}
+                \{{#if gymIsFavorited}}
                     <input id="btnRemoveFromFav" type="button" value="Remove from Favorites" class="btn btn-sm btn-danger" data-gymid=\{{gym._id}} >
-                {{else}}
+                \{{else}}
                     <input id="btnAddToFav" type="button" value="Add to Favorites" class="btn btn-sm btn-primary" data-gymid=\{{gym._id}} >
-                {{/if}}
+                \{{/if}}
             </script>
 
 
             <input type="button" onclick="location.href = '/review/new/{{gym._id}}'" value="Post a New Review"
-                class="btn btn-sm btn-dark" >
+                class="btn btn-sm btn-dark">
         </div>
         {{/if}}
         <div>
@@ -34,7 +34,8 @@
             {{/each}}
         </div>
         <div>
-            <span class="bold">Average Rating:</span> {{gym.rating}} {{{showRating gym.rating}}} <span class="italic">{{gym.reviews.length}} reviews</span>
+            <span class="bold">Average Rating:</span> {{gym.rating}} {{{showRating gym.rating}}} <span
+                class="italic">{{gym.reviews.length}} reviews</span>
         </div>
         <div>
             <div><span class="bold">Address:</span> {{gym.address}}</div>
@@ -44,15 +45,15 @@
             {{!-- First time render of like/dislike button --}}
             <div id="like-dislike-wrapper">
                 <input class="btnLikeGym btn btn-sm btn-success" type="button" data-gymid={{gym._id}}
-                    value="Like ({{gym.likedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} >
+                    value="Like ({{gym.likedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}}>
 
                 <input class="btnDislikeGym btn btn-sm btn-danger" type="button" data-gymid={{gym._id}}
-                    value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}} >
+                    value="Dislike ({{gym.dislikedGymsCnt}})" {{#unless userLoggedIn}}disabled{{/unless}}>
 
                 {{#unless userLoggedIn}}
-                    <span class="badge rounded-pill text-bg-secondary italic">
-                        You have to be logged in to like/dislike a Gym
-                    </span>
+                <span class="badge rounded-pill text-bg-secondary italic">
+                    You have to be logged in to like/dislike a Gym
+                </span>
                 {{/unless}}
             </div>
             {{!-- Template which will be used to dynamically render like/dislike button with actual count when user
@@ -82,12 +83,12 @@
                     <div class="pull-right edit-delete-wrapper">
                         <input type="button" value="Edit content"
                             onclick="location.href = '/review/updateContent/{{gymId}}/{{_id}}'"
-                            class="btn btn-sm btn-outline-dark" >
+                            class="btn btn-sm btn-outline-dark">
                         <input type="button" value="Update rating"
                             onclick="location.href = '/review/updateRating/{{gymId}}/{{_id}}'"
-                            class="btn btn-sm btn-outline-dark" >
+                            class="btn btn-sm btn-outline-dark">
                         <input type="button" value="Delete" onclick="location.href = '/review/delete/{{gymId}}/{{_id}}'"
-                            class="btn btn-sm btn-outline-danger" >
+                            class="btn btn-sm btn-outline-danger">
 
                     </div>
                     {{/ifEquals}}
@@ -95,7 +96,7 @@
 
                     {{#if ../userLoggedIn}}
                     <input type="button" value="Respond with a comment" onclick="location.href = '/comment/new/{{_id}}'"
-                        class="btn btn-sm btn-outline-primary pull-right" >
+                        class="btn btn-sm btn-outline-primary pull-right">
                     {{/if}}
                 </div>
                 <div>
@@ -103,7 +104,7 @@
                 </div>
                 <div>
                     <span class="bold">Review:</span> {{content}}
-                </div><br >
+                </div><br>
                 <p><span class="bold">Comments:</span></p>
                 {{#each comments}}
                 <div class="card comment-box">
@@ -115,10 +116,10 @@
                             <span class="pull-right edit-delete-wrapper">
                                 <input type="button" value="Edit content"
                                     onclick="location.href = '/comment/update/{{reviewId}}/{{_id}}'"
-                                    class="btn btn-sm btn-outline-dark" >
+                                    class="btn btn-sm btn-outline-dark">
                                 <input type="button" value="Delete"
                                     onclick="location.href = '/comment/delete/{{reviewId}}/{{_id}}'"
-                                    class="btn btn-sm btn-outline-danger" >
+                                    class="btn btn-sm btn-outline-danger">
                             </span>
                             {{/ifEquals}}
 
