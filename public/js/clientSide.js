@@ -32,7 +32,7 @@
     function checkValidGymName(gymName) {
         gymName = checkString(gymName);
         const gymNameRegex = /[a-zA-Z]/;
-        
+
         if (gymName.length < 2) {
             throw new Error("Gym name too short");
         }
@@ -181,7 +181,7 @@
                 signup.submit();
             } catch (e) {
                 //console.log("failed to register");
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -200,7 +200,7 @@
 
                 login.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -237,7 +237,7 @@
 
                 updateProfile.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -274,7 +274,7 @@
                 gym.submit();
             } catch (e) {
                 //console.log("failed to register");
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -319,7 +319,7 @@
                 updateGym.submit();
             } catch (e) {
                 //console.log("failed to register");
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -344,7 +344,7 @@
                 content = checkContent(content)
                 newReview.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -368,7 +368,7 @@
 
                 updateReviewRating.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -385,7 +385,7 @@
 
                 updateReviewContent.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -404,7 +404,7 @@
 
                 newComment.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }
@@ -421,7 +421,7 @@
 
                 updateComment.submit();
             } catch (e) {
-                document.getElementById('error').innerText = "(400) " + e;
+                document.getElementById('error').innerText = e;
             }
         });
     }

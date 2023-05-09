@@ -11,7 +11,7 @@
                 value="{{lastName}}" required>
         </div>
         <div class="form-group">
-            <label for="userName">Username</label>
+            <label for="userName">Username, cap letters will be converted to lowercase</label>
             <input type="text" class="form-control" id="userName" placeholder="userName" name="userName"
                 value="{{userName}}" required>
         </div>
@@ -38,6 +38,7 @@
                 Password must be a minimum of 8 characters long,
                 have at least one at least one uppercase and lowercase character, have at least one number, and has to
                 contain at least one special character.
+                If you do not wish to change it, please enter current password.
             </small>
         </div>
         <div class="form-group">

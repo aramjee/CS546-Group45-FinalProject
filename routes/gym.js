@@ -152,7 +152,7 @@ router.route('/add').post(async (req, res) => {
         gym.state === sanitizedState &&
         gym.zip === sanitizedZip
       ) {
-        throw [400, `ERROR: A gym with the same name and address already exists`];
+        throw [400, `ERROR: A gym with the exactly same name and address already exists`];
       }
     }
 

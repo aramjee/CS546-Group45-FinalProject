@@ -90,6 +90,7 @@ router.route('/signup').post(async (req, res) => {
   let errors = [];
   // validation
   try {
+    console.log("for user signup route, the input for dateOfBirth should be in the format of YYYY-MM-DD")
     const sanitizedFirstName = xss(req.body.firstName).trim();
     const sanitizedLastName = xss(req.body.lastName).trim();
     const sanitizedUserName = xss(req.body.userName).trim();
@@ -238,6 +239,7 @@ router.route('/update').get(async (req, res) => {
 
 
 router.route('/update').post(async (req, res) => {
+  console.log("for user update route, the input for dateOfBirth should be in the format of YYYY-MM-DD")
   let hasErrors = false;
   let errors = [];
 
@@ -268,7 +270,7 @@ router.route('/update').post(async (req, res) => {
       let user = await userData.getByUserId(req.session.userId);
       const sanitizedFirstName = xss(req.body.firstName).trim();
       const sanitizedLastName = xss(req.body.lastName).trim();
-      const sanitizedUserName = xss(req.body.userName).trim();
+      const sanitizedUserName = xss(req.body.userName).trim().toLowerCase();
       const sanitizedCity = xss(req.body.city).trim();
       const sanitizedState = xss(req.body.state).trim();
       const sanitizedDateOfBirth = xss(req.body.dateOfBirth).trim();
